@@ -57,7 +57,7 @@ um usuário autenticado, além do registro de movimentações no app.
 	- Ao excluir um produto, ou o app deve atualizar os valores e quantidades no estoque;
 	
 
-- [Link do mockup no figma]https://www.figma.com/file/6GUWjEBZLygSWRC1ueG5CD/estok_app?node-id=1%3A39&t=44oZYe9sTAyUYRgr-1
+- [Link do mockup no figma](https://www.figma.com/file/6GUWjEBZLygSWRC1ueG5CD/estok_app?node-id=1%3A39&t=44oZYe9sTAyUYRgr-1)
 
 ## Para os alunos
 
