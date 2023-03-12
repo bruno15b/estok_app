@@ -4,7 +4,7 @@
 nome: estok_app
 
 Aplicativo para fazer o controle de estoques de produtos de mercearias, lojas e etc, de pequeno porte. 
-Isso inclui o cadastro, atualização, busca e exclusão de produtos, estoques por 
+Isso inclui o cadastro, atualização, busca e exclusão de produtos e estoques por 
 um usuário autenticado, além do registro de movimentações no app.
 
 
