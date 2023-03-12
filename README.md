@@ -59,4 +59,16 @@ um usuário autenticado, além do registro de movimentações no app.
 
 - [Link do mockup no figma]https://www.figma.com/file/6GUWjEBZLygSWRC1ueG5CD/estok_app?node-id=1%3A39&t=44oZYe9sTAyUYRgr-1
 
+## Para os alunos
 
+	- Cada aluno deve criar sua propria branch apartir da main com a seguinte nomeclatura:
+	
+		nome-do-app/seu-nome
+	
+	- Não será considerado o projeto que commitar alterações na main, sendo zerado automaticamente. 
+	
+	- Cada aluno pode fazer suas alterações como desejar na sua branch, ou somente commitar ao concluir seu desenvolvimento, como desejar.
+	
+	- O projeto de cada branch deve estar totalmente funcional para avaliação, de acordo com o proptotipo no figma, e com os requisitos da avaliação.
+	
+	
