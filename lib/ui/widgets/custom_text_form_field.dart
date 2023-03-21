@@ -17,11 +17,11 @@ class CustomTextFormField extends StatelessWidget {
     @required this.labelText,
     @required this.hintText,
     @required this.keyboardType,
+    this.validator,
     this.controller,
     this.obscureText = false,
     this.focusNode,
     this.requestFocus,
-    this.validator,
     this.passwordToggleButton = false,
     this.prefixIcon,
     this.onTogglePasswordVisibility,
@@ -34,15 +34,14 @@ class CustomTextFormField extends StatelessWidget {
       focusNode: focusNode,
       keyboardType: keyboardType,
       obscureText: obscureText,
+      validator: validator,
       onFieldSubmitted: (value) {
         if (this.requestFocus != null) {
           FocusScope.of(context).requestFocus(this.requestFocus);
         }
       },
       decoration: InputDecoration(
-        contentPadding: prefixIcon == null
-            ? EdgeInsets.fromLTRB(25, 11, 19, 9)
-            : EdgeInsets.fromLTRB(52, 11, 19, 9),
+        contentPadding: EdgeInsets.fromLTRB(25, 11, 25, 11),
         labelText: labelText,
         labelStyle: TextStyle(
             fontSize: 16.0,

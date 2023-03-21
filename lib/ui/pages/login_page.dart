@@ -1,12 +1,17 @@
+import 'package:estok_app/models/user_model.dart';
+import 'package:estok_app/ui/validator/login_validator.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
+import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
+
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with LoginValidator {
   final FocusNode _focusPassword = FocusNode();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -32,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(27, 183, 27, 0),
+                padding: EdgeInsets.fromLTRB(27, MediaQuery.of(context).size.height * 0.232, 27, 0),
                 child: Column(
                   children: [
                     Text(
@@ -70,6 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         controller: _emailController,
                         requestFocus: _focusPassword,
+                        validator: validateEmail,
                       ),
                       SizedBox(
                         height: 21,
@@ -87,6 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                         onTogglePasswordVisibility: _togglePasswordView,
                         focusNode: _focusPassword,
                         controller: _passwordController,
+                        validator: validatePassword,
                       ),
                       SizedBox(
                         height: 38,
@@ -101,12 +108,12 @@ class _LoginPageState extends State<LoginPage> {
                               fontSize: 15,
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: ()=>_loginOnPressed(context),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              primary: Color(0xFFF7F2F8),
+                              primary: Theme.of(context).appBarTheme.color,
                               elevation: 0),
                         ),
                       ),
@@ -119,5 +126,37 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+  void _loginOnPressed(BuildContext context) {
+
+    FocusScope.of(context).unfocus();
+
+    if (!this._formKey.currentState.validate()) {
+      return;
+    }
+
+    UserModel.of(context).login(_emailController.text, _passwordController.text,
+        onSuccess: () {
+          Message.onSuccess(
+              scaffoldKey: _scaffoldKey,
+              message: "Usuário logado com sucesso",
+              seconds: 4,
+              onPop: (value) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (BuildContext context) {
+                  return HomePage();
+                }));
+              });
+          return;
+        }, onFail: (String) {
+          Message.onFail(
+            scaffoldKey: _scaffoldKey,
+            message: "Erro ao logar. Tente novamente!",
+            seconds: 4,
+          );
+          return;
+        });
+
+    print("Email : ${_emailController.text}, Senha: ${_passwordController.text}");
   }
 }
