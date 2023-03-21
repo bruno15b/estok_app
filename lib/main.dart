@@ -1,3 +1,4 @@
+import 'package:estok_app/ui/pages/home_page.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -31,6 +32,10 @@ class _MyAppState extends State<MyApp> {
           scaffoldBackgroundColor: Colors.white,
           fontFamily: "Montserrat",
           appBarTheme: AppBarTheme(
+            elevation: 0,
+            iconTheme: IconThemeData(
+              color: Color(0xFF58355E),
+            ),
             color: Color(0xFFF7F2F8),
             textTheme: TextTheme(
               headline6: TextStyle(
@@ -40,8 +45,25 @@ class _MyAppState extends State<MyApp> {
                   fontSize: 15),
             ),
           ),
+          tabBarTheme: TabBarTheme(
+            labelPadding: EdgeInsets.only(top: 0),
+            unselectedLabelStyle: TextStyle(fontSize: 12),
+            labelStyle: TextStyle(
+              fontSize: 12,
+            ),
+            labelColor: Color(0xFF58355E),
+            unselectedLabelColor: Color(0xFF909FAD),
+            indicator: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Color(0xFF58355E),
+                  width: 6,
+                ),
+              ),
+            ),
+          ),
         ),
-        home: LoginPage(),
+        home: HomePage(),
       ),
     );
   }
