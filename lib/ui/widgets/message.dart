@@ -6,33 +6,80 @@ class Message extends StatelessWidget {
     return Container();
   }
 
-  static void onSuccess(
-      {@required GlobalKey<ScaffoldState> scaffoldKey,
-        @required String message,
-        int seconds,
-        Function onPop}) {
-    scaffoldKey.currentState.showSnackBar(SnackBar(
-      content: Text(message),
-      backgroundColor: Theme.of(scaffoldKey.currentContext).accentColor,
-      duration: Duration(seconds: seconds ?? 4),
-    ));
-    if(onPop!= null){
-      Future.delayed(Duration(seconds: seconds??4)).then(onPop);
+  static void onSuccess({
+    @required GlobalKey<ScaffoldState> scaffoldKey,
+    @required String message,
+    int seconds,
+    Function onPop,
+  }) {
+    scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(scaffoldKey.currentContext).accentColor,
+        duration: Duration(seconds: seconds ?? 2),
+      ),
+    );
+    if (onPop != null) {
+      Future.delayed(Duration(seconds: seconds ?? 2)).then(onPop);
     }
   }
 
-  static void onFail(
-      {@required GlobalKey<ScaffoldState> scaffoldKey,
-        @required String message,
-        int seconds,
-        Function onPop}) {
-    scaffoldKey.currentState.showSnackBar(SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red[800],
-      duration: Duration(seconds: seconds ?? 2),
-    ));
-    if(onPop!= null){
-      Future.delayed(Duration(seconds: seconds??2)).then(onPop);
+  static void onFail({
+    @required GlobalKey<ScaffoldState> scaffoldKey,
+    @required String message,
+    int seconds,
+    Function onPop,
+  }) {
+    scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red[800],
+        duration: Duration(seconds: seconds ?? 2),
+      ),
+    );
+    if (onPop != null) {
+      Future.delayed(Duration(seconds: seconds ?? 2)).then(onPop);
     }
   }
+
+  static Widget loading(
+      BuildContext context, {
+        double width,
+        double height,
+        double strokeWidth,
+        @required Color color,
+      }) {
+
+
+
+    return Center(
+      child: Container(
+        width: width ?? 40.0,
+        height: height ?? 40.0,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(color ?? Theme.of(context).accentColor),
+          strokeWidth: strokeWidth ?? 5.0,
+        ),
+      ),
+    );
+  }
+
+  static Widget alert(message,
+      {
+        double fontSize,
+        double fontWeight,
+        Color color,
+      }) {
+    return Center(
+      child: Text(message,
+        style: TextStyle(
+          fontSize: fontSize ?? 15 ,
+          fontWeight: fontWeight ?? FontWeight.bold,
+          color:color ?? Colors.grey[600],
+        ),
+      ),
+    );
+  }
 }
+
+

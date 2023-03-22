@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage> with LoginValidator {
           Message.onSuccess(
               scaffoldKey: _scaffoldKey,
               message: "Usuário logado com sucesso",
-              seconds: 4,
+              seconds: 2,
               onPop: (value) {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (BuildContext context) {
@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> with LoginValidator {
           Message.onFail(
             scaffoldKey: _scaffoldKey,
             message: "Erro ao logar. Tente novamente!",
-            seconds: 4,
+            seconds: 2,
           );
           return;
         });

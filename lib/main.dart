@@ -1,4 +1,5 @@
-import 'package:estok_app/ui/pages/home_page.dart';
+import 'package:estok_app/models/stock_model.dart';
+
 import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -6,13 +7,14 @@ import 'package:scoped_model/scoped_model.dart';
 import 'models/user_model.dart';
 
 void main() {
-  runApp(MyApp(UserModel()));
+  runApp(MyApp(UserModel(),StockModel()));
 }
 
 class MyApp extends StatefulWidget {
   final UserModel userScopedModel;
+  final StockModel stockScopedModel;
 
-  MyApp(this.userScopedModel);
+  MyApp(this.userScopedModel,this.stockScopedModel);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -23,47 +25,50 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return ScopedModel(
       model: widget.userScopedModel,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'ESTOK APP',
-        theme: ThemeData(
-          accentColor: Color(0xFF495057),
-          primaryColor: Color(0xFF58355E),
-          scaffoldBackgroundColor: Colors.white,
-          fontFamily: "Montserrat",
-          appBarTheme: AppBarTheme(
-            elevation: 0,
-            iconTheme: IconThemeData(
-              color: Color(0xFF58355E),
+      child: ScopedModel(
+        model: widget.stockScopedModel,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'ESTOK APP',
+          theme: ThemeData(
+            accentColor: Color(0xFF495057),
+            primaryColor: Color(0xFF58355E),
+            scaffoldBackgroundColor: Colors.white,
+            fontFamily: "Montserrat",
+            appBarTheme: AppBarTheme(
+              elevation: 0,
+              iconTheme: IconThemeData(
+                color: Color(0xFF58355E),
+              ),
+              color: Color(0xFFF7F2F8),
+              textTheme: TextTheme(
+                headline6: TextStyle(
+                    color: Color(0xFF58355E),
+                    fontFamily: "Montserrat",
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15),
+              ),
             ),
-            color: Color(0xFFF7F2F8),
-            textTheme: TextTheme(
-              headline6: TextStyle(
-                  color: Color(0xFF58355E),
-                  fontFamily: "Montserrat",
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15),
-            ),
-          ),
-          tabBarTheme: TabBarTheme(
-            labelPadding: EdgeInsets.only(top: 0),
-            unselectedLabelStyle: TextStyle(fontSize: 12),
-            labelStyle: TextStyle(
-              fontSize: 12,
-            ),
-            labelColor: Color(0xFF58355E),
-            unselectedLabelColor: Color(0xFF909FAD),
-            indicator: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Color(0xFF58355E),
-                  width: 6,
+            tabBarTheme: TabBarTheme(
+              labelPadding: EdgeInsets.only(top: 0),
+              unselectedLabelStyle: TextStyle(fontSize: 12),
+              labelStyle: TextStyle(
+                fontSize: 12,
+              ),
+              labelColor: Color(0xFF58355E),
+              unselectedLabelColor: Color(0xFF909FAD),
+              indicator: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(0xFF58355E),
+                    width: 6,
+                  ),
                 ),
               ),
             ),
           ),
+          home: LoginPage(),
         ),
-        home: HomePage(),
       ),
     );
   }

@@ -7,10 +7,10 @@ class User {
   String token;
 
   static const String ID_FIELD = "id";
-  static const String NAME_FIELD = "name";
+  static const String NAME_FIELD = "nome";
   static const String EMAIL_FIELD = "email";
-  static const String PASSWORD_FIELD = "password";
-  static const String TELEPHONE_FIELD = "telephone";
+  static const String PASSWORD_FIELD = "senha";
+  static const String TELEPHONE_FIELD = "telefone";
   static const String TOKEN_FIELD = "token";
 
   User({
@@ -24,7 +24,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: (json[ID_FIELD] as num),
+      id: (json[ID_FIELD] as num).toInt(),
       name: (json[NAME_FIELD] as String),
       email: (json[EMAIL_FIELD] as String),
       password: (json[PASSWORD_FIELD] as String),

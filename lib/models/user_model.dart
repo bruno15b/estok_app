@@ -1,3 +1,4 @@
+import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:estok_app/entities/user.dart';
 import 'package:estok_app/repository/api/user_api.dart';
@@ -12,10 +13,10 @@ class UserModel extends Model {
 
   void login(String email, String password,
       {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-
     user = await UserApi.instance.signIn(email, password);
     if (user != null) {
-      onSuccess();
+      await UserRepository.instance.saveUser(user);
+      if (onSuccess != null) onSuccess();
     } else {
       onFail("Erro ao efetuar login em: $email");
     }
