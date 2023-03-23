@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Message extends StatelessWidget {
@@ -43,21 +44,19 @@ class Message extends StatelessWidget {
   }
 
   static Widget loading(
-      BuildContext context, {
-        double width,
-        double height,
-        double strokeWidth,
-        @required Color color,
-      }) {
-
-
-
+    BuildContext context, {
+    double width,
+    double height,
+    double strokeWidth,
+    @required Color color,
+  }) {
     return Center(
       child: Container(
         width: width ?? 40.0,
         height: height ?? 40.0,
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(color ?? Theme.of(context).accentColor),
+          valueColor: AlwaysStoppedAnimation<Color>(
+              color ?? Theme.of(context).accentColor),
           strokeWidth: strokeWidth ?? 5.0,
         ),
       ),
@@ -65,21 +64,30 @@ class Message extends StatelessWidget {
   }
 
   static Widget alert(message,
-      {
-        double fontSize,
-        double fontWeight,
-        Color color,
-      }) {
-    return Center(
-      child: Text(message,
-        style: TextStyle(
-          fontSize: fontSize ?? 15 ,
-          fontWeight: fontWeight ?? FontWeight.bold,
-          color:color ?? Colors.grey[600],
+      {double fontSize,
+      double fontWeight,
+      Color color,
+      void Function() onPressed}) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child:
+          Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        Text(
+          message,
+          style: TextStyle(
+            fontSize: fontSize ?? 15,
+            fontWeight: fontWeight ?? FontWeight.bold,
+            color: color ?? Colors.grey[600],
+          ),
         ),
-      ),
+        TextButton(
+            onPressed: onPressed,
+            style: ButtonStyle(),
+            child: Text(
+              "Clique aqui para recarregar",
+              style: TextStyle(color: color),
+            ))
+      ]),
     );
   }
 }
-
-

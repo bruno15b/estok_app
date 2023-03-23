@@ -16,7 +16,7 @@ class UserRepository {
 
   Future<User> getUser() async {
     var instance = await SharedPreferences.getInstance();
-    String userString = await instance.getString("user.prefs");
+    String userString = instance.getString("user.prefs");
     instance.setString("user.prefs", userString);
     if (userString.isEmpty) {
       return null;
@@ -26,6 +26,15 @@ class UserRepository {
     return user;
   }
 
+  Future<void> saveUserToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+  }
+
+  Future<String> getUserToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
 
   Future<void> saveUserCredentials(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();
@@ -44,8 +53,15 @@ class UserRepository {
   }
 
 
-  Future<void> deleteUser() async {
+  Future<void> deleteSharedPrefs() async {
     var instance = await SharedPreferences.getInstance();
-    await instance.getString("user.prefs");
+    await instance.remove("user.prefs");
+
   }
+
+  Future<void> clearUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
 }

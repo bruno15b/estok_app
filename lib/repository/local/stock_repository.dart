@@ -15,13 +15,20 @@ class StockRepository {
 
   Future<List<Stock>> getStockList() async {
     var instance = await SharedPreferences.getInstance();
-    String stockString = await instance.getString("stock.prefs");
+    String stockString = instance.getString("stock.prefs");
+
     if (stockString == null || stockString.isEmpty) {
       return null;
     }
+
     List<dynamic> stockJsonList = json.decode(stockString);
     List<Stock> stockList =
-    stockJsonList.map((json) => Stock.fromJson(json)).toList();
+        stockJsonList.map((json) => Stock.fromJson(json)).toList();
     return stockList;
+  }
+
+  Future<void> clearStockData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('stock.prefs');
   }
 }

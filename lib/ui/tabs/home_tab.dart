@@ -1,31 +1,28 @@
 import 'package:estok_app/entities/stock.dart';
-import 'package:estok_app/entities/user.dart';
-
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
-import 'package:estok_app/repository/local/user_repository.dart';
+import 'package:estok_app/repository/local/stock_repository.dart';
+import 'package:estok_app/ui/helpers/stock_filter_service.dart';
 import 'package:estok_app/ui/tile/stock_tile.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 
-class HomeTab extends StatefulWidget {
+class HomeTab extends StatefulWidget{
+
+  final String category;
+  HomeTab(this.category);
 
   @override
   State<HomeTab> createState() => _HomeTabState();
 }
 
-class _HomeTabState extends State<HomeTab> {
+class _HomeTabState extends State<HomeTab> with StockFilterService{
 
-  @override
-  void initState() {
-    super.initState();
-    _reload();
-  }
 
   void _reload() async{
-    StockModel.of(context).fetch();
+      StockModel.of(context).fetch(context);
   }
 
   @override
@@ -37,21 +34,24 @@ class _HomeTabState extends State<HomeTab> {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
                 return Message.alert(
-                    "Não foi possivel obter os dados necessários");
+                    "Não foi possivel obter os dados necessários",onPressed:_reload,color: Theme.of(context).primaryColor);
               case ConnectionState.waiting:
                 return Message.loading(context);
               default:
                 if (snapshot.hasError) {
                   print('Snapshot has error: ${snapshot.error}');
                   return Message.alert(
-                      "Não foi possivel obter os dados do servidor");
+                      "Não foi possivel obter os dados do servidor, recarregue a pagina!",onPressed:_reload,color: Theme.of(context).primaryColor);
                 } else if (!snapshot.hasData) {
                   return Message.alert(
-                      "Não foi possivel obter os dados de estoque");
+                      "Não foi possivel obter os dados de estoque, recarregue a pagina!",onPressed:_reload,color: Theme.of(context).primaryColor);
                 } else if (snapshot.data.isEmpty) {
                   return Message.alert("Nenhum carro encontrado",
-                      fontSize: 16);
+                      onPressed:_reload,color: Theme.of(context).primaryColor);
                 } else {
+
+                  List<Stock> filteredStocks = filterByStatus(snapshot.data, widget.category);
+
                   return RefreshIndicator(
                     onRefresh: () async{
                      _reload();
@@ -59,9 +59,9 @@ class _HomeTabState extends State<HomeTab> {
                     child: ListView.builder(
                         padding:
                         EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-                        itemCount: snapshot.data.length,
+                        itemCount:filteredStocks.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return StockTile(snapshot.data[index]);
+                          return StockTile(filteredStocks[index]);
                         }),
                   );
                 }

@@ -11,30 +11,26 @@ class StockApi {
 
   StockApi._();
 
-  Future<List<Stock>> getAll() async {
+  Future<List<Stock>> getAllStock(
+      String userToken, void Function() renewTokenCallback) async {
     List<Stock> stockList;
+
     try {
       String url = "http://54.90.203.92/estoques/";
-      User user = await UserRepository.instance.getUser();
-      await UserRepository.instance.saveUser(user);
-      String authorization = "Bearer ${user.token}";
+
+      String authorization = "Bearer $userToken";
+
+      print("Dentro get All : $authorization");
 
       var response = await http.get(url, headers: {
         "Content-Type": "application/json",
         "Authorization": authorization
       });
 
-      if (response.statusCode == 403) {
-
-        user = await UserApi.instance.signIn(await UserRepository.instance.getUserEmail(), await UserRepository.instance.getUserPassword());
-        await UserRepository.instance.saveUser(user);
-
-        return await StockRepository.instance.getStockList();
-
-      }else if(response.statusCode != 200) {
-        return null ;
+      if (response.statusCode != 200) {
+        renewTokenCallback();
+        return null;
       }
-
 
       var responseData = json.decode(utf8.decode(response.bodyBytes));
 
@@ -42,11 +38,9 @@ class StockApi {
         return Stock.fromJson(json as Map<String, dynamic>);
       })?.toList();
 
-      await StockRepository.instance.saveStockList(stockList);
-
       return stockList;
     } on Exception catch (error) {
-      print(error);
+      print("failed to get stocks: $error");
       return null;
     }
   }

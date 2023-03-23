@@ -1,3 +1,7 @@
+import 'package:estok_app/models/stock_model.dart';
+import 'package:estok_app/models/user_model.dart';
+import 'package:estok_app/ui/helpers/stock_filter_service.dart';
+import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:estok_app/ui/tabs/home_tab.dart';
 import 'package:estok_app/ui/widgets/custom_user_account_drawer_header.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,6 +28,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
+    StockModel.of(context).fetch(context);
   }
 
   @override
@@ -54,10 +59,10 @@ class _HomePageState extends State<HomePage>
       body: TabBarView(
         controller: _tabController,
         children: [
-          HomeTab(),
-          HomeTab(),
-          HomeTab(),
-          HomeTab(),
+          HomeTab("TODOS"),
+          HomeTab("EM ESTOQUE"),
+          HomeTab("EM AVISO"),
+          HomeTab("EM FALTA"),
         ],
       ),
       drawer: SafeArea(
@@ -135,7 +140,13 @@ class _HomePageState extends State<HomePage>
                       style: TextStyle(
                           color: Theme.of(context).scaffoldBackgroundColor),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      UserModel.of(context).logout();
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (BuildContext context) {
+                        return LoginPage();
+                      }));
+                    },
                     style: ElevatedButton.styleFrom(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
