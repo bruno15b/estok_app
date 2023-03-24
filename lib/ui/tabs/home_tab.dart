@@ -22,7 +22,7 @@ class _HomeTabState extends State<HomeTab> with StockFilterService{
 
 
   void _reload() async{
-      StockModel.of(context).fetch(context);
+      StockModel.of(context).fetchStocks(context);
   }
 
   @override
@@ -46,7 +46,7 @@ class _HomeTabState extends State<HomeTab> with StockFilterService{
                   return Message.alert(
                       "Não foi possivel obter os dados de estoque, recarregue a pagina!",onPressed:_reload,color: Theme.of(context).primaryColor);
                 } else if (snapshot.data.isEmpty) {
-                  return Message.alert("Nenhum carro encontrado",
+                  return Message.alert("Nenhum estoque encontrado",
                       onPressed:_reload,color: Theme.of(context).primaryColor);
                 } else {
 

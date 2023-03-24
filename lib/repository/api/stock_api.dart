@@ -1,17 +1,14 @@
 import 'dart:convert';
 import 'package:estok_app/entities/stock.dart';
-import 'package:estok_app/entities/user.dart';
-import 'package:estok_app/repository/api/user_api.dart';
-import 'package:estok_app/repository/local/stock_repository.dart';
 import 'package:http/http.dart' as http;
-import '../local/user_repository.dart';
+
 
 class StockApi {
   static final StockApi instance = StockApi._();
 
   StockApi._();
 
-  Future<List<Stock>> getAllStock(
+  Future<List<Stock>> getAllStocks(
       String userToken, void Function() renewTokenCallback) async {
     List<Stock> stockList;
 
@@ -28,6 +25,7 @@ class StockApi {
       });
 
       if (response.statusCode != 200) {
+        print("StockApi: ${response.statusCode}");
         renewTokenCallback();
         return null;
       }
@@ -39,6 +37,7 @@ class StockApi {
       })?.toList();
 
       return stockList;
+
     } on Exception catch (error) {
       print("failed to get stocks: $error");
       return null;

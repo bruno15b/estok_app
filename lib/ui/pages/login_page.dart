@@ -65,6 +65,7 @@ class _LoginPageState extends State<LoginPage> with LoginValidator {
                   child: ListView(
                     shrinkWrap: true,
                     children: [
+
                       CustomTextFormField(
                         labelText: "Email",
                         hintText: "example@email.com",

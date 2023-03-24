@@ -21,6 +21,7 @@ class UserApi {
           headers: {"Content-Type": "application/json"}, body: encode);
 
       if (response.statusCode != 200) {
+
         return null;
       }
 

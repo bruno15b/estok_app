@@ -17,12 +17,17 @@ class StockModel extends Model {
     notifyListeners();
   }
 
-  Future<void> fetch(BuildContext context) async {
-    print("entrou na api");
+  Future<void> fetchStocks(BuildContext context) async {
+
     this.futureStockList = Future.delayed(Duration(seconds: Duration.millisecondsPerDay));
+
     setState();
-    this.futureStockList = StockApi.instance.getAllStock(await UserRepository.instance.getUserToken(),UserModel.of(context).renewToken);
+
+    final userToken = await UserRepository.instance.getUserToken();
+    final renewedToken = UserModel.of(context).renewToken;
+    this.futureStockList = StockApi.instance.getAllStocks(userToken, renewedToken);
     StockRepository.instance.saveStockList(await this.futureStockList);
+
     setState();
   }
 

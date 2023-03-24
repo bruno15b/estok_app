@@ -1,6 +1,5 @@
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
-import 'package:estok_app/ui/helpers/stock_filter_service.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:estok_app/ui/tabs/home_tab.dart';
 import 'package:estok_app/ui/widgets/custom_user_account_drawer_header.dart';
@@ -28,7 +27,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
-    StockModel.of(context).fetch(context);
+    StockModel.of(context).fetchStocks(context);
   }
 
   @override
