@@ -1,4 +1,8 @@
+import 'package:scoped_model/scoped_model.dart';
+
 class LoginValidator {
+
+
 
   bool _isInvalidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');

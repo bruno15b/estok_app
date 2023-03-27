@@ -16,7 +16,7 @@ class Message extends StatelessWidget {
     scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Theme.of(scaffoldKey.currentContext).accentColor,
+        backgroundColor: Colors.green,
         duration: Duration(seconds: seconds ?? 2),
       ),
     );
@@ -48,7 +48,7 @@ class Message extends StatelessWidget {
     double width,
     double height,
     double strokeWidth,
-    @required Color color,
+    Color color,
   }) {
     return Center(
       child: Container(

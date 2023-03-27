@@ -1,6 +1,8 @@
+import 'package:intl/intl.dart';
+
 class Stock {
   int id;
-  String description;
+  String stockDescription;
   double totalProductQuantity;
   DateTime enterDate;
   DateTime validityDate;
@@ -8,7 +10,7 @@ class Stock {
   String stockStatus;
 
   static const String ID_FIELD = "id";
-  static const String DESCRIPTION_FIELD = "descricao";
+  static const String STOCK_DESCRIPTION_FIELD = "descricao";
   static const String TOTAL_STOCK_QUANTITY_FIELD = "quantidade_total";
   static const String ENTER_DATE_FIELD = "data_entrada";
   static const String VALIDITY_DATE_FIELD = "data_validade";
@@ -17,7 +19,7 @@ class Stock {
 
   Stock({
     this.id,
-    this.description,
+    this.stockDescription,
     this.totalProductQuantity,
     this.enterDate,
     this.validityDate,
@@ -28,7 +30,7 @@ class Stock {
   factory Stock.fromJson(Map<String, dynamic> json) {
     return Stock(
       id: (json[ID_FIELD] as num).toInt(),
-      description: (json[DESCRIPTION_FIELD] as String),
+      stockDescription: (json[STOCK_DESCRIPTION_FIELD] as String),
       totalProductQuantity: (json[TOTAL_STOCK_QUANTITY_FIELD] as num).toDouble(),
       enterDate: DateTime.parse(json[ENTER_DATE_FIELD]),
       validityDate: DateTime.parse(json[VALIDITY_DATE_FIELD]),
@@ -38,14 +40,14 @@ class Stock {
   }
 
   Map<String, dynamic> toJson() {
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.ssssss');
     return <String, dynamic>{
       ID_FIELD: id,
-      DESCRIPTION_FIELD: description,
+      STOCK_DESCRIPTION_FIELD: stockDescription ,
       TOTAL_STOCK_QUANTITY_FIELD: totalProductQuantity,
-      ENTER_DATE_FIELD: enterDate.toIso8601String(),
-      VALIDITY_DATE_FIELD : validityDate.toIso8601String(),
+      ENTER_DATE_FIELD: enterDate != null ? dateFormat.format(enterDate) : null,
+      VALIDITY_DATE_FIELD : validityDate != null ? dateFormat.format(validityDate) : null,
       TYPE_OF_STOCK_FIELD: typeOfStock,
-      STOCK_STATUS_FIELD: stockStatus,
     };
   }
 }

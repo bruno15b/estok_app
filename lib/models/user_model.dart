@@ -7,6 +7,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 class UserModel extends Model {
   User user;
+  bool showPassword = true;
 
   static UserModel of(BuildContext context) {
     return ScopedModel.of<UserModel>(context);
@@ -30,17 +31,15 @@ class UserModel extends Model {
     }
   }
 
-  void renewToken() async{
-   String token = await UserApi.instance.renewToken( await UserRepository.instance.getUserEmail(), await UserRepository.instance.getUserPassword());
-    print("renewToken: $token");
-   await UserRepository.instance.saveUserToken(token);
-  }
-
-
   void logout() async{
-    await renewToken();
     await UserApi.instance.logout(await UserRepository.instance.getUserToken());
     UserRepository.instance.clearUserData();
     StockRepository.instance.clearStockData();
   }
+
+  void togglePasswordVisibility(bool isVisible) {
+    showPassword = !showPassword;
+    notifyListeners();
+  }
+
 }

@@ -1,6 +1,7 @@
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
+import 'package:estok_app/ui/pages/stock_add_page.dart';
 import 'package:estok_app/ui/tabs/home_tab.dart';
 import 'package:estok_app/ui/widgets/custom_user_account_drawer_header.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
-    StockModel.of(context).fetchStocks(context);
+    StockModel.of(context).fetchStocks();
   }
 
   @override
@@ -157,6 +158,23 @@ class _HomePageState extends State<HomePage>
               )
             ],
           ),
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom:15 ,right:5 ),
+        child: FloatingActionButton(
+          elevation: 0,
+          backgroundColor: Theme.of(context).primaryColor,
+          child: Icon(Icons.add),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (BuildContext context) {
+                  return StockAddPage();
+                },
+              ),
+            );
+          },
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

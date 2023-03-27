@@ -20,49 +20,23 @@ class UserApi {
       var response = await http.post(url,
           headers: {"Content-Type": "application/json"}, body: encode);
 
-      if (response.statusCode != 200) {
+      if (response.statusCode == 200) {
+
+    var responseData = json.decode(utf8.decode(response.bodyBytes));
+
+    User user = User.fromJson(responseData["data"]);
+
+    return user;
+
+      }else{
+       print("UserApi: ${response.statusCode}");
 
         return null;
       }
 
-      var responseData = json.decode(utf8.decode(response.bodyBytes));
-
-      User user = User.fromJson(responseData["data"]);
-
-      return user;
-    } catch (e) {
-      print('Erro ao realizar login: $e');
-      return null;
-    }
-  }
-
-  renewToken(String email, String password) async {
-    try {
-      var encodeString = {
-        "email": email,
-        "senha": password,
-      };
-
-      print(encodeString);
-
-      var encode = json.encode(encodeString);
-      String url = "http://54.90.203.92/auth/login";
-
-      var response = await http.post(url,
-          headers: {"Content-Type": "application/json"}, body: encode);
-
-      print("dentro do renwCode: ${response.statusCode}");
-
-      if (response.statusCode != 200) {
-        return null;
-      }
-
-      var responseData = json.decode(utf8.decode(response.bodyBytes));
-
-      return responseData["data"]["token"];
-    } catch (e) {
-      print('Erro ao renovar token: $e');
-      return null;
+    } on Exception catch (error) {
+      print('Erro ao realizar SignIn: $error');
+      throw error;
     }
   }
 
@@ -70,17 +44,17 @@ class UserApi {
     try {
       String url = "http://54.90.203.92/auth/logout";
 
-      var response =
-          await http.post(url, headers: {"Authorization": "Bearer $token"});
+      var response = await http.post(url, headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode != 200) {
         throw Exception('Erro ao realizar logout');
       } else {
-        print("logout efetuado");
+        print("Logout efetuado");
+        return null;
       }
-    } catch (e) {
-      print('Erro ao realizar logout: $e');
-      throw e;
+    }on Exception catch (error) {
+      print('Erro ao realizar logout: $error');
+      throw error;
     }
   }
 }

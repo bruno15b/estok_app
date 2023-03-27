@@ -47,7 +47,7 @@ class StockTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    this._stock.description,
+                    this._stock.stockDescription,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,

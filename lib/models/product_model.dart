@@ -23,8 +23,7 @@ class ProductModel extends Model {
     setState();
 
     final userToken = await UserRepository.instance.getUserToken();
-    final renewedToken = UserModel.of(context).renewToken;
-    this.futureProductList = ProductApi.instance.getAllProducts(productId, userToken, renewedToken);
+    this.futureProductList = ProductApi.instance.getAllProducts(productId, userToken);
 
     setState();
   }

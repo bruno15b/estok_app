@@ -1,7 +1,5 @@
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/stock_model.dart';
-import 'package:estok_app/models/user_model.dart';
-import 'package:estok_app/repository/local/stock_repository.dart';
 import 'package:estok_app/ui/helpers/stock_filter_service.dart';
 import 'package:estok_app/ui/tile/stock_tile.dart';
 import 'package:estok_app/ui/widgets/message.dart';
@@ -22,7 +20,7 @@ class _HomeTabState extends State<HomeTab> with StockFilterService{
 
 
   void _reload() async{
-      StockModel.of(context).fetchStocks(context);
+      StockModel.of(context).fetchStocks();
   }
 
   @override
