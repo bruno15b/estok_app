@@ -1,10 +1,12 @@
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
+import 'package:estok_app/ui/pages/history_page.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
+import 'package:estok_app/ui/pages/profile_page.dart';
 import 'package:estok_app/ui/pages/stock_add_page.dart';
 import 'package:estok_app/ui/tabs/home_tab.dart';
-import 'package:estok_app/ui/widgets/custom_user_account_drawer_header.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
+import 'package:estok_app/ui/widgets/custom_user_account_header.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,6 +19,12 @@ class _HomePageState extends State<HomePage>
   TabController _tabController;
 
   int _selectedIndex = 0;
+
+  List<Widget> _pages = [
+    HomePage(),
+    HistoryPage(),
+    ProfilePage(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -69,7 +77,7 @@ class _HomePageState extends State<HomePage>
         child: Drawer(
           child: ListView(
             children: [
-              CustomUserAccountDrawerHeader(
+              CustomUserAccountHeader(
                 accountName: "User",
                 accountEmail: "example@gmail.com",
                 backgroundImage: "assets/images/perfil_background.png",
@@ -160,23 +168,7 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom:15 ,right:5 ),
-        child: FloatingActionButton(
-          elevation: 0,
-          backgroundColor: Theme.of(context).primaryColor,
-          child: Icon(Icons.add),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (BuildContext context) {
-                  return StockAddPage();
-                },
-              ),
-            );
-          },
-        ),
-      ),
+      floatingActionButton: CustomFloatingActionButton(StockAddPage()),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 0,
         backgroundColor: Color(0xFFF6F5F5),

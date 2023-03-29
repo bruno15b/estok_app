@@ -1,6 +1,6 @@
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/stock_model.dart';
-import 'package:estok_app/ui/validator/stock_register_validator.dart';
+import 'package:estok_app/ui/validator/add_pages_validators.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,36 +18,36 @@ class StockAddPage extends StatefulWidget {
   _StockAddPageState createState() => _StockAddPageState();
 }
 
-class _StockAddPageState extends State<StockAddPage>
-    with StockRegisterValidator {
+class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
   String _selectedOption;
 
   final FocusNode _focusEnterDate = FocusNode();
   final FocusNode _focusValidityDate = FocusNode();
 
   var _stockDescriptionController = TextEditingController();
-  var _enterDateController = TextEditingController();
-  var _validityDateController = TextEditingController();
+  var _stockEnterDateController = TextEditingController();
+  var _stockValidityDateController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool newCarAdd = true;
+  bool newStockAdd = true;
+
 
   @override
   void initState() {
     super.initState();
 
     if (widget.stock != null) {
-      newCarAdd = false;
+      newStockAdd = false;
       _stockDescriptionController.text = widget.stock.stockDescription;
-      _enterDateController.text =
+      _stockEnterDateController.text =
           StockModel.of(context).formatDateToString(widget.stock.enterDate);
-      _validityDateController.text =
+      _stockValidityDateController.text =
           StockModel.of(context).formatDateToString(widget.stock.validityDate);
       StockModel.of(context).onChangeTypeOfStock(widget.stock.typeOfStock);
     } else {
       StockModel.of(context).onChangeTypeOfStock("CAIXA");
-      newCarAdd = true;
+      newStockAdd = true;
     }
   }
 
@@ -131,122 +131,128 @@ class _StockAddPageState extends State<StockAddPage>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(widget.stock?.stockDescription ?? "Novo Estoque"),
-      body: Padding(
-        padding: EdgeInsets.only(top: 31, left: 24, right: 24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              CustomTextFormField(
-                requestFocus: _focusEnterDate,
-                textAboveFormField: "Descrição",
-                labelText: "Descrição do estoque",
-                hintText: "Ex: Engradados Cerveja",
-                keyboardType: TextInputType.text,
-                controller: _stockDescriptionController,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: 150,
-                    child: CustomTextFormField(
-                      keyboardType: TextInputType.datetime,
-                      textAboveFormField: "Data de entrada",
-                      labelText: "Entrada",
-                      hintText: "12/12/2012",
-                      controller: _enterDateController,
-                      focusNode: _focusEnterDate,
-                      requestFocus: _focusValidityDate,
-                      validator: validateDate,
-                      maxLength: 10,
-                    ),
+      appBar: CustomAppBar(widget.stock?.stockDescription ?? "NOVO ESTOQUE"),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: EdgeInsets.only(top: 31, left: 24, right: 24),
+          children: [
+            CustomTextFormField(
+              validator: emptyField,
+              requestFocus: _focusEnterDate,
+              textAboveFormField: "Descrição",
+              labelText: "Descrição do estoque",
+              hintText: "Ex: Engradados Cerveja",
+              keyboardType: TextInputType.text,
+              controller: _stockDescriptionController,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: 150,
+                  child: CustomTextFormField(
+                    dateFormatter: true,
+                    keyboardType: TextInputType.datetime,
+                    textAboveFormField: "Data de entrada",
+                    labelText: "Entrada",
+                    hintText: "12/12/2012",
+                    controller: _stockEnterDateController,
+                    focusNode: _focusEnterDate,
+                    requestFocus: _focusValidityDate,
+                    validator: validateDate,
+                    maxLength: 10,
                   ),
-                  SizedBox(
-                    width: 150,
-                    child: CustomTextFormField(
-                      keyboardType: TextInputType.datetime,
-                      textAboveFormField: "Data de validade",
-                      labelText: "Saída",
-                      hintText: "12/12/2012",
-                      controller: _validityDateController,
-                      focusNode: _focusValidityDate,
-                      validator: validateDate,
-                      maxLength: 10,
+                ),
+                SizedBox(
+                  width: 150,
+                  child: CustomTextFormField(
+                    dateFormatter: true,
+                    keyboardType: TextInputType.datetime,
+                    textAboveFormField: "Data de validade",
+                    labelText: "Saída",
+                    hintText: "12/12/2012",
+                    controller: _stockValidityDateController,
+                    focusNode: _focusValidityDate,
+                    validator: validateDate,
+                    maxLength: 10,
+                  ),
+                ),
+              ],
+            ),
+            ScopedModelDescendant<StockModel>(
+                builder: (context, snapshot, stockModel) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(bottom: 8, top: 19),
+                    child: Text("Tipo",
+                        style: TextStyle(
+                            color: Theme.of(context).accentColor,
+                            fontSize: 16)),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                      _showOptionsDialog();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(25, 11, 0, 11),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1.0,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                          ),
+                          Text(
+                            stockModel.typeOfStock,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ],
-              ),
-              ScopedModelDescendant<StockModel>(
-                  builder: (context, snapshot, stockModel) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(bottom: 8, top: 19),
-                      child: Text("Tipo"),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        FocusScope.of(context).unfocus();
-                        _showOptionsDialog();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(25, 11, 0, 11),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1.0,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.3,
-                            ),
-                            Text(
-                              stockModel.typeOfStock,
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.25,
-                            ),
-                            Icon(
-                              Icons.keyboard_arrow_down,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }),
-              SizedBox(
-                height: 57,
-              ),
-              CustomButton(
-                  textButton: newCarAdd ? "CADASTRAR" : "EDITAR",
-                  onPressed: () => stockOnPressed()),
-            ],
-          ),
+              );
+            }),
+            SizedBox(
+              height: 57,
+            ),
+            CustomButton(
+              textButton: newStockAdd ? "CADASTRAR" : "EDITAR",
+              onPressed: () => stockOnPressed(),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void stockOnPressed() {
+  void stockOnPressed() async {
     FocusScope.of(context).unfocus();
     if (this._formKey.currentState.validate()) {
-      DateTime _enterDate =
-          StockModel.of(context).formatStringToDate(_enterDateController.text);
+
+      DateTime _enterDate = StockModel.of(context)
+          .formatStringToDate(_stockEnterDateController.text);
       DateTime _validityDate = StockModel.of(context)
-          .formatStringToDate(_validityDateController.text);
+          .formatStringToDate(_stockValidityDateController.text);
       String typeOfStock = StockModel.of(context).typeOfStock;
 
       Stock stock = Stock(
@@ -256,12 +262,12 @@ class _StockAddPageState extends State<StockAddPage>
         validityDate: _validityDate,
       );
 
-      if (newCarAdd) {
-        StockModel.of(context).createNewStock(stock, onSuccess: () {
+      if (newStockAdd) {
+       await StockModel.of(context).createNewStock(stock, onSuccess: () {
           Message.onSuccess(
               scaffoldKey: _scaffoldKey,
               message: "Estoque adicionado com sucesso",
-              seconds: 2,
+              seconds: 3,
               onPop: (value) {
                 Navigator.of(context).pop();
               });
@@ -270,30 +276,35 @@ class _StockAddPageState extends State<StockAddPage>
           Message.onFail(
             scaffoldKey: _scaffoldKey,
             message: "Erro ao adicionar estoque.!",
-            seconds: 2,
+            seconds: 3,
           );
           return;
         });
       } else {
         stock.id = widget.stock.id;
-        StockModel.of(context).updateStock(stock, onSuccess: () {
-          Message.onSuccess(
+        stock.stockTotalProductQuantity = widget.stock.stockTotalProductQuantity;
+        StockModel.of(context).updateStock(
+          stock,
+          onSuccess: () {
+            Message.onSuccess(
+                scaffoldKey: _scaffoldKey,
+                message: "Estoque editado com sucesso",
+                seconds: 3,
+                onPop: (value) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                });
+            return;
+          },
+          onFail: (string) {
+            Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: "Estoque editado com sucesso",
-              seconds: 2,
-              onPop: (value) {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              });
-          return;
-        }, onFail: (string) {
-          Message.onFail(
-            scaffoldKey: _scaffoldKey,
-            message: "Erro ao editar estoque.!",
-            seconds: 2,
-          );
-          return;
-        });
+              message: "Erro ao editar estoque.!",
+              seconds: 3,
+            );
+            return;
+          },
+        );
       }
 
       return;

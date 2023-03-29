@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 class StockModel extends Model {
   Future<List<Stock>> futureStockList;
+  double stockQuantity;
   String typeOfStock = "CAIXA";
   final dateTypeFormat = "dd/MM/yyyy";
 
@@ -20,56 +21,65 @@ class StockModel extends Model {
     notifyListeners();
   }
 
-  Future<void> fetchStocks() async {
-    this.futureStockList =
-        Future.delayed(Duration(seconds: Duration.millisecondsPerDay));
-
-    setState();
-
+  Future<List<Stock>> fetchStocks() async {
     final userToken = await UserRepository.instance.getUserToken();
-    this.futureStockList = StockApi.instance.getAllStocks(userToken);
-    StockRepository.instance.saveStockList(await this.futureStockList);
+    List<Stock> stockList = await StockApi.instance.getAllStocks(userToken);
+    StockRepository.instance.saveStockList(stockList);
 
+    this.futureStockList = Future.value(stockList);
     setState();
+
+    return this.futureStockList;
   }
 
- void  createNewStock(Stock stock ,{VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
+
+ Future<void> createNewStock(Stock stock ,{VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
     final userToken = await UserRepository.instance.getUserToken();
 
     var response = await StockApi.instance.postNewStock(userToken, stock);
 
     if (response!= null){
       onSuccess();
-      fetchStocks();
+      await fetchStocks();
     }else{
       onFail("Erro ao criar novo Estoque!");
     }
 
   }
 
- void updateStock(Stock stock, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
+ Future<void> updateStock(Stock stock, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
     final userToken = await UserRepository.instance.getUserToken();
     var response = await StockApi.instance.putStock(userToken, stock);
     if (response!= null){
       onSuccess();
-      fetchStocks();
+      await fetchStocks();
     }else{
       onFail("Erro ao editar estoque!");
     }
 
   }
 
-  void deleteStock(Stock stock, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
+   deleteStock(Stock stock, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
     final userToken = await UserRepository.instance.getUserToken();
     var response = await StockApi.instance.deleteStock(userToken, stock.id);
 
-    if (response!= null){
+    if (response != null){
       onSuccess();
-      fetchStocks();
+      await fetchStocks();
     }else{
       onFail("Erro ao deletar estoque!");
     }
 
+  }
+
+  List<Stock> filterStockByStatus(List<Stock> stocks, String status) {
+    if (status == "TODOS") {
+      return stocks;
+    } else {
+      return stocks
+          .where((stockItem) => stockItem.stockStatus == status)
+          .toList();
+    }
   }
 
   String onChangeTypeOfStock(String newType){
@@ -77,6 +87,7 @@ class StockModel extends Model {
     setState();
     return typeOfStock;
   }
+
 
   DateTime formatStringToDate(String dateString) {
     return DateFormat(dateTypeFormat).parse(dateString);

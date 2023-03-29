@@ -12,7 +12,7 @@ class Message extends StatelessWidget {
     @required String message,
     int seconds,
     Function onPop,
-  }) {
+  }) async {
     scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text(message),

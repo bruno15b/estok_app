@@ -11,17 +11,20 @@ class StockApi {
     List<Stock> stockList;
 
     try {
+      print("StockApi[getAllStocks]:---------- Entrou com Sucesso");
       String url = "http://54.90.203.92/estoques/";
 
       String authorization = "Bearer $userToken";
+
+
 
       var response = await http.get(url, headers: {
         "Content-Type": "application/json",
         "Authorization": authorization
       });
 
-
       if (response.statusCode == 200) {
+        print("StockApi[getAllStocks]:---------- Saiu com sucesso");
         var responseData = json.decode(utf8.decode(response.bodyBytes));
 
         stockList = (responseData["data"] as List)?.map((json) {
@@ -30,7 +33,7 @@ class StockApi {
 
         return stockList;
       } else {
-        print("StockApi[getAllStocks]: ${response.statusCode}");
+        print("StockApi[getAllStocks]:----------  Saiu com erro: ${response.statusCode}");
         return null;
       }
     } on Exception catch (error) {
@@ -42,7 +45,10 @@ class StockApi {
   postNewStock(String userToken, Stock stock) async {
 
     try {
-      var encodeString = stock.toJson();
+      print("StockApi[postNewStock]:---------- Entrou");
+      print(userToken);
+
+      var encodeString = stock.toJsonAdd();
       var encode = json.encode(encodeString);
 
       print(encode);
@@ -50,6 +56,8 @@ class StockApi {
       String url = "http://54.90.203.92/estoques/";
 
       String authorization = "Bearer $userToken";
+
+      print(authorization);
 
       var response = await http.post(
         url,
@@ -61,9 +69,10 @@ class StockApi {
       );
 
       if (response.statusCode == 200) {
+        print("StockApi[postNewStock]:----------  Saiu com sucesso");
         return stock;
       } else {
-        print("StockApi[postNewStock]: ${response.statusCode}");
+        print("StockApi[postNewStock]:---------- Saiu com erro: ${response.statusCode}");
         return null;
       }
     } on Exception catch (error) {
@@ -75,7 +84,8 @@ class StockApi {
   putStock(String userToken, Stock stock) async {
 
     try {
-      var encodeString = stock.toJson();
+      print("StockApi[putStock]---------- Entrou");
+      var encodeString = stock.toJsonUpdate();
       var encode = json.encode(encodeString);
 
       String url = "http://54.90.203.92/estoques/";
@@ -93,9 +103,10 @@ class StockApi {
 
 
       if (response.statusCode == 200) {
+        print("StockApi[putStock]:---------- Saiu com Sucesso");
         return stock;
       } else {
-        print("StockApi[putNewStock]: ${response.statusCode}");
+        print("StockApi[putStock]:---------- saiu com erro: ${response.statusCode}");
         return null;
       }
     } on Exception catch (error) {
@@ -106,6 +117,7 @@ class StockApi {
 
  deleteStock(String userToken, int stockId) async {
     try {
+      print("StockApi[deleteStock]:---------- Entrou");
       String url = "http://54.90.203.92/estoques/$stockId";
       String authorization = "Bearer $userToken";
 
@@ -115,14 +127,15 @@ class StockApi {
       });
 
       if (response.statusCode == 200) {
+        print("StockApi[deleteStock]:---------- Saiu com sucesso");
         return stockId;
       } else {
-        print("StockApi[deleteStock]: ${response.statusCode}");
-        return false;
+        print("StockApi[deleteStock]:---------- saiu com erro : ${response.statusCode}");
+        return null;
       }
     } on Exception catch (error) {
       print("failed to delete stock: $error");
-      return false;
+      return null;
     }
   }
 

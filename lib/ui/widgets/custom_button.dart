@@ -3,7 +3,7 @@ class CustomButton extends StatelessWidget {
   final String textButton;
   final Function onPressed;
 
-  CustomButton({this.textButton,this.onPressed});
+  CustomButton({@required this.textButton,this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +15,7 @@ class CustomButton extends StatelessWidget {
           style: TextStyle(
             color: Theme.of(context).accentColor,
             fontSize: 15,
+            fontWeight: FontWeight.w500
           ),
         ),
         onPressed:onPressed,

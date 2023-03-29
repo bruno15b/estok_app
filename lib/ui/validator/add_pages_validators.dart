@@ -1,4 +1,4 @@
-class StockRegisterValidator {
+class AddPagesValidators {
   String validateDate(String date) {
     if (date == null || date.isEmpty) {
       return "Campo Vazio";
@@ -7,7 +7,7 @@ class StockRegisterValidator {
     final regex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
 
     if (!regex.hasMatch(date)) {
-      return "xx/xx/xxxx*";
+      return "dd/mm/yyyy*";
     }
 
     final parts = date.split('/');
@@ -34,6 +34,36 @@ class StockRegisterValidator {
   String compareDates(DateTime date1, DateTime date2) {
     if (date1.isAfter(date2)) {
       return 'A data de validade é superior a de entrada';
+    }
+    return null;
+  }
+
+  String emptyField(String value) {
+    if (value.isEmpty) {
+      return "Campo vazio";
+    } else {
+      return null;
+    }
+  }
+
+  String onlyNumbers(String value) {
+    if (value.isEmpty) {
+      return 'Campo vazio';
+    }
+    final regex = RegExp(r'^[0-9]+$');
+    if (!regex.hasMatch(value)) {
+      return 'Apenas números são permitidos';
+    }
+    return null;
+  }
+
+  String currencyValidator(String value) {
+    if (value.isEmpty) {
+      return 'Campo vazio';
+    }
+    final regex = RegExp(r'^R?\$?\s?\d{1,3}(?:[\.,]\d{3})*(?:[\.,]\d{0,2})?$');
+    if (!regex.hasMatch(value)) {
+      return 'Apenas números! com ou sem o prefixo R\$';
     }
     return null;
   }

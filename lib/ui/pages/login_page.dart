@@ -26,95 +26,93 @@ class _LoginPageState extends State<LoginPage> with LoginValidator {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: Container(
-        width: double.infinity,
-        child: ListView(
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                  27, MediaQuery.of(context).size.height * 0.232, 27, 0),
-              child: Column(
-                children: [
-                  Text(
-                    "ESTOK APP",
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontSize: 24,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 23,
-                  ),
-                  Text(
-                    "Login",
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontSize: 20,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 60,
-                  ),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        CustomTextFormField(
-                          labelText: "Email",
-                          hintText: "example@email.com",
-                          keyboardType: TextInputType.emailAddress,
-                          prefixIcon: Icon(
-                            Icons.person,
-                            color: Color(0xFFC4C4C4),
-                          ),
-                          controller: _emailController,
-                          requestFocus: _focusPassword,
-                          validator: validateEmail,
-                        ),
-                        SizedBox(
-                          height: 21,
-                        ),
-                        ScopedModelDescendant<UserModel>(
-                          builder: (context, snapshot,userModel) {
-                            return CustomTextFormField(
-                              labelText: "Senha",
-                              hintText: "Informe a senha",
-                              keyboardType: TextInputType.text,
-                              prefixIcon: Icon(
-                                Icons.lock,
-                                color: Color(0xFFC4C4C4),
-                              ),
-                              obscureText: userModel.showPassword,
-                              passwordToggleButton: true,
-                              onTogglePasswordVisibility: userModel.togglePasswordVisibility,
-                              focusNode: _focusPassword,
-                              controller: _passwordController,
-                              validator: validatePassword,
-                            );
-                          }
-                        ),
-                        SizedBox(
-                          height: 38,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: CustomButton(
-                                textButton: "Entrar",
-                                onPressed: () => _loginOnPressed(context),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20,),
-                ],
+      body: ListView(
+        padding: EdgeInsets.fromLTRB(
+            27,220, 27, 0),
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "ESTOK APP",
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontSize: 24,
+                ),
               ),
+              SizedBox(
+                height: 23,
+              ),
+              Text(
+                "Login",
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontSize: 20,
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+            ],
+          ),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                CustomTextFormField(
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
+                  labelText: "Email",
+                  hintText: "example@email.com",
+                  keyboardType: TextInputType.emailAddress,
+                  prefixIcon: Icon(
+                    Icons.person,
+                    color: Color(0xFFC4C4C4),
+                  ),
+                  controller: _emailController,
+                  requestFocus: _focusPassword,
+                  validator: validateEmail,
+                ),
+                SizedBox(
+                  height: 21,
+                ),
+                ScopedModelDescendant<UserModel>(
+                    builder: (context, snapshot, userModel) {
+                  return CustomTextFormField(
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
+                    labelText: "Senha",
+                    hintText: "Informe a senha",
+                    keyboardType: TextInputType.text,
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color: Color(0xFFC4C4C4),
+                    ),
+                    obscureText: userModel.showPassword,
+                    passwordToggleButton: true,
+                    onTogglePasswordVisibility:
+                        userModel.togglePasswordVisibility,
+                    focusNode: _focusPassword,
+                    controller: _passwordController,
+                    validator: validatePassword,
+                  );
+                }),
+                SizedBox(
+                  height: 38,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        textButton: "Entrar",
+                        onPressed: () => _loginOnPressed(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          SizedBox(height: 20,),
+        ],
       ),
     );
   }

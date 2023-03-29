@@ -23,9 +23,8 @@ class UserApi {
       if (response.statusCode == 200) {
 
     var responseData = json.decode(utf8.decode(response.bodyBytes));
-
     User user = User.fromJson(responseData["data"]);
-
+    print(responseData["data"]);
     return user;
 
       }else{
@@ -40,17 +39,20 @@ class UserApi {
     }
   }
 
-  Future<void> logout(String token) async {
+   Future<bool> logout(String token) async {
     try {
       String url = "http://54.90.203.92/auth/logout";
+
+      print("Logout iniciado com o token: $token");
 
       var response = await http.post(url, headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode != 200) {
-        throw Exception('Erro ao realizar logout');
+        print("erro ao realizar logout ${response.statusCode}");
+        return false;
       } else {
         print("Logout efetuado");
-        return null;
+        return true;
       }
     }on Exception catch (error) {
       print('Erro ao realizar logout: $error');

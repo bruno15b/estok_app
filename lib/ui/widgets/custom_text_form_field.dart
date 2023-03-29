@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final String labelText;
@@ -14,6 +15,9 @@ class CustomTextFormField extends StatelessWidget {
   final bool passwordToggleButton;
   final String textAboveFormField;
   final int maxLength;
+  final FloatingLabelBehavior floatingLabelBehavior;
+  final bool dateFormatter;
+  final int maxLines;
 
   CustomTextFormField({
     @required this.labelText,
@@ -29,6 +33,9 @@ class CustomTextFormField extends StatelessWidget {
     this.onTogglePasswordVisibility,
     this.textAboveFormField,
     this.maxLength,
+    this.floatingLabelBehavior,
+    this.dateFormatter = false,
+    this.maxLines = 1,
   });
 
   @override
@@ -38,11 +45,17 @@ class CustomTextFormField extends StatelessWidget {
       children: [
         if (textAboveFormField != null)
           Container(
-            padding: EdgeInsets.only(bottom: 8, top: 19),
-            child: Text(textAboveFormField, textAlign: TextAlign.left),
+            padding: EdgeInsets.only(bottom: 8, top: 15),
+            child: Text(
+              textAboveFormField,
+              textAlign: TextAlign.left,
+              style:
+                  TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
+            ),
           ),
-
         TextFormField(
+          inputFormatters: dateFormatter ? [DateTextFormatter()] : null,
+          maxLines: maxLines,
           maxLength: maxLength ?? null,
           controller: controller,
           focusNode: focusNode,
@@ -55,6 +68,8 @@ class CustomTextFormField extends StatelessWidget {
             }
           },
           decoration: InputDecoration(
+            floatingLabelBehavior:
+                floatingLabelBehavior ?? FloatingLabelBehavior.never,
             counterText: "",
             contentPadding: EdgeInsets.fromLTRB(25, 11, 25, 11),
             labelText: labelText,
@@ -62,6 +77,7 @@ class CustomTextFormField extends StatelessWidget {
                 fontSize: 16.0,
                 fontWeight: FontWeight.w400,
                 fontFamily: "Montserrat"),
+            alignLabelWithHint: true,
             hintText: hintText,
             hintStyle: TextStyle(
               fontSize: 16.0,
@@ -99,5 +115,38 @@ class CustomTextFormField extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class DateTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (oldValue.text.length >= newValue.text.length) {
+      return newValue;
+    }
+
+    var dateText = _addSeperators(newValue.text, '/');
+    return newValue.copyWith(
+        text: dateText, selection: updateCursorPosition(dateText));
+  }
+
+  String _addSeperators(String value, String seperator) {
+    value = value.replaceAll('/', '');
+    var newString = '';
+    for (int i = 0; i < value.length; i++) {
+      newString += value[i];
+      if (i == 1) {
+        newString += seperator;
+      }
+      if (i == 3) {
+        newString += seperator;
+      }
+    }
+    return newString;
+  }
+
+  TextSelection updateCursorPosition(String text) {
+    return TextSelection.fromPosition(TextPosition(offset: text.length));
   }
 }

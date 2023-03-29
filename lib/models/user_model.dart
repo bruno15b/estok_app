@@ -9,6 +9,15 @@ class UserModel extends Model {
   User user;
   bool showPassword = true;
 
+  int _selectedIndex = 0;
+
+  int get selectedIndex => _selectedIndex;
+
+  set selectedIndex(int index) {
+    _selectedIndex = index;
+    notifyListeners();
+  }
+
   static UserModel of(BuildContext context) {
     return ScopedModel.of<UserModel>(context);
   }
@@ -32,9 +41,15 @@ class UserModel extends Model {
   }
 
   void logout() async{
-    await UserApi.instance.logout(await UserRepository.instance.getUserToken());
-    UserRepository.instance.clearUserData();
-    StockRepository.instance.clearStockData();
+
+   var userToken = await UserRepository.instance.getUserToken();
+
+   bool logout = await UserApi.instance.logout(userToken);
+
+   if(logout) {
+     await UserRepository.instance.clearUserData();
+     await StockRepository.instance.clearStockData();
+   }
   }
 
   void togglePasswordVisibility(bool isVisible) {

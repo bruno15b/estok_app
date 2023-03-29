@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends PreferredSize {
-
   String titleText;
 
   CustomAppBar(this.titleText);
@@ -20,7 +19,15 @@ class CustomAppBar extends PreferredSize {
           width: 1,
         ),
       ),
-      title: Text(titleText),
+      title: Container(
+        width: 100,
+        child: Text(
+          titleText,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+        ),
+      ),
       centerTitle: true,
     );
   }

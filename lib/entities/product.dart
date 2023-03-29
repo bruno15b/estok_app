@@ -7,7 +7,7 @@ class Product {
   double productItemPrice;
   double productUnitaryPrice;
   int productQuantity;
-  String urlSite;
+  String productUrlSite;
 
   static const String ID_FIELD = "id";
   static const String STOCK_ID_FIELD = "estoque_id";
@@ -24,11 +24,11 @@ class Product {
     this.stockId,
     this.productName,
     this.productDescription,
-    this.productImageUrl,
+    this.productImageUrl="url",
     this.productItemPrice,
     this.productUnitaryPrice,
     this.productQuantity,
-    this.urlSite,
+    this.productUrlSite,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -41,19 +41,32 @@ class Product {
       productItemPrice: (json[ITEM_PRICE_FIELD] as num).toDouble(),
       productUnitaryPrice: (json[UNITARY_PRICE_FIELD] as num).toDouble(),
       productQuantity: (json[PRODUCT_QUANTITY_FIELD] as num).toInt(),
-      urlSite: (json[URL_SITE_FIELD] as String),
+      productUrlSite: (json[URL_SITE_FIELD] as String),
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJsonAdd() {
     return <String, dynamic>{
-      ID_FIELD: id,
-      STOCK_ID_FIELD: stockId,
       NAME_PRODUCT_FIELD: productName,
       PRODUCT_DESCRIPTION_FIELD: productDescription,
       PRODUCT_IMAGE_URL_FIELD: productImageUrl,
       ITEM_PRICE_FIELD: productItemPrice,
-      UNITARY_PRICE_FIELD: productUnitaryPrice
+      UNITARY_PRICE_FIELD: productUnitaryPrice,
+      PRODUCT_QUANTITY_FIELD: productQuantity,
+      URL_SITE_FIELD: productUrlSite,
+    };
+  }
+
+  Map<String, dynamic> toJsonUpdate() {
+    return <String, dynamic>{
+      ID_FIELD: id,
+      NAME_PRODUCT_FIELD: productName,
+      PRODUCT_DESCRIPTION_FIELD: productDescription,
+      PRODUCT_IMAGE_URL_FIELD: productImageUrl,
+      ITEM_PRICE_FIELD: productItemPrice,
+      UNITARY_PRICE_FIELD: productUnitaryPrice,
+      PRODUCT_QUANTITY_FIELD: productQuantity,
+      URL_SITE_FIELD: productUrlSite,
     };
   }
 }

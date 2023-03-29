@@ -1,6 +1,5 @@
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/stock_model.dart';
-import 'package:estok_app/ui/helpers/stock_filter_service.dart';
 import 'package:estok_app/ui/tile/stock_tile.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,7 @@ class HomeTab extends StatefulWidget{
   State<HomeTab> createState() => _HomeTabState();
 }
 
-class _HomeTabState extends State<HomeTab> with StockFilterService{
+class _HomeTabState extends State<HomeTab>{
 
 
   void _reload() async{
@@ -37,7 +36,6 @@ class _HomeTabState extends State<HomeTab> with StockFilterService{
                 return Message.loading(context);
               default:
                 if (snapshot.hasError) {
-                  print('Snapshot has error: ${snapshot.error}');
                   return Message.alert(
                       "Não foi possivel obter os dados do servidor, recarregue a pagina!",onPressed:_reload,color: Theme.of(context).primaryColor);
                 } else if (!snapshot.hasData) {
@@ -48,7 +46,7 @@ class _HomeTabState extends State<HomeTab> with StockFilterService{
                       onPressed:_reload,color: Theme.of(context).primaryColor);
                 } else {
 
-                  List<Stock> filteredStocks = filterByStatus(snapshot.data, widget.category);
+                  List<Stock> filteredStocks = stockModel.filterStockByStatus(snapshot.data, widget.category);
 
                   return RefreshIndicator(
                     onRefresh: () async{
