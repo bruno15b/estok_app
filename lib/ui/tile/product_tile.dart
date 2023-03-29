@@ -1,4 +1,3 @@
-
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/ui/pages/product_add_page.dart';
@@ -8,7 +7,7 @@ class ProductTile extends StatelessWidget {
   final Product _product;
   final void Function(bool) message;
 
-  ProductTile(this._product,this.message);
+  ProductTile(this._product, this.message);
 
   @override
   Widget build(BuildContext context) {
@@ -43,21 +42,24 @@ class ProductTile extends StatelessWidget {
       ),
       onDismissed: (direction) async {
         final bool success =
-        await ProductModel.of(context).deleteProduct(_product);
+            await ProductModel.of(context).deleteProduct(_product);
         message(success);
       },
       child: Column(
         children: [
           Container(
-            height: 120,
+            height: 128,
             padding: EdgeInsets.only(top: 14),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 74,
                   width: 85,
-                  color: Colors.blueGrey[100],
+                  height: 74,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image:_product.productImageUrl == null || _product.productImageUrl.isEmpty ? AssetImage("assets/images/ic_camera.png") : NetworkImage(_product.productImageUrl), fit: BoxFit.fitHeight),
+                  ),
                 ),
                 Column(children: [
                   Row(
@@ -144,11 +146,7 @@ class ProductTile extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            height: 1,
-            width: MediaQuery.of(context).size.width,
-            color: Color(0xFFBEBBBB),
-          )
+          Divider(),
         ],
       ),
     );

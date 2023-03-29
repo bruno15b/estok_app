@@ -10,6 +10,7 @@ class CustomUserAccountHeader extends StatelessWidget {
   final TextStyle textStyleEmail;
   final EdgeInsetsGeometry padding;
   final double spaceTextAvatar;
+  final CrossAxisAlignment crossAxisAlignment;
 
   CustomUserAccountHeader({
     @required this.accountName,
@@ -21,6 +22,7 @@ class CustomUserAccountHeader extends StatelessWidget {
     this.spaceTextAvatar,
     this.textStyleEmail,
     this.textStyleName,
+    this.crossAxisAlignment,
   });
 
   @override
@@ -41,7 +43,7 @@ class CustomUserAccountHeader extends StatelessWidget {
         )
             : null,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: crossAxisAlignment ?? CrossAxisAlignment.start,
           children: [
             CircleAvatar(
               backgroundImage: AssetImage(circleAvatarImage),

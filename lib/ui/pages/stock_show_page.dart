@@ -36,9 +36,11 @@ class _StockShowPageState extends State<StockShowPage> {
   @override
   void initState() {
     super.initState();
+
     ProductModel.of(context).fetchProducts(widget._stock.id).then((_) {
       return ProductModel.of(context).sumStockQuantity(widget._stock.id);
     });
+
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -49,11 +51,14 @@ class _StockShowPageState extends State<StockShowPage> {
       return Message.onSuccess(
         scaffoldKey: _scaffoldKey,
         message: "Produto deletado",
-        seconds: 2,);
+        seconds: 2,
+      );
     } else {
-      return Message.onFail(scaffoldKey: _scaffoldKey,
-          message: "Falha ao deletar o produto",
-          seconds: 2,);
+      return Message.onFail(
+        scaffoldKey: _scaffoldKey,
+        message: "Falha ao deletar o produto",
+        seconds: 2,
+      );
     }
   }
 
@@ -65,121 +70,121 @@ class _StockShowPageState extends State<StockShowPage> {
       body: Column(
         children: [
           Container(
-            height: 170,
+            height: 180,
             margin: EdgeInsets.fromLTRB(20, 23, 20, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ScopedModelDescendant<ProductModel>(
                     builder: (context, snapshot, productModel) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Tipo: ${widget._stock.typeOfStock.toUpperCase()}",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            "Entrada em: ${StockModel.of(context)
-                                .formatDateToString(widget._stock.enterDate)}",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            "Validade: ${StockModel.of(context)
-                                .formatDateToString(widget._stock
-                                .validityDate)}",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            "Valor Total: ${productModel.totalValue} ",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          )
-                        ],
-                      );
-                    }),
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Tipo: ${widget._stock.typeOfStock.toUpperCase()}",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Text(
+                        "Entrada em: ${StockModel.of(context).formatDateToString(widget._stock.enterDate)}",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Text(
+                        "Validade: ${StockModel.of(context).formatDateToString(widget._stock.validityDate)}",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Text(
+                        "Valor Total: ${productModel.totalValue} ",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      )
+                    ],
+                  );
+                }),
                 ScopedModelDescendant<ProductModel>(
                     builder: (context, snapshot, productModel) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            "${productModel.totalProductQuantityInStock ??
-                                widget._stock.stockTotalProductQuantity}",
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        "${productModel.totalProductQuantityInStock ?? widget._stock.stockTotalProductQuantity}",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).accentColor),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, bottom: 10),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.20,
+                          child: Text(
+                            productModel.stockStatus ??
+                                widget._stock.stockStatus,
+                            overflow: TextOverflow.clip,
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: Theme
-                                    .of(context)
-                                    .accentColor),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 6, bottom: 10),
-                            child: SizedBox(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width * 0.20,
-                              child: Text(
-                                productModel.stockStatus ??
-                                    widget._stock.stockStatus,
-                                overflow: TextOverflow.clip,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                  color: productModel.colorStatus ??
-                                      widget.color,
-                                ),
-                              ),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              color: productModel.colorStatus ?? widget.color,
                             ),
                           ),
-                          IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) {
-                                      return StockAddPage(
-                                        stock: widget._stock,
-                                      );
-                                    },
-                                  ),
-                                );
-                              }),
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () async {
-                              await StockModel.of(context).deleteStock(
-                                widget._stock,
-                                onSuccess: () {
-                                  Message.onSuccess(
-                                      scaffoldKey: _scaffoldKey,
-                                      message: "Estoque deletado",
-                                      seconds: 2,
-                                      onPop: (value) {
-                                        Navigator.of(context).pop();
-                                      });
-                                  return;
-                                },
-                                onFail: (string) {
-                                  Message.onFail(
-                                    scaffoldKey: _scaffoldKey,
-                                    message: "Erro ao deletar Estoque",
-                                    seconds: 2,
+                        ),
+                      ),
+                     IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (BuildContext context) {
+                                  return StockAddPage(
+                                    stock: widget._stock,
                                   );
-                                  return;
                                 },
-                              );
-                            },
-                          )
-                        ],
-                      );
-                    }
-                ),
+                              ),
+                            );
+                          }),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () async {
+                          Message.alertDialog(context,
+                                  title: "Deseja excluir o estoque?",
+                                  subtitle:
+                                      "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
+                                  onPressedNoButton: () {
+                                  Navigator.of(context).pop();
+                                }, onPressedOkButton: () async {
+                                  await StockModel.of(context).deleteStock(
+                                    widget._stock,
+                                    onSuccess: () {
+                                      Message.onSuccess(
+                                          scaffoldKey: _scaffoldKey,
+                                          message: "Estoque deletado",
+                                          seconds: 2,
+                                          onPop: (value) {
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
+                                          });
+
+                                      return;
+                                    },
+                                    onFail: (string) {
+                                      Message.onFail(
+                                        scaffoldKey: _scaffoldKey,
+                                        message: "Erro ao deletar Estoque",
+                                        seconds: 2,
+                                      );
+
+                                      return;
+                                    },
+                                  );
+                                });
+                        },
+                      ),
+                    ],
+                  );
+                }),
               ],
             ),
           ),
@@ -211,9 +216,7 @@ class _StockShowPageState extends State<StockShowPage> {
                       return Message.alert(
                           "Não foi possivel obter os dados necessários",
                           onPressed: _reload,
-                          color: Theme
-                              .of(context)
-                              .primaryColor);
+                          color: Theme.of(context).primaryColor);
                     case ConnectionState.waiting:
                       return Message.loading(context);
                     default:
@@ -222,22 +225,16 @@ class _StockShowPageState extends State<StockShowPage> {
                         return Message.alert(
                             "Não foi possivel obter os dados do servidor, recarregue a pagina!",
                             onPressed: _reload,
-                            color: Theme
-                                .of(context)
-                                .primaryColor);
+                            color: Theme.of(context).primaryColor);
                       } else if (!snapshot.hasData) {
                         return Message.alert(
                             "Não foi possivel obter os Produtos, recarregue a pagina!",
                             onPressed: _reload,
-                            color: Theme
-                                .of(context)
-                                .primaryColor);
+                            color: Theme.of(context).primaryColor);
                       } else if (snapshot.data.isEmpty) {
                         return Message.alert("Nenhum Produto Cadastrado",
                             onPressed: _reload,
-                            color: Theme
-                                .of(context)
-                                .primaryColor);
+                            color: Theme.of(context).primaryColor);
                       } else {
                         return Expanded(
                           child: RefreshIndicator(
@@ -249,7 +246,8 @@ class _StockShowPageState extends State<StockShowPage> {
                                   vertical: 20, horizontal: 11),
                               itemCount: snapshot.data.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return ProductTile(snapshot.data[index],deleteProductResponse);
+                                return ProductTile(snapshot.data[index],
+                                    deleteProductResponse);
                               },
                             ),
                           ),

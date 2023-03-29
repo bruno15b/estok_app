@@ -1,5 +1,7 @@
+import 'package:estok_app/entities/user.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
+import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:estok_app/ui/pages/history_page.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:estok_app/ui/pages/profile_page.dart';
@@ -18,25 +20,14 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
 
-  int _selectedIndex = 0;
-
-  List<Widget> _pages = [
-    HomePage(),
-    HistoryPage(),
-    ProfilePage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
     StockModel.of(context).fetchStocks();
+    _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
+
   }
 
   @override
@@ -77,13 +68,17 @@ class _HomePageState extends State<HomePage>
         child: Drawer(
           child: ListView(
             children: [
-              CustomUserAccountHeader(
-                accountName: "User",
-                accountEmail: "example@gmail.com",
-                backgroundImage: "assets/images/perfil_background.png",
-                circleAvatarImage: "assets/images/perfil_image.png",
-                backgroundHeight: 203,
-              ),
+              FutureBuilder<User>(
+                  future: UserRepository.instance.getUser(),
+                  builder: (context, snapshot) {
+                    return CustomUserAccountHeader(
+                      accountName: snapshot.hasData ? snapshot.data.name : "",
+                      accountEmail: snapshot.hasData ? snapshot.data.email : "",
+                      backgroundImage: "assets/images/perfil_background.png",
+                      circleAvatarImage: "assets/images/perfil_image.png",
+                      backgroundHeight: 203,
+                    );
+                  }),
               SizedBox(
                 height: 30,
               ),
@@ -101,7 +96,15 @@ class _HomePageState extends State<HomePage>
                   Icons.arrow_forward_ios,
                   size: 18,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => ProfilePage(),
+                      transitionDuration: const Duration(seconds: 0),
+                    ),
+                  );
+                },
               ),
               ListTile(
                 contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
@@ -117,7 +120,9 @@ class _HomePageState extends State<HomePage>
                   Icons.arrow_forward_ios,
                   size: 18,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
               ),
               ListTile(
                 contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
@@ -133,7 +138,15 @@ class _HomePageState extends State<HomePage>
                   Icons.arrow_forward_ios,
                   size: 18,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => HistoryPage(),
+                      transitionDuration: const Duration(seconds: 0),
+                    ),
+                  );
+                },
               ),
               SizedBox(
                 height: 135,
@@ -150,10 +163,13 @@ class _HomePageState extends State<HomePage>
                     ),
                     onPressed: () {
                       UserModel.of(context).logout();
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (BuildContext context) {
-                        return LoginPage();
-                      }));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) {
+                            return LoginPage();
+                          },
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                         elevation: 0,
@@ -195,8 +211,30 @@ class _HomePageState extends State<HomePage>
             label: 'Perfil',
           ),
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        currentIndex: _currentIndex,
+        onTap: (int index) {
+          switch (index) {
+            case 1:
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => HistoryPage(),
+                  transitionDuration: const Duration(seconds: 0),
+                ),
+              );
+
+              break;
+            case 2:
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => ProfilePage(),
+                  transitionDuration: const Duration(seconds: 0),
+                ),
+              );
+              break;
+          }
+        },
       ),
     );
   }

@@ -30,8 +30,8 @@ class UserModel extends Model {
     if (user != null) {
 
       await UserRepository.instance.saveUser(user);
-      await UserRepository.instance.saveUserCredentials(email, password);
-      await UserRepository.instance.saveUserToken(user.token);
+      await UserRepository.instance.saveUserPassword(password);
+
 
       onSuccess();
 
@@ -42,9 +42,9 @@ class UserModel extends Model {
 
   void logout() async{
 
-   var userToken = await UserRepository.instance.getUserToken();
+   User user = await UserRepository.instance.getUser();
 
-   bool logout = await UserApi.instance.logout(userToken);
+   bool logout = await UserApi.instance.logout(user.token);
 
    if(logout) {
      await UserRepository.instance.clearUserData();

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:estok_app/entities/product.dart';
-import 'package:estok_app/entities/stock.dart';
+import '../local/user_repository.dart';
+import '../../entities/user.dart';
 import 'package:http/http.dart' as http;
 
 class ProductApi {
@@ -8,15 +9,16 @@ class ProductApi {
 
   ProductApi._();
 
-  Future<List<Product>> getAllProducts(String userToken,int stockId) async {
+  Future<List<Product>> getAllProducts(int stockId) async {
     List<Product> productList;
+    User user = await UserRepository.instance.getUser();
 
     try {
 
       print("ProductApi[getAllProduct]:---------- Entrou");
       final String url = "http://54.90.203.92/estoques/$stockId/produtos/";
 
-      final String authorization = "Bearer $userToken";
+      final String authorization = "Bearer ${user.token}";
 
 
       var response = await http.get(url, headers: {
@@ -45,10 +47,12 @@ class ProductApi {
     }
   }
 
-  postNewProduct(String userToken, Product product) async {
+  postNewProduct(Product product) async {
 
     try {
       print("ProductApi[postNewProduct]:---------- Entrou");
+
+      User user = await UserRepository.instance.getUser();
       var encodeString = product.toJsonAdd();
       var encode = json.encode(encodeString);
 
@@ -56,7 +60,7 @@ class ProductApi {
       String url = "http://54.90.203.92/estoques/${product.stockId}/produtos/";
 
 
-      String authorization = "Bearer $userToken";
+      String authorization = "Bearer ${user.token}";
 
       var response = await http.post(
         url,
@@ -81,16 +85,17 @@ class ProductApi {
     }
   }
 
-    putProduct(String userToken, Product product) async {
-
+    putProduct(Product product) async {
     try {
       print("ProductApi[putProduct]:----------  Entrou");
+      final user = await UserRepository.instance.getUser();
+
       var encodeString = product.toJsonUpdate();
       var encode = json.encode(encodeString);
 
       String url = "http://54.90.203.92/estoques/${product.stockId}/produtos/";
 
-      String authorization = "Bearer $userToken";
+      String authorization = "Bearer ${user.token}";
 
       var response = await http.put(
         url,
@@ -115,11 +120,12 @@ class ProductApi {
     }
   }
 
-  deleteProduct(String userToken, Product product) async {
+  deleteProduct(Product product) async {
     try {
+      User user = await UserRepository.instance.getUser();
       print("ProductApi[deleteProduct]:---------- Entrou");
       String url = "http://54.90.203.92/estoques/${product.stockId}/produtos/${product.id}";
-      String authorization = "Bearer $userToken";
+      String authorization = "Bearer ${user.token}";
 
       var response = await http.delete(url, headers: {
         "Content-Type": "application/json",
@@ -138,5 +144,6 @@ class ProductApi {
       return null;
     }
   }
+
 
 }

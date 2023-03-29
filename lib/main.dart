@@ -1,6 +1,7 @@
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:estok_app/models/product_model.dart';
+import 'package:estok_app/ui/pages/product_add_page.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'models/user_model.dart';

@@ -2,10 +2,12 @@ import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/repository/api/product_api.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
+import 'package:estok_app/repository/api/upload_image_api.dart';
 import 'package:estok_app/repository/local/stock_repository.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'dart:io';
 
 class ProductModel extends Model {
   Future<List<Product>> futureProductList = Future.value([]);
@@ -13,6 +15,10 @@ class ProductModel extends Model {
   double totalProductQuantityInStock;
   Color colorStatus;
   String stockStatus;
+  bool isLoading = false;
+
+  File imageFile;
+
 
   static ProductModel of(BuildContext context) {
     return ScopedModel.of<ProductModel>(context);
@@ -23,21 +29,32 @@ class ProductModel extends Model {
   }
 
   Future<void> fetchProducts(int stockId) async {
+
     setState();
 
-    final userToken = await UserRepository.instance.getUserToken();
-    futureProductList = ProductApi.instance.getAllProducts(userToken, stockId);
+    futureProductList = ProductApi.instance.getAllProducts(stockId);
 
      await sumProductsValue();
-
     setState();
   }
 
   Future<void>  createNewProduct(Product product,
       {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-    final userToken = await UserRepository.instance.getUserToken();
 
-    var response = await ProductApi.instance.postNewProduct(userToken, product);
+    print(imageFile);
+
+    if(imageFile!= null){
+      String urlImage = await sendImageFile(imageFile);
+      if(urlImage != null){
+        product.productImageUrl = urlImage;
+      }else{
+        onFail("Erro ao enviar imagem do produto!");
+        return;
+      }
+
+    }
+
+    var response = await ProductApi.instance.postNewProduct(product);
 
     if (response != null) {
       onSuccess();
@@ -48,8 +65,18 @@ class ProductModel extends Model {
 
   Future<void> updateProduct(Product product,
       {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-    final userToken = await UserRepository.instance.getUserToken();
-    var response = await ProductApi.instance.putProduct(userToken, product);
+
+    if(imageFile!= null) {
+      String urlImage = await sendImageFile(imageFile);
+      if (urlImage != null) {
+        product.productImageUrl = urlImage;
+      } else {
+        onFail("Erro ao enviar imagem do produto!");
+        return;
+      }
+    }
+
+    var response = await ProductApi.instance.putProduct(product);
 
     if (response != null) {
       onSuccess();
@@ -59,8 +86,7 @@ class ProductModel extends Model {
   }
 
    deleteProduct(Product product) async {
-    final userToken = await UserRepository.instance.getUserToken();
-    var response = await ProductApi.instance.deleteProduct(userToken, product);
+    var response = await ProductApi.instance.deleteProduct(product);
     if(response == true){
       await fetchProducts(product.stockId);
       await sumStockQuantity(product.stockId);
@@ -68,6 +94,10 @@ class ProductModel extends Model {
       await fetchProducts(product.stockId);
     }
     return response;
+  }
+
+  Future<String> sendImageFile(File imageFile) async{
+    return await UploadImageApi.instance.uploadImage(imageFile);
   }
 
   sumProductsValue() async {
@@ -89,7 +119,6 @@ class ProductModel extends Model {
   Future<void> sumStockQuantity(int stockId) async {
 
     List<Product> productList = await futureProductList;
-    final userToken = await UserRepository.instance.getUserToken();
 
     totalProductQuantityInStock = 0;
 
@@ -113,12 +142,11 @@ class ProductModel extends Model {
     selectedStock.stockTotalProductQuantity = totalProductQuantityInStock;
 
 
-    await StockApi.instance.putStock(userToken, selectedStock);
+    await StockApi.instance.putStock(selectedStock);
   }
 
   stockUpdateInfo(double stockTotalQuantity) {
 
-    print(stockTotalQuantity);
     if (stockTotalQuantity > 5 ) {
       stockStatus = "EM ESTOQUE";
       colorStatus = Color(0xFF3AA637);
@@ -132,6 +160,14 @@ class ProductModel extends Model {
 
     setState();
   }
+
+
+  void setLoading(bool value) {
+    isLoading = value;
+    setState();
+  }
+
+
 
 
 }

@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:estok_app/entities/stock.dart';
+import '../local/user_repository.dart';
+import '../../entities/user.dart';
+
 import 'package:http/http.dart' as http;
 
 class StockApi {
@@ -7,16 +10,15 @@ class StockApi {
 
   StockApi._();
 
-  Future<List<Stock>> getAllStocks(String userToken) async {
+  Future<List<Stock>> getAllStocks() async {
     List<Stock> stockList;
-
     try {
+
+      User user = await UserRepository.instance.getUser();
       print("StockApi[getAllStocks]:---------- Entrou com Sucesso");
       String url = "http://54.90.203.92/estoques/";
 
-      String authorization = "Bearer $userToken";
-
-
+      String authorization = "Bearer ${user.token}";
 
       var response = await http.get(url, headers: {
         "Content-Type": "application/json",
@@ -42,11 +44,16 @@ class StockApi {
     }
   }
 
-  postNewStock(String userToken, Stock stock) async {
+  postNewStock(Stock stock) async {
+
+
 
     try {
       print("StockApi[postNewStock]:---------- Entrou");
-      print(userToken);
+      User user = await UserRepository.instance.getUser();
+
+      print(stock.id);
+      print(user.token);
 
       var encodeString = stock.toJsonAdd();
       var encode = json.encode(encodeString);
@@ -55,9 +62,8 @@ class StockApi {
 
       String url = "http://54.90.203.92/estoques/";
 
-      String authorization = "Bearer $userToken";
+      String authorization = "Bearer ${user.token}";
 
-      print(authorization);
 
       var response = await http.post(
         url,
@@ -81,16 +87,17 @@ class StockApi {
     }
   }
 
-  putStock(String userToken, Stock stock) async {
+  putStock(Stock stock) async {
 
     try {
       print("StockApi[putStock]---------- Entrou");
+      User user = await UserRepository.instance.getUser();
       var encodeString = stock.toJsonUpdate();
       var encode = json.encode(encodeString);
 
       String url = "http://54.90.203.92/estoques/";
 
-      String authorization = "Bearer $userToken";
+      String authorization = "Bearer ${user.token}";
 
       var response = await http.put(
         url,
@@ -115,11 +122,12 @@ class StockApi {
     }
   }
 
- deleteStock(String userToken, int stockId) async {
+ deleteStock(int stockId) async {
     try {
       print("StockApi[deleteStock]:---------- Entrou");
+      User user = await UserRepository.instance.getUser();
       String url = "http://54.90.203.92/estoques/$stockId";
-      String authorization = "Bearer $userToken";
+      String authorization = "Bearer ${user.token}";
 
       var response = await http.delete(url, headers: {
         "Content-Type": "application/json",

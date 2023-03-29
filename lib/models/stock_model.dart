@@ -21,22 +21,17 @@ class StockModel extends Model {
     notifyListeners();
   }
 
-  Future<List<Stock>> fetchStocks() async {
-    final userToken = await UserRepository.instance.getUserToken();
-    List<Stock> stockList = await StockApi.instance.getAllStocks(userToken);
-    StockRepository.instance.saveStockList(stockList);
-
-    this.futureStockList = Future.value(stockList);
+  Future<void> fetchStocks() async {
     setState();
-
-    return this.futureStockList;
+    futureStockList = StockApi.instance.getAllStocks();
+    StockRepository.instance.saveStockList(await futureStockList);
+    setState();
   }
 
 
  Future<void> createNewStock(Stock stock ,{VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-    final userToken = await UserRepository.instance.getUserToken();
 
-    var response = await StockApi.instance.postNewStock(userToken, stock);
+    var response = await StockApi.instance.postNewStock(stock);
 
     if (response!= null){
       onSuccess();
@@ -48,8 +43,8 @@ class StockModel extends Model {
   }
 
  Future<void> updateStock(Stock stock, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-    final userToken = await UserRepository.instance.getUserToken();
-    var response = await StockApi.instance.putStock(userToken, stock);
+
+    var response = await StockApi.instance.putStock(stock);
     if (response!= null){
       onSuccess();
       await fetchStocks();
@@ -60,8 +55,7 @@ class StockModel extends Model {
   }
 
    deleteStock(Stock stock, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-    final userToken = await UserRepository.instance.getUserToken();
-    var response = await StockApi.instance.deleteStock(userToken, stock.id);
+    var response = await StockApi.instance.deleteStock(stock.id);
 
     if (response != null){
       onSuccess();
@@ -87,7 +81,6 @@ class StockModel extends Model {
     setState();
     return typeOfStock;
   }
-
 
   DateTime formatStringToDate(String dateString) {
     return DateFormat(dateTypeFormat).parse(dateString);

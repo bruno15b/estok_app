@@ -63,11 +63,13 @@ class Message extends StatelessWidget {
     );
   }
 
-  static Widget alert(message,
-      {double fontSize,
-      double fontWeight,
-      Color color,
-      void Function() onPressed}) {
+  static Widget alert(
+    message, {
+    double fontSize,
+    double fontWeight,
+    Color color,
+    void Function() onPressed,
+  }) {
     return Container(
       padding: EdgeInsets.all(20),
       child:
@@ -89,5 +91,67 @@ class Message extends StatelessWidget {
             ))
       ]),
     );
+  }
+
+  static void alertDialog(
+    BuildContext context, {
+    String title = "",
+    String subtitle,
+    @required String textOkButton = "sim",
+    @required Function onPressedOkButton,
+    String textNoButton = "Não",
+    Function onPressedNoButton,
+  }) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              title,
+              textAlign: TextAlign.center,
+            ),
+            titleTextStyle: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).accentColor,
+            ),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Text(
+                    subtitle,
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            actions: [
+                    FlatButton(
+                      onPressed: onPressedOkButton,
+                      child: Text(
+                        textOkButton,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).accentColor,
+                        ),
+                      ),
+                    ),
+                    onPressedNoButton == null
+                        ? Container()
+                        : FlatButton(
+                            onPressed: onPressedNoButton,
+                            child: Text(
+                              textNoButton,
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).accentColor,
+                              ),
+                            ),
+                          )
+                  ],
+          );
+        });
   }
 }

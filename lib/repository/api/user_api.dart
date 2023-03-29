@@ -17,6 +17,8 @@ class UserApi {
       var encode = json.encode(encodeString);
       String url = "http://54.90.203.92/auth/login";
 
+      print(encodeString);
+
       var response = await http.post(url,
           headers: {"Content-Type": "application/json"}, body: encode);
 
@@ -28,6 +30,7 @@ class UserApi {
     return user;
 
       }else{
+
        print("UserApi: ${response.statusCode}");
 
         return null;

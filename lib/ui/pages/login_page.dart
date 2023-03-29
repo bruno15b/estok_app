@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> with LoginValidator {
     );
   }
 
-  void _loginOnPressed(BuildContext context) {
+  void _loginOnPressed(BuildContext context) async {
     FocusScope.of(context).unfocus();
 
     if (!this._formKey.currentState.validate()) {

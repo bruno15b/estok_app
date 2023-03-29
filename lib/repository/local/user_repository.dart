@@ -26,26 +26,11 @@ class UserRepository {
     return user;
   }
 
-  Future<void> saveUserToken(String token) async {
+  Future<void> saveUserPassword(String password) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
-  }
-
-  Future<String> getUserToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
-  }
-
-  Future<void> saveUserCredentials(String email, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('emailSalvo', email);
     await prefs.setString('senhaSalva', password);
   }
 
-  Future<String> getUserEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('emailSalvo');
-  }
 
   Future<String> getUserPassword() async {
     final prefs = await SharedPreferences.getInstance();

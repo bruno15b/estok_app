@@ -61,7 +61,7 @@ class AddPagesValidators {
     if (value.isEmpty) {
       return 'Campo vazio';
     }
-    final regex = RegExp(r'^R?\$?\s?\d{1,3}(?:[\.,]\d{3})*(?:[\.,]\d{0,2})?$');
+    final regex =RegExp(r'^R?\$\s?\d+(?:,\d+)?(?:\.\d+)?|\d+$');
     if (!regex.hasMatch(value)) {
       return 'Apenas números! com ou sem o prefixo R\$';
     }
