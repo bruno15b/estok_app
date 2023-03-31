@@ -1,15 +1,13 @@
 import 'package:estok_app/entities/user.dart';
-import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
-import 'package:estok_app/ui/pages/history_page.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
-import 'package:estok_app/ui/pages/profile_page.dart';
 import 'package:estok_app/ui/pages/stock_add_page.dart';
 import 'package:estok_app/ui/tabs/home_tab.dart';
 import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
 import 'package:estok_app/ui/widgets/custom_user_account_header.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,23 +18,20 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
 
-  int _currentIndex = 0;
-
   @override
   void initState() {
     super.initState();
-    StockModel.of(context).fetchStocks();
     _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
-
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         shape: Border(
           bottom: BorderSide(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).accentColor,
             width: 1.5,
           ),
         ),
@@ -82,72 +77,69 @@ class _HomePageState extends State<HomePage>
               SizedBox(
                 height: 30,
               ),
-              ListTile(
-                contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
-                leading: Icon(
-                  Icons.account_circle,
-                  color: Color(0xFF949191),
-                ),
-                title: Text(
-                  "Meu Perfil",
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                ),
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 18,
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => ProfilePage(),
-                      transitionDuration: const Duration(seconds: 0),
+              ScopedModelDescendant<UserModel>(
+                  builder: (context, snapshot, userModel) {
+                return Column(
+                  children: [
+                    ListTile(
+                      contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
+                      leading: Icon(
+                        Icons.account_circle,
+                        color: Color(0xFF949191),
+                      ),
+                      title: Text(
+                        "Meu Perfil",
+                        style: TextStyle(color: Theme.of(context).accentColor),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 18,
+                      ),
+                      onTap: () {
+                        userModel.changePage(2);
+                        Navigator.of(context).pop();
+                      },
                     ),
-                  );
-                },
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
-                leading: Icon(
-                  Icons.store,
-                  color: Color(0xFF949191),
-                ),
-                title: Text(
-                  "Estoques",
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                ),
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 18,
-                ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
-                leading: Icon(
-                  Icons.playlist_add_check,
-                  color: Color(0xFF949191),
-                ),
-                title: Text(
-                  "Histórico",
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                ),
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 18,
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => HistoryPage(),
-                      transitionDuration: const Duration(seconds: 0),
+                    ListTile(
+                      contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
+                      leading: Icon(
+                        Icons.store,
+                        color: Color(0xFF949191),
+                      ),
+                      title: Text(
+                        "Estoques",
+                        style: TextStyle(color: Theme.of(context).accentColor),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 18,
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
-                  );
-                },
-              ),
+                    ListTile(
+                      contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
+                      leading: Icon(
+                        Icons.playlist_add_check,
+                        color: Color(0xFF949191),
+                      ),
+                      title: Text(
+                        "Histórico",
+                        style: TextStyle(color: Theme.of(context).accentColor),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 18,
+                      ),
+                      onTap: () {
+                        userModel.changePage(1);
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              }),
               SizedBox(
                 height: 135,
               ),
@@ -176,7 +168,7 @@ class _HomePageState extends State<HomePage>
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        primary: Theme.of(context).primaryColor),
+                        primary: Theme.of(context).accentColor),
                   ),
                 ),
               )
@@ -185,57 +177,6 @@ class _HomePageState extends State<HomePage>
         ),
       ),
       floatingActionButton: CustomFloatingActionButton(StockAddPage()),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0,
-        backgroundColor: Color(0xFFF6F5F5),
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              size: 20,
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.playlist_add_check,
-              size: 20,
-            ),
-            label: 'Histórico',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.account_circle,
-              size: 20,
-            ),
-            label: 'Perfil',
-          ),
-        ],
-        currentIndex: _currentIndex,
-        onTap: (int index) {
-          switch (index) {
-            case 1:
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => HistoryPage(),
-                  transitionDuration: const Duration(seconds: 0),
-                ),
-              );
-
-              break;
-            case 2:
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => ProfilePage(),
-                  transitionDuration: const Duration(seconds: 0),
-                ),
-              );
-              break;
-          }
-        },
-      ),
     );
   }
 }

@@ -66,7 +66,7 @@ class _StockShowPageState extends State<StockShowPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(widget._stock.stockDescription),
+      appBar: CustomAppBar(titleText:widget._stock.stockDescription),
       body: Column(
         children: [
           Container(
@@ -113,7 +113,7 @@ class _StockShowPageState extends State<StockShowPage> {
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).accentColor),
+                            color: Theme.of(context).primaryColor),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 6, bottom: 10),
@@ -148,7 +148,7 @@ class _StockShowPageState extends State<StockShowPage> {
                       IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () async {
-                          Message.alertDialog(context,
+                          Message.alertDialogConfirm(context,
                                   title: "Deseja excluir o estoque?",
                                   subtitle:
                                       "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
@@ -216,25 +216,25 @@ class _StockShowPageState extends State<StockShowPage> {
                       return Message.alert(
                           "Não foi possivel obter os dados necessários",
                           onPressed: _reload,
-                          color: Theme.of(context).primaryColor);
+                          color: Theme.of(context).accentColor);
                     case ConnectionState.waiting:
-                      return Message.loading(context);
+                      return Message.loading(context,height: 200);
                     default:
                       if (snapshot.hasError) {
                         print('Snapshot has error: ${snapshot.error}');
                         return Message.alert(
                             "Não foi possivel obter os dados do servidor, recarregue a pagina!",
                             onPressed: _reload,
-                            color: Theme.of(context).primaryColor);
+                            color: Theme.of(context).accentColor);
                       } else if (!snapshot.hasData) {
                         return Message.alert(
                             "Não foi possivel obter os Produtos, recarregue a pagina!",
                             onPressed: _reload,
-                            color: Theme.of(context).primaryColor);
+                            color: Theme.of(context).accentColor);
                       } else if (snapshot.data.isEmpty) {
                         return Message.alert("Nenhum Produto Cadastrado",
                             onPressed: _reload,
-                            color: Theme.of(context).primaryColor);
+                            color: Theme.of(context).accentColor);
                       } else {
                         return Expanded(
                           child: RefreshIndicator(

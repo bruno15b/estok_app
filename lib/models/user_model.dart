@@ -9,14 +9,12 @@ class UserModel extends Model {
   User user;
   bool showPassword = true;
 
-  int _selectedIndex = 0;
+  int currentIndexPage = 0;
 
-  int get selectedIndex => _selectedIndex;
-
-  set selectedIndex(int index) {
-    _selectedIndex = index;
+  setState(){
     notifyListeners();
   }
+
 
   static UserModel of(BuildContext context) {
     return ScopedModel.of<UserModel>(context);
@@ -54,7 +52,12 @@ class UserModel extends Model {
 
   void togglePasswordVisibility(bool isVisible) {
     showPassword = !showPassword;
-    notifyListeners();
+    setState();
+  }
+
+  void changePage(int newIndexPage) {
+    currentIndexPage = newIndexPage;
+    setState();
   }
 
 }

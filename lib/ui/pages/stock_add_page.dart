@@ -76,7 +76,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).accentColor,
                       ),
                     ),
                   ),
@@ -95,7 +95,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).accentColor,
                       ),
                     ),
                   ),
@@ -114,7 +114,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).accentColor,
                       ),
                     ),
                   ),
@@ -131,7 +131,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(widget.stock?.stockDescription ?? "NOVO ESTOQUE"),
+      appBar: CustomAppBar(titleText:widget.stock?.stockDescription ?? "NOVO ESTOQUE"),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -189,7 +189,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     padding: EdgeInsets.only(bottom: 8, top: 19),
                     child: Text("Tipo",
                         style: TextStyle(
-                            color: Theme.of(context).accentColor,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 16)),
                   ),
                   InkWell(
@@ -202,7 +202,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       decoration: BoxDecoration(
                         border: Border.all(
                           width: 1.0,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).accentColor,
                         ),
                         borderRadius: BorderRadius.circular(15),
                       ),
@@ -216,7 +216,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                             style: TextStyle(
                               fontSize: 14.0,
                               fontWeight: FontWeight.w600,
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).accentColor,
                             ),
                           ),
                           SizedBox(

@@ -1,5 +1,6 @@
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
+import 'package:estok_app/ui/pages/main_page.dart';
 import 'package:estok_app/ui/validator/login_validator.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
@@ -9,12 +10,9 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'home_page.dart';
 
-class LoginPage extends StatefulWidget {
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
 
-class _LoginPageState extends State<LoginPage> with LoginValidator {
+class LoginPage extends StatelessWidget with LoginValidator {
+
   final FocusNode _focusPassword = FocusNode();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -36,7 +34,7 @@ class _LoginPageState extends State<LoginPage> with LoginValidator {
               Text(
                 "ESTOK APP",
                 style: TextStyle(
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).primaryColor,
                   fontSize: 24,
                 ),
               ),
@@ -46,7 +44,7 @@ class _LoginPageState extends State<LoginPage> with LoginValidator {
               Text(
                 "Login",
                 style: TextStyle(
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).primaryColor,
                   fontSize: 20,
                 ),
               ),
@@ -133,9 +131,11 @@ class _LoginPageState extends State<LoginPage> with LoginValidator {
           onPop: (value) {
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (BuildContext context) {
-              return HomePage();
+              return MainPage();
             }));
           });
+
+      StockModel.of(context).fetchStocks();
       return;
     }, onFail: (string) {
       Message.onFail(

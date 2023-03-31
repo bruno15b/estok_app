@@ -5,8 +5,6 @@ import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_user_account_header.dart';
 import 'package:flutter/material.dart';
-
-import 'history_page.dart';
 import 'login_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -15,7 +13,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar("MEU PERFIL"),
+      appBar: CustomAppBar(titleText:"MEU PERFIL",returnArrow: false,),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.only(left: 25, right: 25),
@@ -31,11 +29,11 @@ class ProfilePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     backgroundHeight: 280,
                     textStyleEmail: TextStyle(
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.w500,
                         fontSize: 14),
                     textStyleName: TextStyle(
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).accentColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 14),
                     spaceTextAvatar: 60,
@@ -74,58 +72,13 @@ class ProfilePage extends StatelessWidget {
                     height: 43,
                     borderRadius: BorderRadius.circular(8),
                     colorText: Theme.of(context).scaffoldBackgroundColor,
-                    colorButton: Theme.of(context).primaryColor,
+                    colorButton: Theme.of(context).accentColor,
                   ),
                 ],
               );
             },
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0,
-        backgroundColor: Color(0xFFF6F5F5),
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              size: 20,
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.playlist_add_check,
-              size: 20,
-            ),
-            label: 'Histórico',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.account_circle,
-              size: 20,
-            ),
-            label: 'Perfil',
-          ),
-        ],
-        currentIndex: _currentIndex,
-        onTap: (int index) {
-          switch (index) {
-            case 0:
-              Navigator.of(context).pop();
-              break;
-            case 1:
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => HistoryPage(),
-                  transitionDuration: Duration.zero,
-                  reverseTransitionDuration: Duration.zero,
-                ),
-              );
-              break;
-          }
-        },
       ),
     );
   }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends PreferredSize {
   String titleText;
-
-  CustomAppBar(this.titleText);
+  bool returnArrow;
+  CustomAppBar({this.titleText, this.returnArrow = true});
 
   @override
   Size get preferredSize {
@@ -13,6 +13,7 @@ class CustomAppBar extends PreferredSize {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: returnArrow,
       shape: Border(
         bottom: BorderSide(
           color: Color(0xFFC4C4C4),

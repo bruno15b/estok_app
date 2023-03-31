@@ -54,10 +54,12 @@ class Message extends StatelessWidget {
       child: Container(
         width: width ?? 40.0,
         height: height ?? 40.0,
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(
-              color ?? Theme.of(context).accentColor),
-          strokeWidth: strokeWidth ?? 5.0,
+        child: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+                color ?? Theme.of(context).primaryColor),
+            strokeWidth: strokeWidth ?? 5.0,
+          ),
         ),
       ),
     );
@@ -93,16 +95,14 @@ class Message extends StatelessWidget {
     );
   }
 
-  static void alertDialog(
+  static void alertDialogLoading(
     BuildContext context, {
-    String title = "",
-    String subtitle,
-    @required String textOkButton = "sim",
-    @required Function onPressedOkButton,
-    String textNoButton = "Não",
-    Function onPressedNoButton,
+    String title = "Atualizando dados do aplicativo com servidor",
+    double width,
+    double height,
   }) {
     showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -113,44 +113,100 @@ class Message extends StatelessWidget {
             titleTextStyle: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor,
+            ),
+            content: SingleChildScrollView(
+              padding: EdgeInsets.only(top: 30, bottom: 30),
+              child: Center(
+                child: Container(
+                  width: width ?? 40.0,
+                  height: height ?? 40.0,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).primaryColor),
+                    strokeWidth: 5.0,
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  static void alertDialogConfirm(
+    BuildContext context, {
+    String title = "",
+    String subtitle = "",
+    @required String textOkButton = "sim",
+    @required Function onPressedOkButton,
+    String textNoButton = "Não",
+    Widget widget,
+    Function onPressedNoButton,
+  }) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 28),
+            title: Text(
+              title,
+              textAlign: TextAlign.center,
+            ),
+            titleTextStyle: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.w700,
               color: Theme.of(context).accentColor,
             ),
             content: SingleChildScrollView(
-              child: ListBody(
+              child: Stack(
+                overflow: Overflow.visible,
+                alignment: Alignment.center,
                 children: [
-                  Text(
-                    subtitle,
-                    textAlign: TextAlign.center,
-                  )
+                  ListBody(
+                    children: [
+                      widget != null
+                          ? Padding(
+                            padding: EdgeInsets.only(top: 20,bottom: 60),
+                            child: Container(width: 400, child: widget),
+                          )
+                          : Container(),
+                      Text(
+                        subtitle,
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
             actions: [
-                    FlatButton(
-                      onPressed: onPressedOkButton,
+              onPressedNoButton == null
+                  ? Container()
+                  : FlatButton(
+                      onPressed: onPressedNoButton,
                       child: Text(
-                        textOkButton,
+                        textNoButton,
                         style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.w700,
-                          color: Theme.of(context).accentColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
-                    onPressedNoButton == null
-                        ? Container()
-                        : FlatButton(
-                            onPressed: onPressedNoButton,
-                            child: Text(
-                              textNoButton,
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).accentColor,
-                              ),
-                            ),
-                          )
-                  ],
+              SizedBox(width: 15,),
+              FlatButton(
+                onPressed: onPressedOkButton,
+                child: Text(
+                  textOkButton,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).accentColor,
+                  ),
+                ),
+              ),
+              SizedBox(width: 15,),
+            ],
           );
         });
   }

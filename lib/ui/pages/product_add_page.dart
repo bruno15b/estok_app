@@ -68,14 +68,13 @@ class _ProductAddPageState extends State<ProductAddPage>
     }
     ProductModel.of(context).imageFile = null;
     ProductModel.of(context).setState();
-
   }
 
   ImageProvider getImage(ProductModel productModel) {
-    if (!newProductAdd) {
-      if(productModel.imageFile!=null){
+    if (!newProductAdd && widget.product.productImageUrl != "") {
+      if (productModel.imageFile != null) {
         return FileImage(productModel.imageFile);
-      }else{
+      } else {
         return NetworkImage(widget.product.productImageUrl);
       }
     } else if (productModel.imageFile != null) {
@@ -89,7 +88,7 @@ class _ProductAddPageState extends State<ProductAddPage>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(widget.product?.productName ?? "NOVO PRODUTO"),
+      appBar: CustomAppBar( titleText: widget.product?.productName ?? "NOVO PRODUTO"),
       body: ScopedModelDescendant<ProductModel>(
           builder: (context, snapshot, productModel) {
         return Form(
@@ -97,10 +96,6 @@ class _ProductAddPageState extends State<ProductAddPage>
           child: ListView(
             padding: EdgeInsets.only(top: 39, left: 24, right: 24, bottom: 72),
             children: [
-              if (productModel.isLoading)
-                AlertDialog(
-                  title: Text("carregando"),
-                ),
               SizedBox(
                 child: InkWell(
                   onTap: () {
@@ -188,7 +183,11 @@ class _ProductAddPageState extends State<ProductAddPage>
                 height: 20,
               ),
               CustomButton(
-                  textButton: "CADASTRAR", onPressed: () => productOnPressed()),
+                textButton: widget.product?.productName != null
+                    ? "Editar"
+                    : "CADASTRAR",
+                onPressed: () => productOnPressed(),
+              ),
               SizedBox(
                 height: 15,
               ),
@@ -202,7 +201,6 @@ class _ProductAddPageState extends State<ProductAddPage>
   productOnPressed() async {
     FocusScope.of(context).unfocus();
     if (this._formKey.currentState.validate()) {
-      ProductModel.of(context).setLoading(true);
       Product product = Product(
         productName: _productNameController.text,
         productDescription: _productDescriptionController.text,
@@ -210,7 +208,7 @@ class _ProductAddPageState extends State<ProductAddPage>
         productUnitaryPrice: double.parse(_productUnitaryPriceController.text),
         productQuantity: int.parse(_productQuantityController.text),
         productUrlSite: _productUrlSiteController.text,
-        productImageUrl: "",
+        productImageUrl: widget.product?.productImageUrl ?? "",
       );
 
       if (newProductAdd) {
@@ -219,23 +217,9 @@ class _ProductAddPageState extends State<ProductAddPage>
           Message.onSuccess(
               scaffoldKey: _scaffoldKey,
               message: "Produto adicionado com sucesso",
-              seconds: 5,
-              onPop: (value) async {
-                try {
-                  await Future.delayed(Duration(milliseconds: 500));
-                  await ProductModel.of(context).fetchProducts(product.stockId);
-                  await Future.delayed(Duration(milliseconds: 500));
-                  await ProductModel.of(context).sumProductsValue();
-                  await ProductModel.of(context)
-                      .sumStockQuantity(product.stockId);
-                  await Future.delayed(Duration(milliseconds: 500));
-                  await StockModel.of(context).fetchStocks();
-                } catch (e) {
-                  print(e);
-                } finally {
-                  ProductModel.of(context).setLoading(false);
-                  Navigator.of(context).pop();
-                }
+              seconds: 1,
+              onPop: (_)  {
+                updateStocksProductsWithServer(product);
               });
           return;
         }, onFail: (string) {
@@ -253,22 +237,9 @@ class _ProductAddPageState extends State<ProductAddPage>
           Message.onSuccess(
               scaffoldKey: _scaffoldKey,
               message: "Produto editado com sucesso",
-              seconds: 5,
-              onPop: (value) async {
-                try {
-                  await Future.delayed(Duration(milliseconds: 500));
-                  await ProductModel.of(context).fetchProducts(product.stockId);
-                  await Future.delayed(Duration(milliseconds: 500));
-                  await ProductModel.of(context).sumProductsValue();
-                  await ProductModel.of(context)
-                      .sumStockQuantity(product.stockId);
-                  await Future.delayed(Duration(milliseconds: 500));
-                  await StockModel.of(context).fetchStocks();
-                } catch (e) {
-                  print(e);
-                } finally {
-                  Navigator.of(context).pop();
-                }
+              seconds: 1,
+              onPop: (_) {
+                updateStocksProductsWithServer(product);
               });
           return;
         }, onFail: (string) {
@@ -280,6 +251,24 @@ class _ProductAddPageState extends State<ProductAddPage>
           return;
         });
       }
+    }
+  }
+
+  void updateStocksProductsWithServer(Product product) async{
+    Message.alertDialogLoading(context);
+    try {
+      await ProductModel.of(context).fetchProducts(product.stockId);
+      await Future.delayed(Duration(milliseconds: 500));
+      await ProductModel.of(context).sumProductsValue();
+      await ProductModel.of(context)
+          .sumStockQuantity(product.stockId);
+      await Future.delayed(Duration(milliseconds: 500));
+      await StockModel.of(context).fetchStocks();
+    } catch (e) {
+      print(e);
+    } finally {
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
     }
   }
 
@@ -306,7 +295,6 @@ class _ProductAddPageState extends State<ProductAddPage>
                 child: Text("Camera")),
             FlatButton(
                 onPressed: () async {
-                  print("entrou no picker da camera");
                   var picker = ImagePicker();
                   var pickedFile =
                       await picker.getImage(source: ImageSource.gallery);

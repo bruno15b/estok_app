@@ -4,7 +4,6 @@ import 'package:estok_app/repository/api/product_api.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
 import 'package:estok_app/repository/api/upload_image_api.dart';
 import 'package:estok_app/repository/local/stock_repository.dart';
-import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dart:io';
@@ -13,12 +12,11 @@ class ProductModel extends Model {
   Future<List<Product>> futureProductList = Future.value([]);
   double totalValue = 0;
   double totalProductQuantityInStock;
+  int singleProductQuantity;
   Color colorStatus;
   String stockStatus;
-  bool isLoading = false;
 
   File imageFile;
-
 
   static ProductModel of(BuildContext context) {
     return ScopedModel.of<ProductModel>(context);
@@ -29,29 +27,26 @@ class ProductModel extends Model {
   }
 
   Future<void> fetchProducts(int stockId) async {
-
     setState();
 
     futureProductList = ProductApi.instance.getAllProducts(stockId);
 
-     await sumProductsValue();
+    await sumProductsValue();
     setState();
   }
 
-  Future<void>  createNewProduct(Product product,
+  Future<void> createNewProduct(Product product,
       {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-
     print(imageFile);
 
-    if(imageFile!= null){
+    if (imageFile != null) {
       String urlImage = await sendImageFile(imageFile);
-      if(urlImage != null){
+      if (urlImage != null) {
         product.productImageUrl = urlImage;
-      }else{
+      } else {
         onFail("Erro ao enviar imagem do produto!");
         return;
       }
-
     }
 
     var response = await ProductApi.instance.postNewProduct(product);
@@ -65,8 +60,9 @@ class ProductModel extends Model {
 
   Future<void> updateProduct(Product product,
       {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
+    print(imageFile);
 
-    if(imageFile!= null) {
+    if (imageFile != null) {
       String urlImage = await sendImageFile(imageFile);
       if (urlImage != null) {
         product.productImageUrl = urlImage;
@@ -85,23 +81,23 @@ class ProductModel extends Model {
     }
   }
 
-   deleteProduct(Product product) async {
+  deleteProduct(Product product) async {
     var response = await ProductApi.instance.deleteProduct(product);
-    if(response == true){
+    if (response == true) {
       await fetchProducts(product.stockId);
+      await Future.delayed(Duration(milliseconds: 500));
       await sumStockQuantity(product.stockId);
-    }else{
+    } else {
       await fetchProducts(product.stockId);
     }
     return response;
   }
 
-  Future<String> sendImageFile(File imageFile) async{
+  Future<String> sendImageFile(File imageFile) async {
     return await UploadImageApi.instance.uploadImage(imageFile);
   }
 
-  sumProductsValue() async {
-
+  Future<void> sumProductsValue() async {
     totalValue = 0;
 
     List<Product> productList = await futureProductList;
@@ -117,7 +113,6 @@ class ProductModel extends Model {
   }
 
   Future<void> sumStockQuantity(int stockId) async {
-
     List<Product> productList = await futureProductList;
 
     totalProductQuantityInStock = 0;
@@ -141,13 +136,11 @@ class ProductModel extends Model {
 
     selectedStock.stockTotalProductQuantity = totalProductQuantityInStock;
 
-
     await StockApi.instance.putStock(selectedStock);
   }
 
-  stockUpdateInfo(double stockTotalQuantity) {
-
-    if (stockTotalQuantity > 5 ) {
+  void stockUpdateInfo(double stockTotalQuantity) {
+    if (stockTotalQuantity > 5) {
       stockStatus = "EM ESTOQUE";
       colorStatus = Color(0xFF3AA637);
     } else if (stockTotalQuantity == 0) {
@@ -161,13 +154,15 @@ class ProductModel extends Model {
     setState();
   }
 
-
-  void setLoading(bool value) {
-    isLoading = value;
+  updateProductQuantity(bool onAdd) {
+    setState();
+    if (onAdd) {
+      singleProductQuantity++;
+    } else if(singleProductQuantity > 0) {
+      singleProductQuantity--;
+    }else{
+      return;
+    }
     setState();
   }
-
-
-
-
 }

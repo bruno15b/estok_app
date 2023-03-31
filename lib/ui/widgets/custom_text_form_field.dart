@@ -50,7 +50,7 @@ class CustomTextFormField extends StatelessWidget {
               textAboveFormField,
               textAlign: TextAlign.left,
               style:
-                  TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
+                  TextStyle(color: Theme.of(context).primaryColor, fontSize: 16),
             ),
           ),
         TextFormField(
@@ -86,14 +86,14 @@ class CustomTextFormField extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 width: 1.0,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).accentColor,
               ),
               borderRadius: BorderRadius.circular(15),
             ),
             border: OutlineInputBorder(
               borderSide: BorderSide(
                 width: 1.0,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).accentColor,
               ),
               borderRadius: BorderRadius.circular(15),
             ),
@@ -107,7 +107,7 @@ class CustomTextFormField extends StatelessWidget {
                     },
                     icon: Icon(
                       obscureText ? Icons.visibility : Icons.visibility_off,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).accentColor,
                     ),
                   )
                 : null,
