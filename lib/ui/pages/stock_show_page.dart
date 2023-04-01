@@ -4,7 +4,7 @@ import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/pages/product_add_page.dart';
 import 'package:estok_app/ui/pages/stock_add_page.dart';
-import 'package:estok_app/ui/tile/product_tile.dart';
+import 'package:estok_app/ui/tiles/product_tile.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
 import 'package:estok_app/ui/widgets/message.dart';
@@ -191,17 +191,17 @@ class _StockShowPageState extends State<StockShowPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Produtos",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                Expanded(
+                  child: Text(
+                    "Produtos",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
                 ),
-                Container(
-                  height: 1,
-                  width: 223,
-                  color: Color(0xFFBEBBBB),
-                )
+                Expanded(
+                  flex: 2,
+                  child: Divider(),
+                  ),
               ],
             ),
           ),
@@ -242,8 +242,7 @@ class _StockShowPageState extends State<StockShowPage> {
                               _reload();
                             },
                             child: ListView.builder(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 11),
+                              padding: EdgeInsets.only(left: 11,right: 11,top: 20, bottom: 90),
                               itemCount: snapshot.data.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return ProductTile(snapshot.data[index],

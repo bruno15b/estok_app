@@ -5,6 +5,7 @@ import 'package:estok_app/ui/pages/product_add_page.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ProductTile extends StatelessWidget {
@@ -49,8 +50,9 @@ class ProductTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                    icon: Icon(Icons.remove),
-                    onPressed: () => productModel.updateProductQuantity(false)),
+                  icon: Icon(Icons.remove),
+                  onPressed: () => productModel.updateProductQuantity(false),
+                ),
                 SizedBox(
                   width: 10,
                 ),
@@ -65,8 +67,9 @@ class ProductTile extends StatelessWidget {
                   width: 10,
                 ),
                 IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () => productModel.updateProductQuantity(true))
+                  icon: Icon(Icons.add),
+                  onPressed: () => productModel.updateProductQuantity(true),
+                )
               ],
             ),
           );
@@ -202,8 +205,14 @@ class ProductTile extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              IconButton(
-                                  icon: Icon(Icons.share), onPressed: () {}),
+                              ScopedModelDescendant<ProductModel>(
+                                builder: (context, snapshot,productModel) {
+                                  return IconButton(
+                                      icon: Icon(Icons.share), onPressed: () {
+                                        productModel.shareLink(_product);
+                                  });
+                                }
+                              ),
                               IconButton(
                                 icon: Icon(Icons.edit),
                                 onPressed: () {

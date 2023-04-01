@@ -24,6 +24,7 @@ class MainPage extends StatelessWidget {
             currentIndex: userModel.currentIndexPage,
             selectedLabelStyle: TextStyle(fontSize: 12),
             unselectedLabelStyle: TextStyle(fontSize: 12),
+            selectedItemColor: Theme.of(context).accentColor,
             elevation: 0,
             backgroundColor: Color(0xFFF6F5F5),
             onTap: (index) {

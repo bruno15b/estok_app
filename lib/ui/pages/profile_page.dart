@@ -5,6 +5,7 @@ import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_user_account_header.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'login_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -58,21 +59,26 @@ class ProfilePage extends StatelessWidget {
                   SizedBox(
                     height: 71,
                   ),
-                  CustomButton(
-                    onPressed: () {
-                      UserModel.of(context).logout();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (BuildContext context) {
-                          return LoginPage();
-                        }),
+                  ScopedModelDescendant<UserModel>(
+                    builder: (context, snapshot,userModel) {
+                      return CustomButton(
+                        onPressed: () {
+                          UserModel.of(context).logout();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (BuildContext context) {
+                              return LoginPage();
+                            }),
+                          );
+                          userModel.currentIndexPage = 0;
+                        },
+                        textButton: "Sair",
+                        width: 100,
+                        height: 43,
+                        borderRadius: BorderRadius.circular(8),
+                        colorText: Theme.of(context).scaffoldBackgroundColor,
+                        colorButton: Theme.of(context).accentColor,
                       );
-                    },
-                    textButton: "Sair",
-                    width: 100,
-                    height: 43,
-                    borderRadius: BorderRadius.circular(8),
-                    colorText: Theme.of(context).scaffoldBackgroundColor,
-                    colorButton: Theme.of(context).accentColor,
+                    }
                   ),
                 ],
               );

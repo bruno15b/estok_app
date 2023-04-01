@@ -4,6 +4,7 @@ import 'package:estok_app/repository/api/product_api.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
 import 'package:estok_app/repository/api/upload_image_api.dart';
 import 'package:estok_app/repository/local/stock_repository.dart';
+import 'package:estok_app/util/share_util.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dart:io';
@@ -165,4 +166,9 @@ class ProductModel extends Model {
     }
     setState();
   }
+
+  Future<void> shareLink(Product product) async {
+    await ShareUtil.shareLink(product.productUrlSite);
+  }
+
 }

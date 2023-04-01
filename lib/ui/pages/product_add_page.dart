@@ -55,7 +55,7 @@ class _ProductAddPageState extends State<ProductAddPage>
     if (widget.product != null) {
       newProductAdd = false;
       _productNameController.text = widget.product.productName;
-      _productDescriptionController.text = widget.product.productName;
+      _productDescriptionController.text = widget.product.productDescription;
       _productItemPriceController.text =
           widget.product.productItemPrice.toString();
       _productUnitaryPriceController.text =

@@ -1,15 +1,13 @@
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:estok_app/models/product_model.dart';
-import 'package:estok_app/ui/pages/main_page.dart';
-import 'package:estok_app/ui/pages/product_add_page.dart';
+import 'package:estok_app/ui/pages/splash_screen_page.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'models/user_model.dart';
 
-
 void main() {
-  runApp(MyApp(UserModel(),StockModel(),ProductModel()));
+  runApp(MyApp(UserModel(), StockModel(), ProductModel()));
 }
 
 class MyApp extends StatefulWidget {
@@ -17,7 +15,7 @@ class MyApp extends StatefulWidget {
   final StockModel stockScopedModel;
   final ProductModel productScopedModel;
 
-  MyApp(this.userScopedModel,this.stockScopedModel,this.productScopedModel);
+  MyApp(this.userScopedModel, this.stockScopedModel, this.productScopedModel);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -36,12 +34,12 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             title: 'ESTOK APP',
             theme: ThemeData(
+              dividerColor: Color(0xFFBEBBBB),
               accentColor: Color(0xFF58355E),
               primaryColor: Color(0xFF495057),
               scaffoldBackgroundColor: Colors.white,
               fontFamily: "Montserrat",
               appBarTheme: AppBarTheme(
-
                 elevation: 0,
                 iconTheme: IconThemeData(
                   color: Color(0xFF58355E),
@@ -73,7 +71,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
             ),
-            home: LoginPage(),
+            home: SplashScreenPage(),
           ),
         ),
       ),

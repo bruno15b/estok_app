@@ -10,9 +10,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'home_page.dart';
 
-
 class LoginPage extends StatelessWidget with LoginValidator {
-
   final FocusNode _focusPassword = FocusNode();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -25,8 +23,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
     return Scaffold(
       key: _scaffoldKey,
       body: ListView(
-        padding: EdgeInsets.fromLTRB(
-            27,220, 27, 0),
+        padding: EdgeInsets.fromLTRB(27, 220, 27, 0),
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +97,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
                   children: [
                     Expanded(
                       child: CustomButton(
-                        textButton: "Entrar",
+                        textButton: "ENTRAR",
                         onPressed: () => _loginOnPressed(context),
                       ),
                     ),
@@ -109,7 +106,9 @@ class LoginPage extends StatelessWidget with LoginValidator {
               ],
             ),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );
@@ -125,15 +124,21 @@ class LoginPage extends StatelessWidget with LoginValidator {
     UserModel.of(context).login(_emailController.text, _passwordController.text,
         onSuccess: () {
       Message.onSuccess(
-          scaffoldKey: _scaffoldKey,
-          message: "Usuário logado com sucesso",
-          seconds: 2,
-          onPop: (value) {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (BuildContext context) {
-              return MainPage();
-            }));
-          });
+        scaffoldKey: _scaffoldKey,
+        message: "Usuário logado com sucesso",
+        seconds: 2,
+        onPop: (value) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) {
+                return MainPage();
+              },
+            ),
+          );
+          UserModel.of(context).setState();
+        },
+
+      );
 
       StockModel.of(context).fetchStocks();
       return;

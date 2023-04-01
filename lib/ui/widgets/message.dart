@@ -97,7 +97,7 @@ class Message extends StatelessWidget {
 
   static void alertDialogLoading(
     BuildContext context, {
-    String title = "Atualizando dados do aplicativo com servidor",
+    String title = "Aguarde! Atualizando dados do aplicativo com o servidor",
     double width,
     double height,
   }) {
@@ -137,7 +137,7 @@ class Message extends StatelessWidget {
     BuildContext context, {
     String title = "",
     String subtitle = "",
-    @required String textOkButton = "sim",
+    @required String textOkButton = "Sim",
     @required Function onPressedOkButton,
     String textNoButton = "Não",
     Widget widget,

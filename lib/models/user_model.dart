@@ -38,7 +38,7 @@ class UserModel extends Model {
     }
   }
 
-  void logout() async{
+  Future<void> logout() async{
 
    User user = await UserRepository.instance.getUser();
 

@@ -1,6 +1,6 @@
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/stock_model.dart';
-import 'package:estok_app/ui/tile/stock_tile.dart';
+import 'package:estok_app/ui/tiles/stock_tile.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -60,7 +60,7 @@ class HomeTab extends StatelessWidget {
                     },
                     child: ListView.builder(
                       padding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+                          EdgeInsets.only(left: 5,right: 5,top: 20, bottom: 90),
                       itemCount: filteredStocks.length,
                       itemBuilder: (BuildContext context, int index) {
                         return StockTile(filteredStocks[index]);
