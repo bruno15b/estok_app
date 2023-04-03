@@ -7,14 +7,12 @@ import 'package:scoped_model/scoped_model.dart';
 
 class UserModel extends Model {
   User user;
-  bool showPassword = true;
-
-  int currentIndexPage = 0;
+  bool passwordVisibility = true;
+  int currentIndexMainPage = 0;
 
   setState(){
     notifyListeners();
   }
-
 
   static UserModel of(BuildContext context) {
     return ScopedModel.of<UserModel>(context);
@@ -48,16 +46,6 @@ class UserModel extends Model {
      await UserRepository.instance.clearUserData();
      await StockRepository.instance.clearStockData();
    }
-  }
-
-  void togglePasswordVisibility(bool isVisible) {
-    showPassword = !showPassword;
-    setState();
-  }
-
-  void changePage(int newIndexPage) {
-    currentIndexPage = newIndexPage;
-    setState();
   }
 
 }

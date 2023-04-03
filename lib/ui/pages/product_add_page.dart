@@ -26,8 +26,7 @@ class ProductAddPage extends StatefulWidget {
   State<ProductAddPage> createState() => _ProductAddPageState();
 }
 
-class _ProductAddPageState extends State<ProductAddPage>
-    with AddPagesValidators {
+class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators {
   var _productNameController = TextEditingController();
   var _productDescriptionController = TextEditingController();
   var _productItemPriceController = TextEditingController();
@@ -56,12 +55,9 @@ class _ProductAddPageState extends State<ProductAddPage>
       newProductAdd = false;
       _productNameController.text = widget.product.productName;
       _productDescriptionController.text = widget.product.productDescription;
-      _productItemPriceController.text =
-          widget.product.productItemPrice.toString();
-      _productUnitaryPriceController.text =
-          widget.product.productUnitaryPrice.toString();
-      _productQuantityController.text =
-          widget.product.productQuantity.toString();
+      _productItemPriceController.text = widget.product.productItemPrice.toString();
+      _productUnitaryPriceController.text = widget.product.productUnitaryPrice.toString();
+      _productQuantityController.text = widget.product.productQuantity.toString();
       _productUrlSiteController.text = widget.product.productUrlSite;
     } else {
       newProductAdd = true;
@@ -88,9 +84,8 @@ class _ProductAddPageState extends State<ProductAddPage>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar( titleText: widget.product?.productName ?? "NOVO PRODUTO"),
-      body: ScopedModelDescendant<ProductModel>(
-          builder: (context, snapshot, productModel) {
+      appBar: CustomAppBar(titleText: widget.product?.productName ?? "NOVO PRODUTO"),
+      body: ScopedModelDescendant<ProductModel>(builder: (context, snapshot, productModel) {
         return Form(
           key: _formKey,
           child: ListView(
@@ -105,8 +100,7 @@ class _ProductAddPageState extends State<ProductAddPage>
                     width: 200,
                     height: 170,
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: getImage(productModel), fit: BoxFit.fitHeight),
+                      image: DecorationImage(image: getImage(productModel), fit: BoxFit.fitHeight),
                     ),
                   ),
                 ),
@@ -183,9 +177,7 @@ class _ProductAddPageState extends State<ProductAddPage>
                 height: 20,
               ),
               CustomButton(
-                textButton: widget.product?.productName != null
-                    ? "Editar"
-                    : "CADASTRAR",
+                textButton: widget.product?.productName != null ? "EDITAR" : "CADASTRAR",
                 onPressed: () => productOnPressed(),
               ),
               SizedBox(
@@ -213,57 +205,66 @@ class _ProductAddPageState extends State<ProductAddPage>
 
       if (newProductAdd) {
         product.stockId = widget.stock.id;
-        await ProductModel.of(context).createNewProduct(product, onSuccess: () {
-          Message.onSuccess(
+        await ProductModel.of(context).createNewProduct(
+          product,
+          onSuccess: () {
+            Message.onSuccess(
               scaffoldKey: _scaffoldKey,
               message: "Produto adicionado com sucesso",
               seconds: 1,
-              onPop: (_)  {
+              onPop: (_) {
                 updateStocksProductsWithServer(product);
-              });
-          return;
-        }, onFail: (string) {
-          Message.onFail(
-            scaffoldKey: _scaffoldKey,
-            message: "Erro ao adicionar Produto!",
-            seconds: 3,
-          );
-          return;
-        });
+              },
+            );
+            return;
+          },
+          onFail: (string) {
+            Message.onFail(
+              scaffoldKey: _scaffoldKey,
+              message: "Erro ao adicionar Produto!",
+              seconds: 3,
+            );
+            return;
+          },
+        );
       } else {
         product.id = widget.product.id;
         product.stockId = widget.product.stockId;
-        await ProductModel.of(context).updateProduct(product, onSuccess: () {
-          Message.onSuccess(
+        await ProductModel.of(context).updateProduct(
+          product,
+          onSuccess: () {
+            Message.onSuccess(
               scaffoldKey: _scaffoldKey,
               message: "Produto editado com sucesso",
               seconds: 1,
               onPop: (_) {
                 updateStocksProductsWithServer(product);
-              });
-          return;
-        }, onFail: (string) {
-          Message.onFail(
-            scaffoldKey: _scaffoldKey,
-            message: "Erro ao editar Produto!",
-            seconds: 3,
-          );
-          return;
-        });
+              },
+            );
+            return;
+          },
+          onFail: (string) {
+            Message.onFail(
+              scaffoldKey: _scaffoldKey,
+              message: "Erro ao editar Produto!",
+              seconds: 3,
+            );
+            return;
+          },
+        );
       }
     }
   }
 
-  void updateStocksProductsWithServer(Product product) async{
+  void updateStocksProductsWithServer(Product product) async {
     Message.alertDialogLoading(context);
     try {
-      await ProductModel.of(context).fetchProducts(product.stockId);
+      await ProductModel.of(context).fetchAllProducts(product.stockId);
       await Future.delayed(Duration(milliseconds: 500));
       await ProductModel.of(context).sumProductsValue();
-      await ProductModel.of(context)
-          .sumStockQuantity(product.stockId);
+      await ProductModel.of(context).sumStockQuantity(product.stockId);
       await Future.delayed(Duration(milliseconds: 500));
-      await StockModel.of(context).fetchStocks();
+      await StockModel.of(context).fetchAllStocks();
     } catch (e) {
       print(e);
     } finally {
@@ -282,8 +283,7 @@ class _ProductAddPageState extends State<ProductAddPage>
             FlatButton(
                 onPressed: () async {
                   var picker = ImagePicker();
-                  var pickedFile =
-                      await picker.getImage(source: ImageSource.camera);
+                  var pickedFile = await picker.getImage(source: ImageSource.camera);
                   if (pickedFile != null) {
                     productModel.imageFile = File(pickedFile.path);
                   } else {
@@ -296,8 +296,7 @@ class _ProductAddPageState extends State<ProductAddPage>
             FlatButton(
                 onPressed: () async {
                   var picker = ImagePicker();
-                  var pickedFile =
-                      await picker.getImage(source: ImageSource.gallery);
+                  var pickedFile = await picker.getImage(source: ImageSource.gallery);
                   if (pickedFile != null) {
                     productModel.imageFile = File(pickedFile.path);
                   } else {

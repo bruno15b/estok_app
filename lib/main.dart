@@ -1,6 +1,6 @@
 import 'package:estok_app/models/stock_model.dart';
-import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:estok_app/models/product_model.dart';
+import 'package:estok_app/ui/pages/main_page.dart';
 import 'package:estok_app/ui/pages/splash_screen_page.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -34,10 +34,15 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             title: 'ESTOK APP',
             theme: ThemeData(
-              dividerColor: Color(0xFFBEBBBB),
-              accentColor: Color(0xFF58355E),
-              primaryColor: Color(0xFF495057),
+              textTheme: TextTheme(
+                bodyText2:TextStyle(
+                  color: Color(0xFF495057),
+                ),
+              ),
+              primaryColor: Color(0xFF58355E),
+              accentColor: Color(0xFFF7F2F8),
               scaffoldBackgroundColor: Colors.white,
+              dividerColor: Color(0xFFBEBBBB),
               fontFamily: "Montserrat",
               appBarTheme: AppBarTheme(
                 elevation: 0,
@@ -61,14 +66,6 @@ class _MyAppState extends State<MyApp> {
                 ),
                 labelColor: Color(0xFF58355E),
                 unselectedLabelColor: Color(0xFF909FAD),
-                indicator: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Color(0xFF58355E),
-                      width: 6,
-                    ),
-                  ),
-                ),
               ),
             ),
             home: SplashScreenPage(),

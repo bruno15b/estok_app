@@ -1,5 +1,7 @@
+import 'package:estok_app/entities/history.dart';
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/stock_model.dart';
+import 'package:estok_app/repository/local/history_repository.dart';
 import 'package:estok_app/ui/validator/add_pages_validators.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/message.dart';
@@ -32,7 +34,6 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool newStockAdd = true;
 
-
   @override
   void initState() {
     super.initState();
@@ -40,10 +41,8 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
     if (widget.stock != null) {
       newStockAdd = false;
       _stockDescriptionController.text = widget.stock.stockDescription;
-      _stockEnterDateController.text =
-          StockModel.of(context).formatDateToString(widget.stock.enterDate);
-      _stockValidityDateController.text =
-          StockModel.of(context).formatDateToString(widget.stock.validityDate);
+      _stockEnterDateController.text = StockModel.of(context).formatDateToString(widget.stock.enterDate);
+      _stockValidityDateController.text = StockModel.of(context).formatDateToString(widget.stock.validityDate);
       StockModel.of(context).onChangeTypeOfStock(widget.stock.typeOfStock);
     } else {
       StockModel.of(context).onChangeTypeOfStock("CAIXA");
@@ -76,7 +75,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
@@ -95,7 +94,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
@@ -114,7 +113,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
@@ -131,7 +130,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(titleText:widget.stock?.stockDescription ?? "NOVO ESTOQUE"),
+      appBar: CustomAppBar(titleText: widget.stock?.stockDescription ?? "NOVO ESTOQUE"),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -180,17 +179,14 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                 ),
               ],
             ),
-            ScopedModelDescendant<StockModel>(
-                builder: (context, snapshot, stockModel) {
+            ScopedModelDescendant<StockModel>(builder: (context, snapshot, stockModel) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     padding: EdgeInsets.only(bottom: 8, top: 19),
                     child: Text("Tipo",
-                        style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 16)),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyText2.color, fontSize: 16)),
                   ),
                   InkWell(
                     onTap: () {
@@ -202,28 +198,32 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       decoration: BoxDecoration(
                         border: Border.all(
                           width: 1.0,
-                          color: Theme.of(context).accentColor,
+                          color: Theme.of(context).primaryColor,
                         ),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Row(
                         children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.3,
-                          ),
-                          Text(
-                            stockModel.typeOfStock,
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).accentColor,
+                          Expanded(
+                            flex: 6,
+                            child: Container(
+                              padding: EdgeInsets.only(left: 25),
+                              child: Text(
+                                stockModel.typeOfStock,
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.25,
-                          ),
-                          Icon(
-                            Icons.keyboard_arrow_down,
+                          Expanded(
+                            flex: 1,
+                            child: Icon(
+                              Icons.keyboard_arrow_down,
+                            ),
                           )
                         ],
                       ),
@@ -248,11 +248,8 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
   void stockOnPressed() async {
     FocusScope.of(context).unfocus();
     if (this._formKey.currentState.validate()) {
-
-      DateTime _enterDate = StockModel.of(context)
-          .formatStringToDate(_stockEnterDateController.text);
-      DateTime _validityDate = StockModel.of(context)
-          .formatStringToDate(_stockValidityDateController.text);
+      DateTime _enterDate = StockModel.of(context).formatStringToDate(_stockEnterDateController.text);
+      DateTime _validityDate = StockModel.of(context).formatStringToDate(_stockValidityDateController.text);
       String typeOfStock = StockModel.of(context).typeOfStock;
 
       Stock stock = Stock(
@@ -263,23 +260,34 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
       );
 
       if (newStockAdd) {
-       await StockModel.of(context).createNewStock(stock, onSuccess: () {
-          Message.onSuccess(
+        await StockModel.of(context).createNewStock (
+          stock,
+          onSuccess: () async {
+            Message.onSuccess(
+                scaffoldKey: _scaffoldKey,
+                message: "Estoque adicionado com sucesso",
+                seconds: 3,
+                onPop: (value) {
+                  Navigator.of(context).pop();
+                });
+            StockModel.of(context).fetchAllStocks();
+
+            History history = History(date: DateTime.now(),entitiesType: "Stock",operationType: "CRIADO");
+            await HistoryRepository.instance.save(history);
+            List<History> result = await HistoryRepository.instance.getAll();
+            result.forEach((element) {print(element.toJson());});
+
+            return;
+          },
+          onFail: (string) {
+            Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: "Estoque adicionado com sucesso",
+              message: "Erro ao adicionar estoque.!",
               seconds: 3,
-              onPop: (value) {
-                Navigator.of(context).pop();
-              });
-          return;
-        }, onFail: (string) {
-          Message.onFail(
-            scaffoldKey: _scaffoldKey,
-            message: "Erro ao adicionar estoque.!",
-            seconds: 3,
-          );
-          return;
-        });
+            );
+            return;
+          },
+        );
       } else {
         stock.id = widget.stock.id;
         stock.stockTotalProductQuantity = widget.stock.stockTotalProductQuantity;
@@ -287,13 +295,15 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
           stock,
           onSuccess: () {
             Message.onSuccess(
-                scaffoldKey: _scaffoldKey,
-                message: "Estoque editado com sucesso",
-                seconds: 3,
-                onPop: (value) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                });
+              scaffoldKey: _scaffoldKey,
+              message: "Estoque editado com sucesso",
+              seconds: 3,
+              onPop: (value) {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            );
+            StockModel.of(context).fetchAllStocks();
             return;
           },
           onFail: (string) {

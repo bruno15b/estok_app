@@ -1,14 +1,13 @@
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/ui/pages/main_page.dart';
+import 'package:estok_app/ui/pages/splash_screen_page.dart';
 import 'package:estok_app/ui/validator/login_validator.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-
-import 'home_page.dart';
 
 class LoginPage extends StatelessWidget with LoginValidator {
   final FocusNode _focusPassword = FocusNode();
@@ -31,7 +30,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
               Text(
                 "ESTOK APP",
                 style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).textTheme.bodyText2.color,
                   fontSize: 24,
                 ),
               ),
@@ -41,7 +40,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
               Text(
                 "Login",
                 style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).textTheme.bodyText2.color,
                   fontSize: 20,
                 ),
               ),
@@ -71,25 +70,24 @@ class LoginPage extends StatelessWidget with LoginValidator {
                   height: 21,
                 ),
                 ScopedModelDescendant<UserModel>(
-                    builder: (context, snapshot, userModel) {
-                  return CustomTextFormField(
-                    floatingLabelBehavior: FloatingLabelBehavior.auto,
-                    labelText: "Senha",
-                    hintText: "Informe a senha",
-                    keyboardType: TextInputType.text,
-                    prefixIcon: Icon(
-                      Icons.lock,
-                      color: Color(0xFFC4C4C4),
-                    ),
-                    obscureText: userModel.showPassword,
-                    passwordToggleButton: true,
-                    onTogglePasswordVisibility:
-                        userModel.togglePasswordVisibility,
-                    focusNode: _focusPassword,
-                    controller: _passwordController,
-                    validator: validatePassword,
-                  );
-                }),
+                  builder: (context, snapshot, userModel) {
+                    return CustomTextFormField(
+                      floatingLabelBehavior: FloatingLabelBehavior.auto,
+                      labelText: "Senha",
+                      hintText: "Informe a senha",
+                      keyboardType: TextInputType.text,
+                      prefixIcon: Icon(
+                        Icons.lock,
+                        color: Color(0xFFC4C4C4),
+                      ),
+                      obscureText: userModel.passwordVisibility,
+                      passwordToggleButton: true,
+                      focusNode: _focusPassword,
+                      controller: _passwordController,
+                      validator: validatePassword,
+                    );
+                  },
+                ),
                 SizedBox(
                   height: 38,
                 ),
@@ -121,8 +119,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
       return;
     }
 
-    UserModel.of(context).login(_emailController.text, _passwordController.text,
-        onSuccess: () {
+    UserModel.of(context).login(_emailController.text, _passwordController.text, onSuccess: () {
       Message.onSuccess(
         scaffoldKey: _scaffoldKey,
         message: "Usuário logado com sucesso",
@@ -135,12 +132,10 @@ class LoginPage extends StatelessWidget with LoginValidator {
               },
             ),
           );
-          UserModel.of(context).setState();
         },
-
       );
 
-      StockModel.of(context).fetchStocks();
+      StockModel.of(context).fetchAllStocks();
       return;
     }, onFail: (string) {
       Message.onFail(
@@ -151,7 +146,6 @@ class LoginPage extends StatelessWidget with LoginValidator {
       return;
     });
 
-    print(
-        "Email : ${_emailController.text}, Senha: ${_passwordController.text}");
+    print("Email : ${_emailController.text}, Senha: ${_passwordController.text}");
   }
 }

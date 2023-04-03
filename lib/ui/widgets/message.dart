@@ -57,7 +57,7 @@ class Message extends StatelessWidget {
         child: Center(
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(
-                color ?? Theme.of(context).primaryColor),
+                color ?? Theme.of(context).textTheme.bodyText2.color),
             strokeWidth: strokeWidth ?? 5.0,
           ),
         ),
@@ -113,7 +113,7 @@ class Message extends StatelessWidget {
             titleTextStyle: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).textTheme.bodyText2.color,
             ),
             content: SingleChildScrollView(
               padding: EdgeInsets.only(top: 30, bottom: 30),
@@ -123,7 +123,7 @@ class Message extends StatelessWidget {
                   height: height ?? 40.0,
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).primaryColor),
+                        Theme.of(context).textTheme.bodyText2.color),
                     strokeWidth: 5.0,
                   ),
                 ),
@@ -155,7 +155,7 @@ class Message extends StatelessWidget {
             titleTextStyle: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.w700,
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).primaryColor,
             ),
             content: SingleChildScrollView(
               child: Stack(
@@ -189,7 +189,7 @@ class Message extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).textTheme.bodyText2.color,
                         ),
                       ),
                     ),
@@ -201,7 +201,7 @@ class Message extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).accentColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               ),

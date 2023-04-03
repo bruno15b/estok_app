@@ -12,15 +12,12 @@ class HomeTab extends StatelessWidget {
 
   HomeTab(this.category);
 
-
-
   @override
   Widget build(BuildContext context) {
 
     void _reload()  {
-      StockModel.of(context).fetchStocks();
+      StockModel.of(context).fetchAllStocks();
     }
-
 
     return ScopedModelDescendant<StockModel>(
       builder: (context, child, stockModel) {
@@ -32,7 +29,7 @@ class HomeTab extends StatelessWidget {
                 return Message.alert(
                     "Não foi possivel obter os dados necessários",
                     onPressed: _reload,
-                    color: Theme.of(context).accentColor);
+                    color: Theme.of(context).primaryColor);
               case ConnectionState.waiting:
                 return Message.loading(context);
               default:
@@ -40,17 +37,18 @@ class HomeTab extends StatelessWidget {
                   return Message.alert(
                       "Não foi possivel obter os dados do servidor, recarregue a pagina!",
                       onPressed: _reload,
-                      color: Theme.of(context).accentColor);
+                      color: Theme.of(context).primaryColor);
                 } else if (!snapshot.hasData) {
                   return Message.alert(
                       "Não foi possivel obter os dados de estoque, recarregue a pagina!",
                       onPressed: _reload,
-                      color: Theme.of(context).accentColor);
+                      color: Theme.of(context).primaryColor);
                 } else if (snapshot.data.isEmpty) {
                   return Message.alert("Nenhum estoque encontrado",
                       onPressed: _reload,
-                      color: Theme.of(context).accentColor);
+                      color: Theme.of(context).primaryColor);
                 } else {
+
                   List<Stock> filteredStocks = stockModel.filterStockByStatus(
                       snapshot.data, category);
 

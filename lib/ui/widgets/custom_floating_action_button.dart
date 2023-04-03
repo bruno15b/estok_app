@@ -12,7 +12,8 @@ class CustomFloatingActionButton extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 15, right: 5),
       child: FloatingActionButton(
         elevation: 0,
-        backgroundColor: Theme.of(context).accentColor,
+        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
         child: Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(

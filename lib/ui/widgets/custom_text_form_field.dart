@@ -1,17 +1,18 @@
+import 'package:estok_app/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final String labelText;
   final String hintText;
   final TextInputType keyboardType;
-  final bool obscureText;
+  bool obscureText;
   final TextEditingController controller;
   final FocusNode focusNode;
   final FocusNode requestFocus;
   final FormFieldValidator<String> validator;
   final Icon prefixIcon;
-  final Function(bool) onTogglePasswordVisibility;
   final bool passwordToggleButton;
   final String textAboveFormField;
   final int maxLength;
@@ -30,7 +31,6 @@ class CustomTextFormField extends StatelessWidget {
     this.requestFocus,
     this.passwordToggleButton = false,
     this.prefixIcon,
-    this.onTogglePasswordVisibility,
     this.textAboveFormField,
     this.maxLength,
     this.floatingLabelBehavior,
@@ -49,8 +49,7 @@ class CustomTextFormField extends StatelessWidget {
             child: Text(
               textAboveFormField,
               textAlign: TextAlign.left,
-              style:
-                  TextStyle(color: Theme.of(context).primaryColor, fontSize: 16),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyText2.color, fontSize: 16),
             ),
           ),
         TextFormField(
@@ -68,15 +67,11 @@ class CustomTextFormField extends StatelessWidget {
             }
           },
           decoration: InputDecoration(
-            floatingLabelBehavior:
-                floatingLabelBehavior ?? FloatingLabelBehavior.never,
+            floatingLabelBehavior: floatingLabelBehavior ?? FloatingLabelBehavior.never,
             counterText: "",
             contentPadding: EdgeInsets.fromLTRB(25, 11, 25, 11),
             labelText: labelText,
-            labelStyle: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w400,
-                fontFamily: "Montserrat"),
+            labelStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400, fontFamily: "Montserrat"),
             alignLabelWithHint: true,
             hintText: hintText,
             hintStyle: TextStyle(
@@ -86,30 +81,31 @@ class CustomTextFormField extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 width: 1.0,
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).primaryColor,
               ),
               borderRadius: BorderRadius.circular(15),
             ),
             border: OutlineInputBorder(
               borderSide: BorderSide(
                 width: 1.0,
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).primaryColor,
               ),
               borderRadius: BorderRadius.circular(15),
             ),
             prefixIcon: prefixIcon,
             suffixIcon: passwordToggleButton
-                ? IconButton(
-                    onPressed: () {
-                      if (onTogglePasswordVisibility != null) {
-                        onTogglePasswordVisibility(!obscureText);
-                      }
-                    },
-                    icon: Icon(
-                      obscureText ? Icons.visibility : Icons.visibility_off,
-                      color: Theme.of(context).accentColor,
-                    ),
-                  )
+                ? ScopedModelDescendant<UserModel>(builder: (context, snapshot, userModel) {
+                    return IconButton(
+                      onPressed: () {
+                        userModel.passwordVisibility = !userModel.passwordVisibility;
+                        userModel.setState();
+                      },
+                      icon: Icon(
+                        userModel.passwordVisibility ? Icons.visibility : Icons.visibility_off,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    );
+                  })
                 : null,
           ),
         ),
@@ -120,15 +116,13 @@ class CustomTextFormField extends StatelessWidget {
 
 class DateTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     if (oldValue.text.length >= newValue.text.length) {
       return newValue;
     }
 
     var dateText = _addSeperators(newValue.text, '/');
-    return newValue.copyWith(
-        text: dateText, selection: updateCursorPosition(dateText));
+    return newValue.copyWith(text: dateText, selection: updateCursorPosition(dateText));
   }
 
   String _addSeperators(String value, String seperator) {

@@ -1,5 +1,6 @@
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/enums/stock_status.dart';
 import 'package:estok_app/repository/api/product_api.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
 import 'package:estok_app/repository/api/upload_image_api.dart';
@@ -14,9 +15,8 @@ class ProductModel extends Model {
   double totalValue = 0;
   double totalProductQuantityInStock;
   int singleProductQuantity;
-  Color colorStatus;
-  String stockStatus;
-
+  Color colorStockStatus;
+  String textStockStatus;
   File imageFile;
 
   static ProductModel of(BuildContext context) {
@@ -27,7 +27,7 @@ class ProductModel extends Model {
     notifyListeners();
   }
 
-  Future<void> fetchProducts(int stockId) async {
+  Future<void> fetchAllProducts(int stockId) async {
     setState();
 
     futureProductList = ProductApi.instance.getAllProducts(stockId);
@@ -85,11 +85,11 @@ class ProductModel extends Model {
   deleteProduct(Product product) async {
     var response = await ProductApi.instance.deleteProduct(product);
     if (response == true) {
-      await fetchProducts(product.stockId);
+      await fetchAllProducts(product.stockId);
       await Future.delayed(Duration(milliseconds: 500));
       await sumStockQuantity(product.stockId);
     } else {
-      await fetchProducts(product.stockId);
+      await fetchAllProducts(product.stockId);
     }
     return response;
   }
@@ -122,7 +122,7 @@ class ProductModel extends Model {
       totalProductQuantityInStock += product.productQuantity;
     }
 
-    stockUpdateInfo(totalProductQuantityInStock);
+    stockStatusUpdateInfoForStockShowPage(totalProductQuantityInStock);
 
     List<Stock> stockList = await StockRepository.instance.getStockList();
 
@@ -140,18 +140,10 @@ class ProductModel extends Model {
     await StockApi.instance.putStock(selectedStock);
   }
 
-  void stockUpdateInfo(double stockTotalQuantity) {
-    if (stockTotalQuantity > 5) {
-      stockStatus = "EM ESTOQUE";
-      colorStatus = Color(0xFF3AA637);
-    } else if (stockTotalQuantity == 0) {
-      stockStatus = "EM FALTA";
-      colorStatus = Color(0xFFA63737);
-    } else {
-      stockStatus = "EM AVISO";
-      colorStatus = Color(0XFFDCC707);
-    }
-
+  void stockStatusUpdateInfoForStockShowPage(double stockTotalQuantity) {
+    StockStatus stockStatus = StockStatusExtension.fromStockQuantity(stockTotalQuantity);
+    textStockStatus = stockStatus.stringValue;
+    colorStockStatus = stockStatus.colorValue;
     setState();
   }
 

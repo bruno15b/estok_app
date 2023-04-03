@@ -1,4 +1,5 @@
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/enums/stock_status.dart';
 import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/ui/pages/stock_show_page.dart';
 import 'package:flutter/material.dart';
@@ -12,29 +13,35 @@ class StockTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color color;
 
-    if (_stock.stockStatus == "EM ESTOQUE") {
-      color = Color(0xFF3AA637);
-    } else if (_stock.stockStatus == "EM FALTA") {
-      color = Color(0xFFA63737);
-    } else {
-      color = Color(0XFFDCC707);
+    Color colorStockStatus;
+
+    if (_stock.stockStatus == StockStatus.EM_ESTOQUE.stringValue) {
+      colorStockStatus = StockStatus.EM_ESTOQUE.colorValue;
+    } else if (_stock.stockStatus == StockStatus.EM_FALTA.stringValue) {
+      colorStockStatus = StockStatus.EM_FALTA.colorValue;
+    } else if(_stock.stockStatus == StockStatus.EM_AVISO.stringValue) {
+      colorStockStatus =  StockStatus.EM_AVISO.colorValue;
     }
 
     return Card(
       elevation: 0,
       child: ScopedModelDescendant<ProductModel>(
         builder: (context, snapshot,productModel) {
-          return GestureDetector(
-            onTap: () {
-              productModel.colorStatus = null;
-              productModel.stockStatus = null;
+          return InkWell(
+            onTap: (){
+              productModel.colorStockStatus = null;
+              productModel.textStockStatus = null;
               productModel.totalProductQuantityInStock = null;
+
+              ProductModel.of(context).fetchAllProducts(_stock.id).then((_) {
+                return ProductModel.of(context).sumStockQuantity(_stock.id);
+              });
+
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (BuildContext context) {
-                    return StockShowPage(this._stock, color);
+                    return StockShowPage(this._stock, colorStockStatus);
                   },
                 ),
               );
@@ -93,7 +100,7 @@ class StockTile extends StatelessWidget {
                           Icon(
                             Icons.circle,
                             size: 11,
-                            color: color,
+                            color: colorStockStatus,
                           )
                         ],
                       ),
@@ -106,7 +113,7 @@ class StockTile extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 11,
-                            color: color,
+                            color: colorStockStatus,
                           ),
                         ),
                       ),

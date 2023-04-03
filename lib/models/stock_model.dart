@@ -1,7 +1,7 @@
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/enums/stock_status.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
 import 'package:estok_app/repository/local/stock_repository.dart';
-import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +21,7 @@ class StockModel extends Model {
     notifyListeners();
   }
 
-  Future<void> fetchStocks() async {
+  Future<void> fetchAllStocks() async {
     setState();
     futureStockList = StockApi.instance.getAllStocks();
     StockRepository.instance.saveStockList(await futureStockList);
@@ -35,7 +35,6 @@ class StockModel extends Model {
 
     if (response!= null){
       onSuccess();
-      await fetchStocks();
     }else{
       onFail("Erro ao criar novo Estoque!");
     }
@@ -47,7 +46,6 @@ class StockModel extends Model {
     var response = await StockApi.instance.putStock(stock);
     if (response!= null){
       onSuccess();
-      await fetchStocks();
     }else{
       onFail("Erro ao editar estoque!");
     }
@@ -59,7 +57,6 @@ class StockModel extends Model {
 
     if (response != null){
       onSuccess();
-      await fetchStocks();
     }else{
       onFail("Erro ao deletar estoque!");
     }
@@ -67,7 +64,7 @@ class StockModel extends Model {
   }
 
   List<Stock> filterStockByStatus(List<Stock> stocks, String status) {
-    if (status == "TODOS") {
+    if (status == StockStatus.TODOS.stringValue) {
       return stocks;
     } else {
       return stocks

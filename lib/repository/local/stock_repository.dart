@@ -12,6 +12,7 @@ class StockRepository {
     var instance = await SharedPreferences.getInstance();
     await instance.setString("stock.prefs", stockString);
   }
+
   Future<List<Stock>> getStockList() async {
     var instance = await SharedPreferences.getInstance();
     String stockString = instance.getString("stock.prefs");
@@ -24,7 +25,6 @@ class StockRepository {
     if (stockJsonList == null) {
       return [];
     }
-
     List<Stock> stockList = stockJsonList.map((json) => Stock.fromJson(json)).toList();
     return stockList;
   }

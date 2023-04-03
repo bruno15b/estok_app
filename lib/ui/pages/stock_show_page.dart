@@ -11,62 +11,48 @@ import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class StockShowPage extends StatefulWidget {
+class StockShowPage extends StatelessWidget {
   final Stock _stock;
-  final Color color;
+  final Color colorStockStatus;
 
-  StockShowPage(this._stock, this.color);
-
-  @override
-  State<StockShowPage> createState() => _StockShowPageState();
-}
-
-class _StockShowPageState extends State<StockShowPage> {
-  void _reload() async {
-    try {
-      await StockModel.of(context).fetchStocks();
-      await ProductModel.of(context).fetchProducts(widget._stock.id);
-      await Future.delayed(Duration(milliseconds: 500));
-      await ProductModel.of(context).sumProductsValue();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    ProductModel.of(context).fetchProducts(widget._stock.id).then((_) {
-      return ProductModel.of(context).sumStockQuantity(widget._stock.id);
-    });
-
-  }
+  StockShowPage(this._stock, this.colorStockStatus);
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  deleteProductResponse(bool response) {
-    if (response) {
-      StockModel.of(context).fetchStocks();
-      return Message.onSuccess(
-        scaffoldKey: _scaffoldKey,
-        message: "Produto deletado",
-        seconds: 2,
-      );
-    } else {
-      return Message.onFail(
-        scaffoldKey: _scaffoldKey,
-        message: "Falha ao deletar o produto",
-        seconds: 2,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    void _reload() async {
+      try {
+        await StockModel.of(context).fetchAllStocks();
+        await ProductModel.of(context).fetchAllProducts(_stock.id);
+        await Future.delayed(Duration(milliseconds: 500));
+        await ProductModel.of(context).sumProductsValue();
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    deleteProductResponse(bool response) {
+      if (response) {
+        StockModel.of(context).fetchAllStocks();
+
+        return Message.onSuccess(
+          scaffoldKey: _scaffoldKey,
+          message: "Produto deletado",
+          seconds: 2,
+        );
+      } else {
+        return Message.onFail(
+          scaffoldKey: _scaffoldKey,
+          message: "Falha ao deletar o produto",
+          seconds: 2,
+        );
+      }
+    }
+
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(titleText:widget._stock.stockDescription),
+      appBar: CustomAppBar(titleText: _stock.stockDescription),
       body: Column(
         children: [
           Container(
@@ -75,22 +61,21 @@ class _StockShowPageState extends State<StockShowPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ScopedModelDescendant<ProductModel>(
-                    builder: (context, snapshot, productModel) {
+                ScopedModelDescendant<ProductModel>(builder: (context, snapshot, productModel) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Tipo: ${widget._stock.typeOfStock.toUpperCase()}",
+                        "Tipo: ${_stock.typeOfStock.toUpperCase()}",
                         style: TextStyle(fontSize: 14),
                       ),
                       Text(
-                        "Entrada em: ${StockModel.of(context).formatDateToString(widget._stock.enterDate)}",
+                        "Entrada em: ${StockModel.of(context).formatDateToString(_stock.enterDate)}",
                         style: TextStyle(fontSize: 14),
                       ),
                       Text(
-                        "Validade: ${StockModel.of(context).formatDateToString(widget._stock.validityDate)}",
+                        "Validade: ${StockModel.of(context).formatDateToString(_stock.validityDate)}",
                         style: TextStyle(fontSize: 14),
                       ),
                       Text(
@@ -103,43 +88,41 @@ class _StockShowPageState extends State<StockShowPage> {
                     ],
                   );
                 }),
-                ScopedModelDescendant<ProductModel>(
-                    builder: (context, snapshot, productModel) {
+                ScopedModelDescendant<ProductModel>(builder: (context, snapshot, productModel) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
-                        "${productModel.totalProductQuantityInStock ?? widget._stock.stockTotalProductQuantity}",
+                        "${productModel.totalProductQuantityInStock ?? _stock.stockTotalProductQuantity}",
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).primaryColor),
+                            color: Theme.of(context).textTheme.bodyText2.color),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 6, bottom: 10),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.20,
                           child: Text(
-                            productModel.stockStatus ??
-                                widget._stock.stockStatus,
+                            productModel.textStockStatus ?? _stock.stockStatus,
                             overflow: TextOverflow.clip,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
-                              color: productModel.colorStatus ?? widget.color,
+                              color: productModel.colorStockStatus ?? colorStockStatus,
                             ),
                           ),
                         ),
                       ),
-                     IconButton(
+                      IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (BuildContext context) {
                                   return StockAddPage(
-                                    stock: widget._stock,
+                                    stock: _stock,
                                   );
                                 },
                               ),
@@ -149,37 +132,37 @@ class _StockShowPageState extends State<StockShowPage> {
                         icon: Icon(Icons.delete),
                         onPressed: () async {
                           Message.alertDialogConfirm(context,
-                                  title: "Deseja excluir o estoque?",
-                                  subtitle:
-                                      "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
-                                  onPressedNoButton: () {
-                                  Navigator.of(context).pop();
-                                }, onPressedOkButton: () async {
-                                  await StockModel.of(context).deleteStock(
-                                    widget._stock,
-                                    onSuccess: () {
-                                      Message.onSuccess(
-                                          scaffoldKey: _scaffoldKey,
-                                          message: "Estoque deletado",
-                                          seconds: 2,
-                                          onPop: (value) {
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pop();
-                                          });
+                              title: "Deseja excluir o estoque?",
+                              subtitle:
+                                  "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
+                              onPressedNoButton: () {
+                            Navigator.of(context).pop();
+                          }, onPressedOkButton: () async {
+                            await StockModel.of(context).deleteStock(
+                              _stock,
+                              onSuccess: () {
+                                Message.onSuccess(
+                                    scaffoldKey: _scaffoldKey,
+                                    message: "Estoque deletado",
+                                    seconds: 2,
+                                    onPop: (value) {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                    });
+                                StockModel.of(context).fetchAllStocks();
+                                return;
+                              },
+                              onFail: (string) {
+                                Message.onFail(
+                                  scaffoldKey: _scaffoldKey,
+                                  message: "Erro ao deletar Estoque",
+                                  seconds: 2,
+                                );
 
-                                      return;
-                                    },
-                                    onFail: (string) {
-                                      Message.onFail(
-                                        scaffoldKey: _scaffoldKey,
-                                        message: "Erro ao deletar Estoque",
-                                        seconds: 2,
-                                      );
-
-                                      return;
-                                    },
-                                  );
-                                });
+                                return;
+                              },
+                            );
+                          });
                         },
                       ),
                     ],
@@ -201,7 +184,7 @@ class _StockShowPageState extends State<StockShowPage> {
                 Expanded(
                   flex: 2,
                   child: Divider(),
-                  ),
+                ),
               ],
             ),
           ),
@@ -209,32 +192,24 @@ class _StockShowPageState extends State<StockShowPage> {
             builder: (context, child, productModel) {
               return FutureBuilder(
                 future: productModel.futureProductList,
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<Product>> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
-                      return Message.alert(
-                          "Não foi possivel obter os dados necessários",
-                          onPressed: _reload,
-                          color: Theme.of(context).accentColor);
+                      return Message.alert("Não foi possivel obter os dados necessários",
+                          onPressed: _reload, color: Theme.of(context).primaryColor);
                     case ConnectionState.waiting:
-                      return Message.loading(context,height: 200);
+                      return Message.loading(context, height: 200);
                     default:
                       if (snapshot.hasError) {
                         print('Snapshot has error: ${snapshot.error}');
-                        return Message.alert(
-                            "Não foi possivel obter os dados do servidor, recarregue a pagina!",
-                            onPressed: _reload,
-                            color: Theme.of(context).accentColor);
+                        return Message.alert("Não foi possivel obter os dados do servidor, recarregue a pagina!",
+                            onPressed: _reload, color: Theme.of(context).primaryColor);
                       } else if (!snapshot.hasData) {
-                        return Message.alert(
-                            "Não foi possivel obter os Produtos, recarregue a pagina!",
-                            onPressed: _reload,
-                            color: Theme.of(context).accentColor);
+                        return Message.alert("Não foi possivel obter os Produtos, recarregue a pagina!",
+                            onPressed: _reload, color: Theme.of(context).primaryColor);
                       } else if (snapshot.data.isEmpty) {
                         return Message.alert("Nenhum Produto Cadastrado",
-                            onPressed: _reload,
-                            color: Theme.of(context).accentColor);
+                            onPressed: _reload, color: Theme.of(context).primaryColor);
                       } else {
                         return Expanded(
                           child: RefreshIndicator(
@@ -242,11 +217,10 @@ class _StockShowPageState extends State<StockShowPage> {
                               _reload();
                             },
                             child: ListView.builder(
-                              padding: EdgeInsets.only(left: 11,right: 11,top: 20, bottom: 90),
+                              padding: EdgeInsets.only(left: 11, right: 11, top: 20, bottom: 90),
                               itemCount: snapshot.data.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return ProductTile(snapshot.data[index],
-                                    deleteProductResponse);
+                                return ProductTile(snapshot.data[index], deleteProductResponse);
                               },
                             ),
                           ),
@@ -261,7 +235,7 @@ class _StockShowPageState extends State<StockShowPage> {
       ),
       floatingActionButton: CustomFloatingActionButton(
         ProductAddPage.newProduct(
-          stock: widget._stock,
+          stock: _stock,
         ),
       ),
     );
