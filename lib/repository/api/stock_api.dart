@@ -13,17 +13,13 @@ class StockApi {
   Future<List<Stock>> getAllStocks() async {
     List<Stock> stockList;
     try {
-
       User user = await UserRepository.instance.getUser();
       print("StockApi[getAllStocks]:---------- Entrou com Sucesso");
       String url = "http://54.90.203.92/estoques/";
 
       String authorization = "Bearer ${user.token}";
 
-      var response = await http.get(url, headers: {
-        "Content-Type": "application/json",
-        "Authorization": authorization
-      });
+      var response = await http.get(url, headers: {"Content-Type": "application/json", "Authorization": authorization});
 
       if (response.statusCode == 200) {
         print("StockApi[getAllStocks]:---------- Saiu com sucesso");
@@ -45,9 +41,6 @@ class StockApi {
   }
 
   postNewStock(Stock stock) async {
-
-
-
     try {
       print("StockApi[postNewStock]:---------- Entrou");
       User user = await UserRepository.instance.getUser();
@@ -64,13 +57,9 @@ class StockApi {
 
       String authorization = "Bearer ${user.token}";
 
-
       var response = await http.post(
         url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": authorization
-        },
+        headers: {"Content-Type": "application/json", "Authorization": authorization},
         body: encode,
       );
 
@@ -88,7 +77,6 @@ class StockApi {
   }
 
   putStock(Stock stock) async {
-
     try {
       print("StockApi[putStock]---------- Entrou");
       User user = await UserRepository.instance.getUser();
@@ -101,13 +89,9 @@ class StockApi {
 
       var response = await http.put(
         url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": authorization
-        },
+        headers: {"Content-Type": "application/json", "Authorization": authorization},
         body: encode,
       );
-
 
       if (response.statusCode == 200) {
         print("StockApi[putStock]:---------- Saiu com Sucesso");
@@ -122,17 +106,15 @@ class StockApi {
     }
   }
 
- deleteStock(int stockId) async {
+  deleteStock(int stockId) async {
     try {
       print("StockApi[deleteStock]:---------- Entrou");
       User user = await UserRepository.instance.getUser();
       String url = "http://54.90.203.92/estoques/$stockId";
       String authorization = "Bearer ${user.token}";
 
-      var response = await http.delete(url, headers: {
-        "Content-Type": "application/json",
-        "Authorization": authorization
-      });
+      var response =
+          await http.delete(url, headers: {"Content-Type": "application/json", "Authorization": authorization});
 
       if (response.statusCode == 200) {
         print("StockApi[deleteStock]:---------- Saiu com sucesso");
@@ -146,5 +128,4 @@ class StockApi {
       return null;
     }
   }
-
 }

@@ -26,15 +26,24 @@ class StockShowPage extends StatelessWidget {
         await StockModel.of(context).fetchAllStocks();
         await ProductModel.of(context).fetchAllProducts(_stock.id);
         await Future.delayed(Duration(milliseconds: 500));
-        await ProductModel.of(context).sumProductsValue();
+        await ProductModel.of(context).sumStockTotalPrice();
       } catch (e) {
         print(e);
       }
     }
 
-    deleteProductResponse(bool response) {
+    deleteProductResponse(bool response) async {
+
       if (response) {
-        StockModel.of(context).fetchAllStocks();
+
+        await ProductModel.of(context).fetchAllProducts(_stock.id);
+        await ProductModel.of(context).sumStockTotalPrice();
+        double totalStock = await ProductModel.of(context).sumStockTotalProductQuantity();
+        await Future.delayed(Duration(milliseconds: 500));
+        await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
+        StockModel.of(context).updateOpenStockStatus();
+        await Future.delayed(Duration(milliseconds: 500));
+        await StockModel.of(context).fetchAllStocks();
 
         return Message.onSuccess(
           scaffoldKey: _scaffoldKey,
@@ -56,8 +65,8 @@ class StockShowPage extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 180,
-            margin: EdgeInsets.fromLTRB(20, 23, 20, 0),
+            height: 165,
+            margin: EdgeInsets.fromLTRB(20, 15, 20, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -68,19 +77,19 @@ class StockShowPage extends StatelessWidget {
                     children: [
                       Text(
                         "Tipo: ${_stock.typeOfStock.toUpperCase()}",
-                        style: TextStyle(fontSize: 14),
+                        style: TextStyle(fontSize: 15, color: Colors.black),
                       ),
                       Text(
                         "Entrada em: ${StockModel.of(context).formatDateToString(_stock.enterDate)}",
-                        style: TextStyle(fontSize: 14),
+                        style: TextStyle(fontSize: 15, color: Colors.black),
                       ),
                       Text(
                         "Validade: ${StockModel.of(context).formatDateToString(_stock.validityDate)}",
-                        style: TextStyle(fontSize: 14),
+                        style: TextStyle(fontSize: 15, color: Colors.black),
                       ),
                       Text(
-                        "Valor Total: ${productModel.totalValue} ",
-                        style: TextStyle(fontSize: 14),
+                        "Valor Total: ${productModel.totalValueOfStock} ",
+                        style: TextStyle(fontSize: 14, color: Colors.black),
                       ),
                       SizedBox(
                         height: 20,
@@ -88,86 +97,98 @@ class StockShowPage extends StatelessWidget {
                     ],
                   );
                 }),
-                ScopedModelDescendant<ProductModel>(builder: (context, snapshot, productModel) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        "${productModel.totalProductQuantityInStock ?? _stock.stockTotalProductQuantity}",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).textTheme.bodyText2.color),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6, bottom: 10),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.20,
-                          child: Text(
-                            productModel.textStockStatus ?? _stock.stockStatus,
-                            overflow: TextOverflow.clip,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                              color: productModel.colorStockStatus ?? colorStockStatus,
+                ScopedModelDescendant<StockModel>(
+                  builder: (context, snapshot, stockModel) {
+                    return Column(
+                      children: [
+                        Text(
+                          "${_stock.stockTotalProductQuantity?.round()}",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).textTheme.bodyText2.color),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6, bottom: 10),
+                          child: SizedBox(
+                            width: 80,
+                            child: Text(
+                              "${stockModel.textStockStatusReplacer ?? _stock.stockStatus}",
+                              overflow: TextOverflow.clip,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                color: stockModel.colorStockStatusReplacer ?? colorStockStatus,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (BuildContext context) {
-                                  return StockAddPage(
-                                    stock: _stock,
-                                  );
-                                },
-                              ),
-                            );
-                          }),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () async {
-                          Message.alertDialogConfirm(context,
+                        IconButton(
+                            constraints: BoxConstraints(maxHeight: 36),
+                            icon: Icon(
+                              Icons.edit,
+                              size: 22,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                    return StockAddPage(
+                                      stock: _stock,
+                                    );
+                                  },
+                                ),
+                              );
+                            }),
+                        IconButton(
+                          constraints: BoxConstraints(maxHeight: 36),
+                          icon: Icon(
+                            Icons.delete,
+                            size: 22,
+                          ),
+                          onPressed: () async {
+                            Message.alertDialogConfirm(
+                              context,
                               title: "Deseja excluir o estoque?",
                               subtitle:
                                   "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
                               onPressedNoButton: () {
-                            Navigator.of(context).pop();
-                          }, onPressedOkButton: () async {
-                            await StockModel.of(context).deleteStock(
-                              _stock,
-                              onSuccess: () {
-                                Message.onSuccess(
-                                    scaffoldKey: _scaffoldKey,
-                                    message: "Estoque deletado",
-                                    seconds: 2,
-                                    onPop: (value) {
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).pop();
-                                    });
-                                StockModel.of(context).fetchAllStocks();
-                                return;
+                                Navigator.of(context).pop();
                               },
-                              onFail: (string) {
-                                Message.onFail(
-                                  scaffoldKey: _scaffoldKey,
-                                  message: "Erro ao deletar Estoque",
-                                  seconds: 2,
-                                );
+                              onPressedOkButton: () async {
+                                await StockModel.of(context).deleteStock(
+                                  _stock,
+                                  onSuccess: () {
+                                    Message.onSuccess(
+                                        scaffoldKey: _scaffoldKey,
+                                        message: "Estoque deletado",
+                                        seconds: 2,
+                                        onPop: (value) {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        });
+                                    StockModel.of(context).fetchAllStocks();
+                                    return;
+                                  },
+                                  onFail: (string) {
+                                    Message.onFail(
+                                      scaffoldKey: _scaffoldKey,
+                                      message: "Erro ao deletar Estoque",
+                                      seconds: 2,
+                                    );
 
-                                return;
+                                    return;
+                                  },
+                                );
                               },
                             );
-                          });
-                        },
-                      ),
-                    ],
-                  );
-                }),
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -178,12 +199,15 @@ class StockShowPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     "Produtos",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                 ),
                 Expanded(
                   flex: 2,
-                  child: Divider(),
+                  child: Divider(
+                    color: Colors.black,
+                    height: 4,
+                  ),
                 ),
               ],
             ),

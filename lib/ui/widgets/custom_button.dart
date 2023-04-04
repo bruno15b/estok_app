@@ -8,6 +8,7 @@ class CustomButton extends StatelessWidget {
   final BorderRadiusGeometry borderRadius;
   final Color colorText;
   final Color colorButton;
+  final double fontSize;
 
   CustomButton({
     @required this.textButton,
@@ -17,6 +18,7 @@ class CustomButton extends StatelessWidget {
     this.borderRadius,
     this.colorText,
     this.colorButton,
+    this.fontSize,
   });
 
   @override
@@ -24,22 +26,19 @@ class CustomButton extends StatelessWidget {
     return SizedBox(
       height: height,
       width: width,
-      child: ElevatedButton(
+      child: FlatButton(
         child: Text(
           textButton,
           style: TextStyle(
               color: colorText ?? Theme.of(context).primaryColor,
-              fontSize: 15,
+              fontSize: fontSize ?? 15,
               fontWeight: FontWeight.w500),
         ),
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius:borderRadius ?? BorderRadius.circular(15),
-          ),
-          primary: colorButton ?? Theme.of(context).accentColor,
-          elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius:borderRadius ?? BorderRadius.circular(15),
         ),
+        color: colorButton ?? Theme.of(context).accentColor,
       ),
     );
   }

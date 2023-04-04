@@ -26,13 +26,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.only(top: 60) ,
+            padding: EdgeInsets.only(top: 60),
             decoration: BoxDecoration(
               color: Theme.of(context).accentColor,
               border: Border(
                 bottom: BorderSide(
                   color: Theme.of(context).primaryColor,
-                  width: 1.5,
+                  width: 1.3,
                 ),
               ),
             ),
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 border: Border(
                   bottom: BorderSide(
                     color: Color(0xFF58355E),
-                    width: 6,
+                    width: 2.5,
                   ),
                 ),
               ),

@@ -5,7 +5,6 @@ import 'package:estok_app/ui/pages/product_add_page.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ProductTile extends StatelessWidget {
@@ -16,11 +15,14 @@ class ProductTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     void updateStocksProductsWithServer(Product product) async {
       Message.alertDialogLoading(context);
       try {
-        await ProductModel.of(context).sumProductsValue();
-        await ProductModel.of(context).sumStockQuantity(product.stockId);
+        await ProductModel.of(context).sumStockTotalPrice();
+        double stockTotal = await ProductModel.of(context).sumStockTotalProductQuantity();
+        await StockModel.of(context).updateStockTotalProductQuantity(stockTotal);
+        StockModel.of(context).updateOpenStockStatus();
         await Future.delayed(Duration(milliseconds: 500));
         await StockModel.of(context).fetchAllStocks();
         await Future.delayed(Duration(milliseconds: 500));
@@ -34,7 +36,7 @@ class ProductTile extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        ProductModel.of(context).singleProductQuantity = null;
+        ProductModel.of(context).unitaryProductQuantity = null;
         Message.alertDialogConfirm(
           context,
           textOkButton: "Alterar ",
@@ -42,26 +44,27 @@ class ProductTile extends StatelessWidget {
           title: _product.productName,
           widget: ScopedModelDescendant<ProductModel>(
             builder: (context, snapshot, productModel) {
-              if (productModel.singleProductQuantity == null) {
-                productModel.singleProductQuantity = _product.productQuantity;
+              if (productModel.unitaryProductQuantity == null) {
+                productModel.unitaryProductQuantity = _product.productQuantity;
               }
               return Container(
-                padding: EdgeInsets.only(top: 25),
+                padding: EdgeInsets.only(top: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
                       icon: Icon(Icons.remove),
-                      onPressed: () => productModel.updateProductQuantity(false),
+                      onPressed: () => productModel.updateUnitaryProductQuantity("remove"),
                     ),
                     SizedBox(
                       width: 10,
                     ),
                     Text(
-                      "${productModel.singleProductQuantity}",
+                      "${productModel.unitaryProductQuantity}",
                       style: TextStyle(
                         fontSize: 24,
                         color: Color(0xFF949191),
+                        fontWeight: FontWeight.w600
                       ),
                     ),
                     SizedBox(
@@ -69,7 +72,7 @@ class ProductTile extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(Icons.add),
-                      onPressed: () => productModel.updateProductQuantity(true),
+                      onPressed: () => productModel.updateUnitaryProductQuantity("add"),
                     )
                   ],
                 ),
@@ -78,7 +81,7 @@ class ProductTile extends StatelessWidget {
           ),
           onPressedOkButton: () async {
             Navigator.of(context).pop();
-            _product.productQuantity = ProductModel.of(context).singleProductQuantity;
+            _product.productQuantity = ProductModel.of(context).unitaryProductQuantity;
 
             await ProductModel.of(context).updateProduct(
               _product,
@@ -153,7 +156,7 @@ class ProductTile extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
-                                    color: Color(0xFF949191),
+                                    color: Color(0xFF555353),
                                   ),
                                 ),
                                 SizedBox(

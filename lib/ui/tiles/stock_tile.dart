@@ -1,6 +1,7 @@
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/enums/stock_status.dart';
 import 'package:estok_app/models/product_model.dart';
+import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/pages/stock_show_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -26,17 +27,14 @@ class StockTile extends StatelessWidget {
 
     return Card(
       elevation: 0,
-      child: ScopedModelDescendant<ProductModel>(
-        builder: (context, snapshot,productModel) {
-          return InkWell(
+      child: InkWell(
             onTap: (){
-              productModel.colorStockStatus = null;
-              productModel.textStockStatus = null;
-              productModel.totalProductQuantityInStock = null;
 
-              ProductModel.of(context).fetchAllProducts(_stock.id).then((_) {
-                return ProductModel.of(context).sumStockQuantity(_stock.id);
-              });
+              ProductModel.of(context).fetchAllProducts(_stock.id);
+              ProductModel.of(context).sumStockTotalPrice();
+              StockModel.of(context).saveOpenStock(_stock);
+              StockModel.of(context).colorStockStatusReplacer = null;
+              StockModel.of(context).textStockStatusReplacer = null;
 
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -49,11 +47,11 @@ class StockTile extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: Color(0xFFE7EFF2),
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(18),
               ),
-              height: 81,
-              margin: EdgeInsets.only(top: 15, left: 10, right: 10),
-              padding: EdgeInsets.only(top: 12, left: 22, right: 12, bottom: 12),
+              height: 87,
+              margin: EdgeInsets.only(top: 7.5, left: 10, right: 10,bottom:7.5),
+              padding: EdgeInsets.only(top: 15, left: 22, right: 12, bottom: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -61,10 +59,11 @@ class StockTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        this._stock.stockDescription,
+                        this._stock.stockDescription.toUpperCase(),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
+                          color: Colors.black,
                         ),
                       ),
                       SizedBox(
@@ -72,7 +71,7 @@ class StockTile extends StatelessWidget {
                       ),
                       Row(children: [
                         Text(
-                          "TOTAL: ${this._stock.stockTotalProductQuantity.toString()}",
+                          "TOTAL: ${this._stock.stockTotalProductQuantity.round().toString()}",
                           style: TextStyle(
                             fontSize: 12,
                           ),
@@ -90,41 +89,41 @@ class StockTile extends StatelessWidget {
                     ],
                   ),
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
                           SizedBox(
-                            width: 15,
+                            width: 12,
                           ),
                           Icon(
                             Icons.circle,
-                            size: 11,
+                            size: 14,
                             color: colorStockStatus,
                           )
                         ],
                       ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.17,
-                        child: Text(
-                          this._stock.stockStatus,
-                          overflow: TextOverflow.clip,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 11,
-                            color: colorStockStatus,
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: SizedBox(
+                          width: 80,
+                          child: Text(
+                            this._stock.stockStatus,
+                            overflow: TextOverflow.clip,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 11.5,
+                              color: colorStockStatus,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ),],
                   ),
                 ],
               ),
             ),
-          );
-        }
-      ),
+          ),
     );
   }
 }

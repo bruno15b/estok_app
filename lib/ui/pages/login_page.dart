@@ -1,7 +1,6 @@
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/ui/pages/main_page.dart';
-import 'package:estok_app/ui/pages/splash_screen_page.dart';
 import 'package:estok_app/ui/validator/login_validator.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
@@ -105,7 +104,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
             ),
           ),
           SizedBox(
-            height: 20,
+            height: 40,
           ),
         ],
       ),

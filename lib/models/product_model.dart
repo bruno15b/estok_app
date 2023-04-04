@@ -1,10 +1,6 @@
 import 'package:estok_app/entities/product.dart';
-import 'package:estok_app/entities/stock.dart';
-import 'package:estok_app/enums/stock_status.dart';
 import 'package:estok_app/repository/api/product_api.dart';
-import 'package:estok_app/repository/api/stock_api.dart';
 import 'package:estok_app/repository/api/upload_image_api.dart';
-import 'package:estok_app/repository/local/stock_repository.dart';
 import 'package:estok_app/util/share_util.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -12,11 +8,9 @@ import 'dart:io';
 
 class ProductModel extends Model {
   Future<List<Product>> futureProductList = Future.value([]);
-  double totalValue = 0;
-  double totalProductQuantityInStock;
-  int singleProductQuantity;
-  Color colorStockStatus;
-  String textStockStatus;
+  double totalValueOfStock = 0;
+  double totalProductQuantityInStockReplacer;
+  int unitaryProductQuantity;
   File imageFile;
 
   static ProductModel of(BuildContext context) {
@@ -29,10 +23,7 @@ class ProductModel extends Model {
 
   Future<void> fetchAllProducts(int stockId) async {
     setState();
-
     futureProductList = ProductApi.instance.getAllProducts(stockId);
-
-    await sumProductsValue();
     setState();
   }
 
@@ -84,13 +75,6 @@ class ProductModel extends Model {
 
   deleteProduct(Product product) async {
     var response = await ProductApi.instance.deleteProduct(product);
-    if (response == true) {
-      await fetchAllProducts(product.stockId);
-      await Future.delayed(Duration(milliseconds: 500));
-      await sumStockQuantity(product.stockId);
-    } else {
-      await fetchAllProducts(product.stockId);
-    }
     return response;
   }
 
@@ -98,14 +82,14 @@ class ProductModel extends Model {
     return await UploadImageApi.instance.uploadImage(imageFile);
   }
 
-  Future<void> sumProductsValue() async {
-    totalValue = 0;
+  Future<void> sumStockTotalPrice() async {
+    totalValueOfStock = 0;
 
     List<Product> productList = await futureProductList;
 
     if (productList != null) {
       for (Product product in productList) {
-        totalValue += product.productQuantity * product.productItemPrice;
+        totalValueOfStock += product.productQuantity * product.productItemPrice;
       }
     } else {
       print("Lista de produtos retornou nula.");
@@ -113,46 +97,24 @@ class ProductModel extends Model {
     setState();
   }
 
-  Future<void> sumStockQuantity(int stockId) async {
+  Future<double> sumStockTotalProductQuantity() async {
+    totalProductQuantityInStockReplacer = 0;
+
     List<Product> productList = await futureProductList;
 
-    totalProductQuantityInStock = 0;
-
     for (Product product in productList) {
-      totalProductQuantityInStock += product.productQuantity;
+      totalProductQuantityInStockReplacer += product.productQuantity;
     }
-
-    stockStatusUpdateInfoForStockShowPage(totalProductQuantityInStock);
-
-    List<Stock> stockList = await StockRepository.instance.getStockList();
-
-    Stock selectedStock;
-
-    for (int i = 0; i < stockList.length; i++) {
-      if (stockList[i].id == stockId) {
-        selectedStock = stockList[i];
-        break;
-      }
-    }
-
-    selectedStock.stockTotalProductQuantity = totalProductQuantityInStock;
-
-    await StockApi.instance.putStock(selectedStock);
+    return totalProductQuantityInStockReplacer;
   }
 
-  void stockStatusUpdateInfoForStockShowPage(double stockTotalQuantity) {
-    StockStatus stockStatus = StockStatusExtension.fromStockQuantity(stockTotalQuantity);
-    textStockStatus = stockStatus.stringValue;
-    colorStockStatus = stockStatus.colorValue;
-    setState();
-  }
 
-  updateProductQuantity(bool onAdd) {
+  updateUnitaryProductQuantity(String action) {
     setState();
-    if (onAdd) {
-      singleProductQuantity++;
-    } else if(singleProductQuantity > 0) {
-      singleProductQuantity--;
+    if (action == "add") {
+      unitaryProductQuantity++;
+    } else if(action == "remove") {
+      unitaryProductQuantity--;
     }else{
       return;
     }

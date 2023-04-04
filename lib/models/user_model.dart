@@ -1,4 +1,3 @@
-import 'package:estok_app/repository/local/stock_repository.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:estok_app/entities/user.dart';
@@ -44,7 +43,6 @@ class UserModel extends Model {
 
    if(logout) {
      await UserRepository.instance.clearUserData();
-     await StockRepository.instance.clearStockData();
    }
   }
 

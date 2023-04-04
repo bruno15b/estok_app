@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
             title: 'ESTOK APP',
             theme: ThemeData(
               textTheme: TextTheme(
-                bodyText2:TextStyle(
+                bodyText2: TextStyle(
                   color: Color(0xFF495057),
                 ),
               ),
@@ -52,20 +52,25 @@ class _MyAppState extends State<MyApp> {
                 color: Color(0xFFF7F2F8),
                 textTheme: TextTheme(
                   headline6: TextStyle(
-                      color: Color(0xFF58355E),
-                      fontFamily: "Montserrat",
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15),
+                    color: Color(0xFF58355E),
+                    fontFamily: "Montserrat",
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
                 ),
               ),
               tabBarTheme: TabBarTheme(
-                labelPadding: EdgeInsets.only(top: 0),
-                unselectedLabelStyle: TextStyle(fontSize: 12),
-                labelStyle: TextStyle(
-                  fontSize: 12,
+                labelPadding: EdgeInsets.only(top: 0, bottom: 0),
+                unselectedLabelStyle: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
-                labelColor: Color(0xFF58355E),
-                unselectedLabelColor: Color(0xFF909FAD),
+                unselectedLabelColor:Color(0xFF909FAD),
+                labelColor:Color(0xFF58355E),
+                labelStyle: TextStyle(
+                  fontSize:14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             home: SplashScreenPage(),

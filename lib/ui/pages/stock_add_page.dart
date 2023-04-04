@@ -69,7 +69,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     Navigator.pop(context);
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
                     child: Text(
                       "CAIXA",
                       style: TextStyle(
@@ -88,7 +88,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     Navigator.pop(context);
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
                     child: Text(
                       "GRADE",
                       style: TextStyle(
@@ -107,7 +107,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     Navigator.pop(context);
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
                     child: Text(
                       "PACOTE",
                       style: TextStyle(
@@ -134,7 +134,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.only(top: 31, left: 24, right: 24),
+          padding: EdgeInsets.only(top: 31, left: 24, right: 24, bottom: 60),
           children: [
             CustomTextFormField(
               validator: emptyField,
@@ -260,7 +260,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
       );
 
       if (newStockAdd) {
-        await StockModel.of(context).createNewStock (
+        await StockModel.of(context).createNewStock(
           stock,
           onSuccess: () async {
             Message.onSuccess(
@@ -270,12 +270,21 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                 onPop: (value) {
                   Navigator.of(context).pop();
                 });
-            StockModel.of(context).fetchAllStocks();
 
-            History history = History(date: DateTime.now(),entitiesType: "Stock",operationType: "CRIADO");
+
+            StockModel.of(context).fetchAllStocks();
+            History history = History(
+              date: DateTime.now().toLocal(),
+              objectType: "ESTOQUE",
+              objectName: stock.stockDescription,
+              operationType: "INSERÇÃO",
+            );
+
             await HistoryRepository.instance.save(history);
             List<History> result = await HistoryRepository.instance.getAll();
-            result.forEach((element) {print(element.toJson());});
+            result.forEach((element) {
+              print(element.toJson());
+            });
 
             return;
           },

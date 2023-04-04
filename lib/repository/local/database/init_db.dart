@@ -14,11 +14,18 @@ class InitDB {
         await database.execute('CREATE TABLE ${HistoryRepository.tableName} ('
             '${HistoryRepository.idHistoryColumn} INTEGER PRIMARY KEY, '
             '${HistoryRepository.operationType} TEXT, '
-            '${HistoryRepository.entitiesType} TEXT, '
+            '${HistoryRepository.objectType} TEXT, '
+            '${HistoryRepository.objectName} TEXT, '
             '${HistoryRepository.dateTimeOperation} TEXT '
             ')');
 
       },
     );
   }
+
+  // static Future<void> deleteDatabase() async {
+  //   String path = join(await getDatabasesPath(), "history_db");
+  //   DatabaseFactory dbFactory = databaseFactory;
+  //   await dbFactory.deleteDatabase(path);
+  // }
 }

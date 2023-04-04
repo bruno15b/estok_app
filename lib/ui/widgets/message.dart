@@ -1,11 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Message extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
+class Message {
 
   static void onSuccess({
     @required GlobalKey<ScaffoldState> scaffoldKey,
@@ -137,7 +133,7 @@ class Message extends StatelessWidget {
     BuildContext context, {
     String title = "",
     String subtitle = "",
-    @required String textOkButton = "Sim",
+    String textOkButton = "Sim",
     @required Function onPressedOkButton,
     String textNoButton = "Não",
     Widget widget,
@@ -166,7 +162,7 @@ class Message extends StatelessWidget {
                     children: [
                       widget != null
                           ? Padding(
-                            padding: EdgeInsets.only(top: 20,bottom: 60),
+                            padding: EdgeInsets.only(top: 20,bottom: 40),
                             child: Container(width: 400, child: widget),
                           )
                           : Container(),

@@ -44,7 +44,14 @@ class MainPage extends StatelessWidget {
             ],
           ),
           bottomNavigationBar: BottomNavigationBar(
-            selectedFontSize: 12,
+            unselectedLabelStyle: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+            selectedLabelStyle: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
             currentIndex: userModel.currentIndexMainPage,
             onTap: (index) {
               _pageController.jumpToPage(index);
@@ -53,21 +60,21 @@ class MainPage extends StatelessWidget {
               BottomNavigationBarItem(
                 icon: Icon(
                   Icons.home_filled,
-                  size: 20,
+                  size: 18,
                 ),
                 label: "Home",
               ),
               BottomNavigationBarItem(
                 icon: Icon(
                   Icons.playlist_add_check,
-                  size: 20,
+                  size: 18,
                 ),
                 label: "Histórico",
               ),
               BottomNavigationBarItem(
                 icon: Icon(
                   Icons.account_circle,
-                  size: 20,
+                  size: 18,
                 ),
                 label: "Perfil",
               )
@@ -76,7 +83,7 @@ class MainPage extends StatelessWidget {
           drawer: userModel.currentIndexMainPage == 0
               ? SafeArea(
                   child: SizedBox(
-                    width: 320,
+                    width: 315,
                     child: Drawer(
                       child: ListView(
                         children: [
@@ -86,7 +93,7 @@ class MainPage extends StatelessWidget {
                                 return SizedBox(
                                   height: 240,
                                   child: DrawerHeader(
-                                    padding: EdgeInsets.only(top: 40, left: 32, bottom: 32),
+                                    padding: EdgeInsets.only(top: 50, left: 32, bottom: 32),
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                           image: AssetImage("assets/images/perfil_background.png"), fit: BoxFit.cover),
@@ -96,7 +103,7 @@ class MainPage extends StatelessWidget {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         CircleAvatar(
-                                          radius: 50,
+                                          radius: 42,
                                           child: Image.asset(
                                             "assets/images/perfil_image.png",
                                             fit: BoxFit.cover,
@@ -144,7 +151,7 @@ class MainPage extends StatelessWidget {
                             ),
                             trailing: Icon(
                               Icons.arrow_forward_ios,
-                              size: 18,
+                              size: 16,
                             ),
                             onTap: () {
                               Navigator.of(context).pop();
@@ -163,7 +170,7 @@ class MainPage extends StatelessWidget {
                             ),
                             trailing: Icon(
                               Icons.arrow_forward_ios,
-                              size: 18,
+                              size: 16,
                             ),
                             onTap: () {
                               Navigator.of(context).pop();
@@ -177,11 +184,11 @@ class MainPage extends StatelessWidget {
                             ),
                             title: Text(
                               "Histórico",
-                              style: TextStyle(color: Theme.of(context).primaryColor),
+                              style: TextStyle(color: Theme.of(context).primaryColor,fontSize: 14,),
                             ),
                             trailing: Icon(
                               Icons.arrow_forward_ios,
-                              size: 18,
+                              size: 16,
                             ),
                             onTap: () {
                               Navigator.of(context).pop();

@@ -2,58 +2,93 @@ import 'package:estok_app/entities/user.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
-import 'package:estok_app/ui/widgets/custom_user_account_header.dart';
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 
 class ProfilePage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.only(left: 25, right: 25),
+          padding: EdgeInsets.only(left: 25, right: 25, top: 75,bottom: 60),
           width: double.infinity,
           child: FutureBuilder<User>(
             future: UserRepository.instance.getUser(),
             builder: (context, snapshot) {
               return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CustomUserAccountHeader(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    backgroundHeight: 280,
-                    textStyleEmail: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText2.color,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14),
-                    textStyleName: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14),
-                    spaceTextAvatar: 60,
-                    accountName: snapshot.hasData ? snapshot.data.name : "",
-                    accountEmail: snapshot.hasData ? snapshot.data.email : "",
-                    circleAvatarImage: "assets/images/perfil_image.png",
-                    padding: EdgeInsets.only(top: 70),
+                  CircleAvatar(
+                    backgroundImage: AssetImage("assets/images/perfil_image.png"),
+                    radius: 40,
+                    backgroundColor: Colors.transparent,
                   ),
-                  Divider(),
                   SizedBox(
-                    height: 29,
+                    height: 55,
                   ),
                   Text(
-                    snapshot.hasData ? snapshot.data.telephone : "",
-                  ),
-                  SizedBox(
-                    height: 12,
+                    snapshot.hasData ? snapshot.data.name.toUpperCase() : "",
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+
+                    ),
                   ),
                   Text(
                     snapshot.hasData ? snapshot.data.email : "",
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyText2.color,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
                   ),
                   SizedBox(
-                    height: 71,
+                    height: 30,
+                  ),
+                  Divider(height: 2.5,),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(width: 20,),
+                          Icon(Icons.phone,size: 20,color: Theme.of(context).primaryColor,),
+                          SizedBox(width: 15),
+                          Text(
+                            snapshot.hasData ? snapshot.data.telephone : "",
+                            style: TextStyle(
+                              color: Theme.of(context).textTheme.bodyText2.color,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        children: [
+                          SizedBox(width: 20,),
+                          Icon(Icons.email,size: 20,color: Theme.of(context).primaryColor,),
+                          SizedBox(width: 15),
+                          Text(
+                            snapshot.hasData ? snapshot.data.email : "",
+                            style: TextStyle(
+                              color: Theme.of(context).textTheme.bodyText2.color,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 60,
                   ),
                   CustomButton(
                     onPressed: () {
@@ -66,10 +101,11 @@ class ProfilePage extends StatelessWidget {
                     },
                     textButton: "Sair",
                     width: 100,
-                    height: 43,
+                    height: 45,
                     borderRadius: BorderRadius.circular(8),
                     colorText: Theme.of(context).scaffoldBackgroundColor,
                     colorButton: Theme.of(context).primaryColor,
+                    fontSize: 14,
                   ),
                 ],
               );

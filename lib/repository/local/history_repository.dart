@@ -6,7 +6,8 @@ class HistoryRepository {
   static final String tableName = "history_db";
   static final String idHistoryColumn = "id";
   static final String operationType = "operationType";
-  static final String entitiesType = "entitiesType";
+  static final String objectType = "objectType";
+  static final String objectName= "objectName";
   static final String dateTimeOperation = "dateTimeOperation";
 
   static final HistoryRepository instance = HistoryRepository._();
@@ -24,8 +25,6 @@ class HistoryRepository {
 
   Future<History> save(History history) async {
     Database db = await database;
-    print(tableName);
-    print(history.toJson());
     history.id = await db.insert(tableName, history.toJson());
     return history;
   }

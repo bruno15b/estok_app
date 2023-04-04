@@ -260,9 +260,11 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
     Message.alertDialogLoading(context);
     try {
       await ProductModel.of(context).fetchAllProducts(product.stockId);
+      await ProductModel.of(context).sumStockTotalPrice();
+      double totalStock = await ProductModel.of(context).sumStockTotalProductQuantity();
       await Future.delayed(Duration(milliseconds: 500));
-      await ProductModel.of(context).sumProductsValue();
-      await ProductModel.of(context).sumStockQuantity(product.stockId);
+      await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
+      StockModel.of(context).updateOpenStockStatus();
       await Future.delayed(Duration(milliseconds: 500));
       await StockModel.of(context).fetchAllStocks();
     } catch (e) {
