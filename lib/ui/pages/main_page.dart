@@ -45,11 +45,11 @@ class MainPage extends StatelessWidget {
           ),
           bottomNavigationBar: BottomNavigationBar(
             unselectedLabelStyle: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
             selectedLabelStyle: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
             currentIndex: userModel.currentIndexMainPage,
@@ -74,7 +74,7 @@ class MainPage extends StatelessWidget {
               BottomNavigationBarItem(
                 icon: Icon(
                   Icons.account_circle,
-                  size: 18,
+                  size: 19,
                 ),
                 label: "Perfil",
               )

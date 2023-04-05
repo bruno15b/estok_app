@@ -1,17 +1,18 @@
 import 'package:estok_app/entities/stock.dart';
-import 'package:estok_app/enums/stock_status.dart';
+import 'package:estok_app/enums/stock_status_enum.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
+import 'package:estok_app/extensions/stock_status_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:intl/intl.dart';
 
 class StockModel extends Model {
   Future<List<Stock>> futureStockList;
-  String typeOfStock = "CAIXA";
-  final dateTypeFormat = "dd/MM/yyyy";
-  Stock openStock;
-  String textStockStatusReplacer;
-  Color colorStockStatusReplacer;
+  String selectedStockType = "CAIXA";
+  final dateFormatString = "dd/MM/yyyy";
+  Stock selectedStock;
+  String selectedStockStatusText;
+  Color selectedStockStatusColor;
 
   static StockModel of(BuildContext context) {
     return ScopedModel.of<StockModel>(context);
@@ -58,24 +59,24 @@ class StockModel extends Model {
   }
 
   void saveOpenStock(Stock stock) {
-    openStock = stock;
+    selectedStock = stock;
   }
 
   Future<void> updateStockTotalProductQuantity(double stockQuantity) async {
-    openStock.stockTotalProductQuantity = stockQuantity;
-    await StockApi.instance.putStock(openStock);
+    selectedStock.stockTotalProductQuantity = stockQuantity;
+    await StockApi.instance.putStock(selectedStock);
   }
 
   void updateOpenStockStatus() {
-    print(openStock.stockTotalProductQuantity);
-    StockStatus stockStatus = StockStatusExtension.fromStockQuantity(openStock.stockTotalProductQuantity);
-    colorStockStatusReplacer = stockStatus.colorValue;
-    textStockStatusReplacer = stockStatus.stringValue;
+    print(selectedStock.stockTotalProductQuantity);
+    StockStatusEnum stockStatus = StockStatusExtension.fromStockQuantity(selectedStock.stockTotalProductQuantity);
+    selectedStockStatusColor = stockStatus.colorValue;
+    selectedStockStatusText= stockStatus.stringValue;
     setState();
   }
 
   List<Stock> filterStockByStatus(List<Stock> stocks, String status) {
-    if (status == StockStatus.TODOS.stringValue) {
+    if (status == StockStatusEnum.TODOS.stringValue) {
       return stocks;
     } else {
       return stocks.where((stockItem) => stockItem.stockStatus == status).toList();
@@ -83,16 +84,16 @@ class StockModel extends Model {
   }
 
   String onChangeTypeOfStock(String newType) {
-    typeOfStock = newType;
+    selectedStockType = newType;
     setState();
-    return typeOfStock;
+    return selectedStockType;
   }
 
   DateTime formatStringToDate(String dateString) {
-    return DateFormat(dateTypeFormat).parse(dateString);
+    return DateFormat(dateFormatString).parse(dateString);
   }
 
   String formatDateToString(DateTime date) {
-    return DateFormat(dateTypeFormat).format(date);
+    return DateFormat(dateFormatString).format(date);
   }
 }

@@ -1,0 +1,4 @@
+enum ObjectTypeEnum {
+  ESTOQUE,
+  PRODUTO,
+}

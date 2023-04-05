@@ -9,12 +9,26 @@ class CustomAppBar extends PreferredSize {
 
   @override
   Size get preferredSize {
-    return new Size.fromHeight(56.0);
+    return new Size.fromHeight(57.5);
   }
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: Theme.of(context).accentColor,
+      elevation: 0,
+      iconTheme: IconThemeData(
+        color: Theme.of(context).primaryColor,
+
+      ),
+      textTheme: TextTheme(
+        headline6: TextStyle(
+          color: Theme.of(context).primaryColor,
+          fontFamily: "Montserrat",
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+        ),
+      ),
       automaticallyImplyLeading: automaticallyImplyLeading,
       shape: showBorder
           ? Border(

@@ -4,7 +4,8 @@ import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:estok_app/ui/pages/history_page.dart';
 import 'package:estok_app/ui/pages/main_page.dart';
-import 'package:estok_app/ui/validator/login_validator.dart';
+import 'package:estok_app/ui/validators/login_validator.dart';
+import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
 import 'package:estok_app/ui/widgets/message.dart';
@@ -33,21 +34,21 @@ class LoginPage extends StatelessWidget with LoginValidator {
                 "ESTOK APP",
                 style: TextStyle(
                   color: Theme.of(context).textTheme.bodyText2.color,
-                  fontSize: 24,
+                  fontSize: 26,
                 ),
               ),
               SizedBox(
-                height: 23,
+                height: 22,
               ),
               Text(
                 "Login",
                 style: TextStyle(
                   color: Theme.of(context).textTheme.bodyText2.color,
-                  fontSize: 20,
+                  fontSize: 22,
                 ),
               ),
               SizedBox(
-                height: 60,
+                height: 57,
               ),
             ],
           ),
@@ -63,6 +64,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
                   prefixIcon: Icon(
                     Icons.person,
                     color: Color(0xFFC4C4C4),
+                    size: 26,
                   ),
                   controller: _emailController,
                   requestFocus: _focusPassword,
@@ -81,6 +83,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
                       prefixIcon: Icon(
                         Icons.lock,
                         color: Color(0xFFC4C4C4),
+                        size: 26,
                       ),
                       obscureText: userModel.passwordVisibility,
                       passwordToggleButton: true,
@@ -126,7 +129,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
         scaffoldKey: _scaffoldKey,
         message: "Usuário logado com sucesso",
         seconds: 2,
-        onPop: (value) {
+        onPop: (_) {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (BuildContext context) {
@@ -139,12 +142,30 @@ class LoginPage extends StatelessWidget with LoginValidator {
 
       StockModel.of(context).fetchAllStocks();
       return;
-    }, onFail: (string) {
+    }, onFail: (infoText) {
       Message.onFail(
-        scaffoldKey: _scaffoldKey,
-        message: "Erro ao logar. Tente novamente!",
-        seconds: 2,
-      );
+          scaffoldKey: _scaffoldKey,
+          seconds: 2,
+          message: infoText,
+          onPop: (_) async {
+            String password = await UserRepository.instance.getUserPassword();
+            User user = await UserRepository.instance.getUser();
+            if (_emailController.text == user.email && _passwordController.text == password) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) {
+                    return Scaffold(
+                      appBar: CustomAppBar(
+                        titleText: "Histórico",
+                        automaticallyImplyLeading: true,
+                      ),
+                      body: HistoryPage(),
+                    );
+                  },
+                ),
+              );
+            }
+          });
       return;
     });
 

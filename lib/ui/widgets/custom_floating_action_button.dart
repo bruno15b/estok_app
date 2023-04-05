@@ -9,12 +9,12 @@ class CustomFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15, right: 5),
+      padding: const EdgeInsets.only(bottom: 15),
       child: FloatingActionButton(
         elevation: 0,
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).scaffoldBackgroundColor,
         backgroundColor: Theme.of(context).primaryColor,
-        child: Icon(Icons.add),
+        child: Icon(Icons.add,size: 27,),
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(

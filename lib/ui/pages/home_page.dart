@@ -1,8 +1,9 @@
-import 'package:estok_app/enums/stock_status.dart';
+import 'package:estok_app/enums/stock_status_enum.dart';
 import 'package:estok_app/ui/pages/stock_add_page.dart';
 import 'package:estok_app/ui/tabs/home_tab.dart';
 import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
 import 'package:flutter/material.dart';
+import 'package:estok_app/extensions/stock_status_extension.dart';
 
 class HomePage extends StatefulWidget {
   HomePage();
@@ -26,7 +27,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.only(top: 60),
+            padding: EdgeInsets.only(top: 54, bottom: 0),
             decoration: BoxDecoration(
               color: Theme.of(context).accentColor,
               border: Border(
@@ -37,10 +38,23 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ),
             ),
             child: TabBar(
+              labelPadding: EdgeInsets.only(top: 0, bottom: 0),
+              unselectedLabelStyle: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                height: 2,
+              ),
+              unselectedLabelColor: Color(0xFF909FAD),
+              labelColor: Theme.of(context).primaryColor,
+              labelStyle: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                height: 2,
+              ),
               indicator: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: Color(0xFF58355E),
+                    color: Theme.of(context).primaryColor,
                     width: 2.5,
                   ),
                 ),
@@ -58,10 +72,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             child: TabBarView(
               controller: _tabController,
               children: [
-                HomeTab(StockStatus.TODOS.stringValue),
-                HomeTab(StockStatus.EM_ESTOQUE.stringValue),
-                HomeTab(StockStatus.EM_AVISO.stringValue),
-                HomeTab(StockStatus.EM_FALTA.stringValue),
+                HomeTab(StockStatusEnum.TODOS.stringValue),
+                HomeTab(StockStatusEnum.EM_ESTOQUE.stringValue),
+                HomeTab(StockStatusEnum.EM_AVISO.stringValue),
+                HomeTab(StockStatusEnum.EM_FALTA.stringValue),
               ],
             ),
           ),

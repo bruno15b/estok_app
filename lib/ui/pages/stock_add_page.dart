@@ -1,9 +1,7 @@
-import 'package:estok_app/entities/history.dart';
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/stock_model.dart';
-import 'package:estok_app/repository/local/history_repository.dart';
-import 'package:estok_app/ui/validator/add_pages_validator.dart';
+import 'package:estok_app/ui/validators/add_pages_validator.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
@@ -145,6 +143,8 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
               hintText: "Ex: Engradados Cerveja",
               keyboardType: TextInputType.text,
               controller: _stockDescriptionController,
+              colorText: Color(0xFFC3B6B6),
+              sizeText: 14,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,6 +162,8 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     requestFocus: _focusValidityDate,
                     validator: validateDate,
                     maxLength: 10,
+                    colorText: Color(0xFFC3B6B6),
+                    sizeText: 14,
                   ),
                 ),
                 SizedBox(
@@ -176,6 +178,8 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     focusNode: _focusValidityDate,
                     validator: validateDate,
                     maxLength: 10,
+                    colorText: Color(0xFFC3B6B6),
+                    sizeText: 14,
                   ),
                 ),
               ],
@@ -210,7 +214,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                             child: Container(
                               padding: EdgeInsets.only(left: 25),
                               child: Text(
-                                stockModel.typeOfStock,
+                                stockModel.selectedStockType,
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w600,
@@ -251,7 +255,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
     if (this._formKey.currentState.validate()) {
       DateTime _enterDate = StockModel.of(context).formatStringToDate(_stockEnterDateController.text);
       DateTime _validityDate = StockModel.of(context).formatStringToDate(_stockValidityDateController.text);
-      String typeOfStock = StockModel.of(context).typeOfStock;
+      String typeOfStock = StockModel.of(context).selectedStockType;
 
       Stock stock = Stock(
         stockDescription: _stockDescriptionController.text,

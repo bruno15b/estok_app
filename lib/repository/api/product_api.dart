@@ -20,7 +20,6 @@ class ProductApi {
 
       final String authorization = "Bearer ${user.token}";
 
-
       var response = await http.get(url, headers: {
         "Content-Type": "application/json",
         "Authorization": authorization

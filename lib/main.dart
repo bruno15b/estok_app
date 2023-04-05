@@ -48,34 +48,6 @@ class _MyAppState extends State<MyApp> {
                 scaffoldBackgroundColor: Colors.white,
                 dividerColor: Color(0xFFBEBBBB),
                 fontFamily: "Montserrat",
-                appBarTheme: AppBarTheme(
-                  elevation: 0,
-                  iconTheme: IconThemeData(
-                    color: Color(0xFF58355E),
-                  ),
-                  color: Color(0xFFF7F2F8),
-                  textTheme: TextTheme(
-                    headline6: TextStyle(
-                      color: Color(0xFF58355E),
-                      fontFamily: "Montserrat",
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-                tabBarTheme: TabBarTheme(
-                  labelPadding: EdgeInsets.only(top: 0, bottom: 0),
-                  unselectedLabelStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  unselectedLabelColor:Color(0xFF909FAD),
-                  labelColor:Color(0xFF58355E),
-                  labelStyle: TextStyle(
-                    fontSize:14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
               ),
               home: SplashScreenPage(),
             ),

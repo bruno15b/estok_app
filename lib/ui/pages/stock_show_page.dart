@@ -25,32 +25,34 @@ class StockShowPage extends StatelessWidget {
     void _reload() async {
       try {
         await StockModel.of(context).fetchAllStocks();
-        await ProductModel.of(context).fetchAllProducts(_stock.id);
         await Future.delayed(Duration(milliseconds: 500));
-        await ProductModel.of(context).sumStockTotalPrice();
+        await ProductModel.of(context).fetchAllProducts(_stock.id);
+        await ProductModel.of(context).sumProductsTotalValue();
       } catch (e) {
         print(e);
       }
     }
 
+
     deleteProductResponse(bool response, Product product) async {
-
-      await ProductModel.of(context).fetchAllProducts(_stock.id);
-      await ProductModel.of(context).sumStockTotalPrice();
-      double totalStock = await ProductModel.of(context).sumStockTotalProductQuantity();
-      await Future.delayed(Duration(milliseconds: 500));
-      await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
-      StockModel.of(context).updateOpenStockStatus();
-      await Future.delayed(Duration(milliseconds: 500));
-      await StockModel.of(context).fetchAllStocks();
-
-      HistoryModel.of(context).saveHistoryOnDelete(product: product);
-
       if (response) {
         return Message.onSuccess(
             scaffoldKey: _scaffoldKey,
             message: "Produto deletado",
             seconds: 2,
+          onPop: (_)async{
+            Message.alertDialogLoading(context);
+            await ProductModel.of(context).fetchAllProducts(_stock.id);
+            await ProductModel.of(context).sumProductsTotalValue();
+            double totalStock = await ProductModel.of(context).sumProductsTotalQuantity();
+            await Future.delayed(Duration(milliseconds: 500));
+            await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
+            StockModel.of(context).updateOpenStockStatus();
+            await Future.delayed(Duration(milliseconds: 500));
+            await StockModel.of(context).fetchAllStocks();
+            HistoryModel.of(context).saveHistoryOnDelete(product: product);
+            Navigator.of(context).pop();
+          }
           );
       } else {
         return Message.onFail(
@@ -90,7 +92,7 @@ class StockShowPage extends StatelessWidget {
                         style: TextStyle(fontSize: 15, color: Colors.black),
                       ),
                       Text(
-                        "Valor Total: ${productModel.totalValueOfStock} ",
+                        "Valor Total: ${productModel.productsTotalValue} ",
                         style: TextStyle(fontSize: 14, color: Colors.black),
                       ),
                       SizedBox(
@@ -115,13 +117,13 @@ class StockShowPage extends StatelessWidget {
                           child: SizedBox(
                             width: 80,
                             child: Text(
-                              "${stockModel.textStockStatusReplacer ?? _stock.stockStatus}",
+                              "${stockModel.selectedStockStatusText ?? _stock.stockStatus}",
                               overflow: TextOverflow.clip,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14,
-                                color: stockModel.colorStockStatusReplacer ?? colorStockStatus,
+                                color: stockModel.selectedStockStatusColor ?? colorStockStatus,
                               ),
                             ),
                           ),
@@ -208,55 +210,54 @@ class StockShowPage extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Divider(
-                    color: Colors.black,
                     height: 4,
                   ),
                 ),
               ],
             ),
           ),
-          ScopedModelDescendant<ProductModel>(
-            builder: (context, child, productModel) {
-              return FutureBuilder(
-                future: productModel.futureProductList,
-                builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                      return Message.alert("Não foi possivel obter os dados necessários",
-                          onPressed: _reload, color: Theme.of(context).primaryColor);
-                    case ConnectionState.waiting:
-                      return Message.loading(context, height: 200);
-                    default:
-                      if (snapshot.hasError) {
-                        print('Snapshot has error: ${snapshot.error}');
-                        return Message.alert("Não foi possivel obter os dados do servidor, recarregue a pagina!",
+          Expanded(
+            child: ScopedModelDescendant<ProductModel>(
+              builder: (context, child, productModel) {
+                return FutureBuilder(
+                  future: productModel.futureProductList,
+                  builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                        return Message.alert("Não foi possivel obter os dados necessários",
                             onPressed: _reload, color: Theme.of(context).primaryColor);
-                      } else if (!snapshot.hasData) {
-                        return Message.alert("Não foi possivel obter os Produtos, recarregue a pagina!",
-                            onPressed: _reload, color: Theme.of(context).primaryColor);
-                      } else if (snapshot.data.isEmpty) {
-                        return Message.alert("Nenhum Produto Cadastrado",
-                            onPressed: _reload, color: Theme.of(context).primaryColor);
-                      } else {
-                        return Expanded(
-                          child: RefreshIndicator(
+                      case ConnectionState.waiting:
+                        return Message.loading(context, height: 200);
+                      default:
+                        if (snapshot.hasError) {
+                          print('Snapshot has error: ${snapshot.error}');
+                          return Message.alert("Não foi possivel obter os dados do servidor, recarregue a pagina!",
+                              onPressed: _reload, color: Theme.of(context).primaryColor);
+                        } else if (!snapshot.hasData) {
+                          return Message.alert("Não foi possivel obter os Produtos, recarregue a pagina!",
+                              onPressed: _reload, color: Theme.of(context).primaryColor);
+                        } else if (snapshot.data.isEmpty) {
+                          return Message.alert("Nenhum Produto Cadastrado",
+                              onPressed: _reload, color: Theme.of(context).primaryColor);
+                        } else {
+                          return RefreshIndicator(
                             onRefresh: () async {
                               _reload();
                             },
                             child: ListView.builder(
-                              padding: EdgeInsets.only(left: 11, right: 11, top: 20, bottom: 90),
+                              padding: EdgeInsets.only(left: 11, right: 11, top: 18, bottom: 90),
                               itemCount: snapshot.data.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return ProductTile(snapshot.data[index], deleteProductResponse);
+                                return ProductTile(snapshot.data[index], deleteProductResponse,_scaffoldKey);
                               },
                             ),
-                          ),
-                        );
-                      }
-                  }
-                },
-              );
-            },
+                          );
+                        }
+                    }
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

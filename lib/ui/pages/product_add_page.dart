@@ -3,7 +3,7 @@ import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/models/stock_model.dart';
-import 'package:estok_app/ui/validator/add_pages_validator.dart';
+import 'package:estok_app/ui/validators/add_pages_validator.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
@@ -90,7 +90,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
         return Form(
           key: _formKey,
           child: ListView(
-            padding: EdgeInsets.only(top: 39, left: 24, right: 24, bottom: 72),
+            padding: EdgeInsets.only(top: 39, left: 24, right: 24, bottom: 40),
             children: [
               SizedBox(
                 child: InkWell(
@@ -107,7 +107,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 11, bottom: 15),
+                padding: EdgeInsets.only(top: 11, bottom: 15),
                 child: Text(
                   "Clique na imagem para tirar foto",
                   textAlign: TextAlign.center,
@@ -116,6 +116,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
               ),
               Divider(),
               CustomTextFormField(
+                maxLength: 17,
                 controller: _productNameController,
                 requestFocus: _focusProductDescription,
                 validator: emptyField,
@@ -123,8 +124,11 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 labelText: "Nome do Produto",
                 hintText: "Ex: Heinkiken Original",
                 keyboardType: TextInputType.text,
+                colorText: Color(0xFFC3B6B6),
+                sizeText: 14,
               ),
               CustomTextFormField(
+                maxLength: 100,
                 controller: _productDescriptionController,
                 focusNode: _focusProductDescription,
                 requestFocus: _focusProductItemPrice,
@@ -134,8 +138,11 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 labelText: "Descrição do Produto",
                 hintText: "Ex: Uma das melhores marcas em uma casa só",
                 keyboardType: TextInputType.text,
+                colorText: Color(0xFFC3B6B6),
+                sizeText: 14,
               ),
               CustomTextFormField(
+                maxLength: 15,
                 controller: _productItemPriceController,
                 focusNode: _focusProductItemPrice,
                 requestFocus: _focusProductUnitaryPrice,
@@ -144,8 +151,11 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 labelText: "Valor total do estoque do produto",
                 hintText: "R\$ 45,00",
                 keyboardType: TextInputType.number,
+                colorText: Color(0xFFC3B6B6),
+                sizeText: 14,
               ),
               CustomTextFormField(
+                maxLength: 15,
                 controller: _productUnitaryPriceController,
                 focusNode: _focusProductUnitaryPrice,
                 requestFocus: _focusProductQuantity,
@@ -154,8 +164,11 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 labelText: "Valor unitário do produto",
                 hintText: "R\$ 45,00",
                 keyboardType: TextInputType.number,
+                colorText: Color(0xFFC3B6B6),
+                sizeText: 14,
               ),
               CustomTextFormField(
+                maxLength: 15,
                 controller: _productQuantityController,
                 focusNode: _focusProductQuantity,
                 requestFocus: _focusProductUrlSite,
@@ -164,8 +177,11 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 labelText: "Informe a quantidade do produto",
                 hintText: "Ex: 10",
                 keyboardType: TextInputType.number,
+                colorText: Color(0xFFC3B6B6),
+                sizeText: 14,
               ),
               CustomTextFormField(
+                maxLength: 40,
                 controller: _productUrlSiteController,
                 focusNode: _focusProductUrlSite,
                 validator: emptyField,
@@ -173,6 +189,8 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 labelText: "Informe a url",
                 hintText: "ex: www.google.com.br",
                 keyboardType: TextInputType.text,
+                colorText: Color(0xFFC3B6B6),
+                sizeText: 14,
               ),
               SizedBox(
                 height: 20,
@@ -180,9 +198,6 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
               CustomButton(
                 textButton: widget.product?.productName != null ? "EDITAR" : "CADASTRAR",
                 onPressed: () => productOnPressed(),
-              ),
-              SizedBox(
-                height: 15,
               ),
             ],
           ),
@@ -263,8 +278,8 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
     Message.alertDialogLoading(context);
     try {
       await ProductModel.of(context).fetchAllProducts(product.stockId);
-      await ProductModel.of(context).sumStockTotalPrice();
-      double totalStock = await ProductModel.of(context).sumStockTotalProductQuantity();
+      await ProductModel.of(context).sumProductsTotalValue();
+      double totalStock = await ProductModel.of(context).sumProductsTotalQuantity();
       await Future.delayed(Duration(milliseconds: 500));
       await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
       StockModel.of(context).updateOpenStockStatus();

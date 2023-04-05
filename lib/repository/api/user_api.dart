@@ -1,5 +1,4 @@
 import 'package:estok_app/entities/user.dart';
-import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -20,30 +19,26 @@ class UserApi {
 
       print(encodeString);
 
-      var response = await http.post(url,
-          headers: {"Content-Type": "application/json"}, body: encode);
+      var response = await http.post(url, headers: {"Content-Type": "application/json"}, body: encode);
 
       if (response.statusCode == 200) {
+        var responseData = json.decode(utf8.decode(response.bodyBytes));
+        User user = User.fromJson(responseData["data"]);
+        print(responseData["data"]);
 
-    var responseData = json.decode(utf8.decode(response.bodyBytes));
-    User user = User.fromJson(responseData["data"]);
-    print(responseData["data"]);
-    return user;
-
-      }else{
-
-       print("UserApi: ${response.statusCode}");
+        return user;
+      } else {
+        print("UserApi: ${response.statusCode}");
 
         return null;
       }
-
     } on Exception catch (error) {
-      print('Erro ao realizar SignIn: $error');
-      throw error;
+      print('Erro ao realizar SignIn- $error');
+      return User();
     }
   }
 
-   Future<bool> logout(String token) async {
+  Future<bool> logout(String token) async {
     try {
       String url = "http://54.90.203.92/auth/logout";
 
@@ -58,7 +53,7 @@ class UserApi {
         print("Logout efetuado");
         return true;
       }
-    }on Exception catch (error) {
+    } on Exception catch (error) {
       print('Erro ao realizar logout: $error');
       throw error;
     }

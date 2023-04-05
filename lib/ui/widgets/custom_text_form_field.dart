@@ -20,6 +20,8 @@ class CustomTextFormField extends StatelessWidget {
   final FloatingLabelBehavior floatingLabelBehavior;
   final bool dateFormatter;
   final int maxLines;
+  final double sizeText;
+  final Color colorText;
 
   CustomTextFormField({
     @required this.labelText,
@@ -37,6 +39,8 @@ class CustomTextFormField extends StatelessWidget {
     this.floatingLabelBehavior,
     this.dateFormatter = false,
     this.maxLines = 1,
+    this.colorText = const Color(0xFF495057),
+    this.sizeText = 16,
   });
 
   @override
@@ -70,14 +74,21 @@ class CustomTextFormField extends StatelessWidget {
           decoration: InputDecoration(
             floatingLabelBehavior: floatingLabelBehavior ?? FloatingLabelBehavior.never,
             counterText: "",
-            contentPadding: EdgeInsets.fromLTRB(25, 11, 25, 11),
+            contentPadding: EdgeInsets.only(left: 25,right: 10,top: 10,bottom: 10),
             labelText: labelText,
-            labelStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400, fontFamily: "Montserrat"),
+            labelStyle: TextStyle(
+              fontSize: sizeText,
+              fontWeight: FontWeight.w400,
+              fontFamily: "Montserrat",
+              color: colorText,
+            ),
             alignLabelWithHint: true,
             hintText: hintText,
             hintStyle: TextStyle(
-              fontSize: 16.0,
+              fontSize: sizeText,
               fontWeight: FontWeight.w400,
+              color:  colorText ?? Color(0xFF495057),
+              height: prefixIcon != null ? 1.8 : null,
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
@@ -93,20 +104,25 @@ class CustomTextFormField extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(15),
             ),
-            prefixIcon: prefixIcon,
+            prefixIcon: prefixIcon != null ? Padding(
+              padding: EdgeInsets.only(left: 10,right: 2),
+              child: prefixIcon,
+            ): null,
             suffixIcon: passwordToggleButton
-                ? ScopedModelDescendant<UserModel>(builder: (context, snapshot, userModel) {
-                    return IconButton(
+                ? Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: IconButton(
                       onPressed: () {
-                        userModel.passwordVisibility = !userModel.passwordVisibility;
-                        userModel.setState();
+                        UserModel.of(context).passwordVisibility = !UserModel.of(context).passwordVisibility;
+                        UserModel.of(context).setState();
                       },
                       icon: Icon(
-                        userModel.passwordVisibility ? Icons.visibility : Icons.visibility_off,
+                        UserModel.of(context).passwordVisibility ? Icons.visibility : Icons.visibility_off,
                         color: Theme.of(context).primaryColor,
+                        size: 27,
                       ),
-                    );
-                  })
+                    ),
+                )
                 : null,
           ),
         ),

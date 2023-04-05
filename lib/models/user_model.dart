@@ -5,11 +5,10 @@ import 'package:estok_app/repository/api/user_api.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class UserModel extends Model {
-  User user;
   bool passwordVisibility = true;
   int currentIndexMainPage = 0;
 
-  setState(){
+  setState() {
     notifyListeners();
   }
 
@@ -17,29 +16,31 @@ class UserModel extends Model {
     return ScopedModel.of<UserModel>(context);
   }
 
-  void login(String email, String password,
-      {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
+  void login(String email, String password, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
+    User user = await UserApi.instance.signIn(email, password);
 
-    user = await UserApi.instance.signIn(email, password);
+    print(user.toJson());
 
-    if (user != null) {
-
+    if (user != null && user.email != null && user.id != null) {
       await UserRepository.instance.saveUser(user);
       await UserRepository.instance.saveUserPassword(password);
 
       onSuccess();
-
+    } else if (user == null) {
+      onFail("Erro ao logar! Verifique o email e senha!");
     } else {
-      onFail("Erro ao efetuar login em: $email");
+      String password = await UserRepository.instance.getUserPassword();
+      User user = await UserRepository.instance.getUser();
+      if (email == user.email && password == password) {
+        onFail("Sem conexão! Redirecionando para Histórico");
+      } else {
+        onFail("Sem conexão com a internet!");
+      }
     }
   }
 
-  Future<void> logout() async{
-
-   User user = await UserRepository.instance.getUser();
-   await UserApi.instance.logout(user.token);
-
-
+  Future<void> logout() async {
+    User user = await UserRepository.instance.getUser();
+    await UserApi.instance.logout(user.token);
   }
-
 }

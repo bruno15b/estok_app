@@ -8,9 +8,9 @@ import 'dart:io';
 
 class ProductModel extends Model {
   Future<List<Product>> futureProductList = Future.value([]);
-  double totalValueOfStock = 0;
-  double totalProductQuantityInStockReplacer;
-  int unitaryProductQuantity;
+  double productsTotalValue = 0;
+  double productsTotalQuantity;
+  int productUnitQuantity;
   File imageFile;
 
   static ProductModel of(BuildContext context) {
@@ -82,14 +82,14 @@ class ProductModel extends Model {
     return await UploadImageApi.instance.uploadImage(imageFile);
   }
 
-  Future<void> sumStockTotalPrice() async {
-    totalValueOfStock = 0;
+  Future<void> sumProductsTotalValue() async {
+    productsTotalValue = 0;
 
     List<Product> productList = await futureProductList;
 
     if (productList != null) {
       for (Product product in productList) {
-        totalValueOfStock += product.productQuantity * product.productItemPrice;
+        productsTotalValue += product.productQuantity * product.productItemPrice;
       }
     } else {
       print("Lista de produtos retornou nula.");
@@ -97,31 +97,31 @@ class ProductModel extends Model {
     setState();
   }
 
-  Future<double> sumStockTotalProductQuantity() async {
-    totalProductQuantityInStockReplacer = 0;
+  Future<double> sumProductsTotalQuantity() async {
+    productsTotalQuantity = 0;
 
     List<Product> productList = await futureProductList;
 
     for (Product product in productList) {
-      totalProductQuantityInStockReplacer += product.productQuantity;
+      productsTotalQuantity += product.productQuantity;
     }
-    return totalProductQuantityInStockReplacer;
+    return productsTotalQuantity;
   }
 
 
   updateUnitaryProductQuantity(String action) {
     setState();
     if (action == "add") {
-      unitaryProductQuantity++;
+      productUnitQuantity++;
     } else if(action == "remove") {
-      unitaryProductQuantity--;
+      productUnitQuantity--;
     }else{
       return;
     }
     setState();
   }
 
-  Future<void> shareLink(Product product) async {
+  Future<void> shareWebsiteLink(Product product) async {
     await ShareUtil.shareLink(product.productUrlSite);
   }
 

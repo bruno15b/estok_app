@@ -1,4 +1,5 @@
 import 'package:estok_app/entities/product.dart';
+import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/pages/product_add_page.dart';
@@ -9,18 +10,18 @@ import 'package:scoped_model/scoped_model.dart';
 
 class ProductTile extends StatelessWidget {
   final Product _product;
-  final void Function(bool,Product) message;
+  final void Function(bool, Product) message;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
-  ProductTile(this._product, this.message);
+  ProductTile(this._product, this.message, this.scaffoldKey);
 
   @override
   Widget build(BuildContext context) {
-
     void updateStocksProductsWithServer(Product product) async {
       Message.alertDialogLoading(context);
       try {
-        await ProductModel.of(context).sumStockTotalPrice();
-        double stockTotal = await ProductModel.of(context).sumStockTotalProductQuantity();
+        await ProductModel.of(context).sumProductsTotalValue();
+        double stockTotal = await ProductModel.of(context).sumProductsTotalQuantity();
         await StockModel.of(context).updateStockTotalProductQuantity(stockTotal);
         StockModel.of(context).updateOpenStockStatus();
         await Future.delayed(Duration(milliseconds: 500));
@@ -36,7 +37,7 @@ class ProductTile extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        ProductModel.of(context).unitaryProductQuantity = null;
+        ProductModel.of(context).productUnitQuantity = null;
         Message.alertDialogConfirm(
           context,
           textOkButton: "Alterar ",
@@ -44,8 +45,8 @@ class ProductTile extends StatelessWidget {
           title: _product.productName,
           widget: ScopedModelDescendant<ProductModel>(
             builder: (context, snapshot, productModel) {
-              if (productModel.unitaryProductQuantity == null) {
-                productModel.unitaryProductQuantity = _product.productQuantity;
+              if (productModel.productUnitQuantity == null) {
+                productModel.productUnitQuantity = _product.productQuantity;
               }
               return Container(
                 padding: EdgeInsets.only(top: 20),
@@ -60,12 +61,8 @@ class ProductTile extends StatelessWidget {
                       width: 10,
                     ),
                     Text(
-                      "${productModel.unitaryProductQuantity}",
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Color(0xFF949191),
-                        fontWeight: FontWeight.w600
-                      ),
+                      "${productModel.productUnitQuantity}",
+                      style: TextStyle(fontSize: 24, color: Color(0xFF949191), fontWeight: FontWeight.w600),
                     ),
                     SizedBox(
                       width: 10,
@@ -81,21 +78,23 @@ class ProductTile extends StatelessWidget {
           ),
           onPressedOkButton: () async {
             Navigator.of(context).pop();
-            _product.productQuantity = ProductModel.of(context).unitaryProductQuantity;
+            _product.productQuantity = ProductModel.of(context).productUnitQuantity;
 
             await ProductModel.of(context).updateProduct(
               _product,
               onSuccess: () {
-                print("sucesso");
-
+                Message.onSuccess(scaffoldKey: scaffoldKey, message: "Quantidade atualizada com sucesso!",onPop: (_){
+                  updateStocksProductsWithServer(_product);
+                  HistoryModel.of(context).saveHistoryOnUpdate(product: _product);
+                });
                 return;
               },
               onFail: (string) {
-                print("Error");
+                Message.onFail(scaffoldKey: scaffoldKey, message: "Falha ao atualizar quantidade!");
                 return;
               },
             );
-            updateStocksProductsWithServer(_product);
+
           },
           onPressedNoButton: () {
             Navigator.of(context).pop();
@@ -121,93 +120,125 @@ class ProductTile extends StatelessWidget {
         ),
         onDismissed: (direction) async {
           final bool success = await ProductModel.of(context).deleteProduct(_product);
-          message(success,_product);
+          message(success, _product);
         },
         child: Column(
           children: [
             Container(
-              height: 128,
+              height:132,
+              width: double.infinity,
               padding: EdgeInsets.only(top: 14),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 85,
-                    height: 74,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: _product.productImageUrl == null || _product.productImageUrl.isEmpty
-                              ? AssetImage("assets/images/ic_camera.png")
-                              : NetworkImage(_product.productImageUrl),
-                          fit: BoxFit.fitHeight),
+                  Expanded(
+                    flex:3,
+                    child: Container(
+                      width: 85,
+                      height: 74,
+                      margin: EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: _product.productImageUrl == null || _product.productImageUrl.isEmpty
+                                ? AssetImage("assets/images/ic_camera.png")
+                                : NetworkImage(_product.productImageUrl),
+                            fit: BoxFit.fitHeight),
+                      ),
                     ),
                   ),
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _product.productName,
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                    color: Color(0xFF555353),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.47,
-                                  child: Text(
-                                    _product.productDescription,
-                                    overflow: TextOverflow.clip,
+                  Expanded(
+                    flex: 7,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _product.productName,
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 11,
-                                      color: Color(0xFF949191),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                      color: Color(0xFF555353),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                "R\$ ${_product.productItemPrice}",
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor, fontWeight: FontWeight.w700, fontSize: 13),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  SizedBox(
+                                    height: 46,
+                                    child: Text(
+                                      _product.productDescription,
+                                      overflow: TextOverflow.clip,
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11,
+                                        color: Color(0xFF949191),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                "R\$ ${_product.productUnitaryPrice}",
-                                style: TextStyle(fontSize: 11),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.70,
-                        child: Row(
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    width: 65,
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        "R\$ ${_product.productItemPrice}",
+                                        style: TextStyle(
+                                            color: Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  SizedBox(
+                                    width: 60,
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        "R\$ ${_product.productUnitaryPrice}",
+                                        style: TextStyle(fontSize: 12,color: Colors.black),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 28,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              padding: EdgeInsets.only(left: 32),
-                              child: Text("${_product.productQuantity}"),
+                              margin:EdgeInsets.only(left: 40),
+                              child: Text(
+                                "${_product.productQuantity}",
+                                style: TextStyle(fontSize: 16, color: Colors.black),
+                              ),
                             ),
                             Row(
                               children: [
-                                ScopedModelDescendant<ProductModel>(builder: (context, snapshot, productModel) {
-                                  return IconButton(
-                                      icon: Icon(Icons.share),
-                                      onPressed: () {
-                                        productModel.shareLink(_product);
-                                      });
-                                }),
+                                IconButton(
+                                    icon: Icon(Icons.share),
+                                    onPressed: () {
+                                      ProductModel.of(context).shareWebsiteLink(_product);
+                                    }),
                                 IconButton(
                                   icon: Icon(Icons.edit),
                                   onPressed: () {
@@ -223,16 +254,18 @@ class ProductTile extends StatelessWidget {
                                   },
                                 )
                               ],
-                            )
+                            ),
                           ],
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),
             ),
-            Divider(),
+            Divider(
+              height: 3,
+            ),
           ],
         ),
       ),

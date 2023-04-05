@@ -58,7 +58,7 @@ class HomeTab extends StatelessWidget {
                     },
                     child: ListView.builder(
                       padding:
-                          EdgeInsets.only(left: 5,right: 5,top: 20, bottom: 90),
+                          EdgeInsets.only(left: 10,right: 10,top: 37, bottom: 90),
                       itemCount: filteredStocks.length,
                       itemBuilder: (BuildContext context, int index) {
                         return StockTile(filteredStocks[index]);
