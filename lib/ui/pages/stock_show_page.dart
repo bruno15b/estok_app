@@ -1,5 +1,6 @@
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/pages/product_add_page.dart';
@@ -32,24 +33,25 @@ class StockShowPage extends StatelessWidget {
       }
     }
 
-    deleteProductResponse(bool response) async {
+    deleteProductResponse(bool response, Product product) async {
+
+      await ProductModel.of(context).fetchAllProducts(_stock.id);
+      await ProductModel.of(context).sumStockTotalPrice();
+      double totalStock = await ProductModel.of(context).sumStockTotalProductQuantity();
+      await Future.delayed(Duration(milliseconds: 500));
+      await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
+      StockModel.of(context).updateOpenStockStatus();
+      await Future.delayed(Duration(milliseconds: 500));
+      await StockModel.of(context).fetchAllStocks();
+
+      HistoryModel.of(context).saveHistoryOnDelete(product: product);
 
       if (response) {
-
-        await ProductModel.of(context).fetchAllProducts(_stock.id);
-        await ProductModel.of(context).sumStockTotalPrice();
-        double totalStock = await ProductModel.of(context).sumStockTotalProductQuantity();
-        await Future.delayed(Duration(milliseconds: 500));
-        await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
-        StockModel.of(context).updateOpenStockStatus();
-        await Future.delayed(Duration(milliseconds: 500));
-        await StockModel.of(context).fetchAllStocks();
-
         return Message.onSuccess(
-          scaffoldKey: _scaffoldKey,
-          message: "Produto deletado",
-          seconds: 2,
-        );
+            scaffoldKey: _scaffoldKey,
+            message: "Produto deletado",
+            seconds: 2,
+          );
       } else {
         return Message.onFail(
           scaffoldKey: _scaffoldKey,
@@ -165,10 +167,11 @@ class StockShowPage extends StatelessWidget {
                                         message: "Estoque deletado",
                                         seconds: 2,
                                         onPop: (value) {
+                                          StockModel.of(context).fetchAllStocks();
+                                          HistoryModel.of(context).saveHistoryOnDelete(stock: _stock);
                                           Navigator.of(context).pop();
                                           Navigator.of(context).pop();
                                         });
-                                    StockModel.of(context).fetchAllStocks();
                                     return;
                                   },
                                   onFail: (string) {

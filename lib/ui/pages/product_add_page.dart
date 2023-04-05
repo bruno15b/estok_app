@@ -1,8 +1,9 @@
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/models/stock_model.dart';
-import 'package:estok_app/ui/validator/add_pages_validators.dart';
+import 'package:estok_app/ui/validator/add_pages_validator.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
@@ -214,6 +215,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
               seconds: 1,
               onPop: (_) {
                 updateStocksProductsWithServer(product);
+                HistoryModel.of(context).saveHistoryOnInsert(product: product);
               },
             );
             return;
@@ -239,6 +241,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
               seconds: 1,
               onPop: (_) {
                 updateStocksProductsWithServer(product);
+                HistoryModel.of(context).saveHistoryOnUpdate(product: product);
               },
             );
             return;

@@ -9,7 +9,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 class ProductTile extends StatelessWidget {
   final Product _product;
-  final void Function(bool) message;
+  final void Function(bool,Product) message;
 
   ProductTile(this._product, this.message);
 
@@ -121,7 +121,7 @@ class ProductTile extends StatelessWidget {
         ),
         onDismissed: (direction) async {
           final bool success = await ProductModel.of(context).deleteProduct(_product);
-          message(success);
+          message(success,_product);
         },
         child: Column(
           children: [

@@ -1,5 +1,5 @@
 import 'package:estok_app/models/user_model.dart';
-import 'package:estok_app/ui/formatter/date_text_formatter.dart';
+import 'package:estok_app/ui/formatters/date_text_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';

@@ -1,5 +1,8 @@
+import 'package:estok_app/entities/user.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
+import 'package:estok_app/repository/local/user_repository.dart';
+import 'package:estok_app/ui/pages/history_page.dart';
 import 'package:estok_app/ui/pages/main_page.dart';
 import 'package:estok_app/ui/validator/login_validator.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';

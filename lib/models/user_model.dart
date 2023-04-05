@@ -27,7 +27,6 @@ class UserModel extends Model {
       await UserRepository.instance.saveUser(user);
       await UserRepository.instance.saveUserPassword(password);
 
-
       onSuccess();
 
     } else {
@@ -38,12 +37,9 @@ class UserModel extends Model {
   Future<void> logout() async{
 
    User user = await UserRepository.instance.getUser();
+   await UserApi.instance.logout(user.token);
 
-   bool logout = await UserApi.instance.logout(user.token);
 
-   if(logout) {
-     await UserRepository.instance.clearUserData();
-   }
   }
 
 }

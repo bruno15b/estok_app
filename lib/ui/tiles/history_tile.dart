@@ -1,8 +1,19 @@
+import 'package:estok_app/entities/history.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HistoryTile extends StatelessWidget {
+
+  History history;
+  HistoryTile(this.history);
+
   @override
   Widget build(BuildContext context) {
+
+    final DateTime dateTime = history.date;
+    final DateFormat dateFormatter = DateFormat("dd/MM/yyyy");
+    final DateFormat timeFormatter = DateFormat("HH:mm");
+
     return Column(
       children: [
         Padding(
@@ -15,7 +26,7 @@ class HistoryTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "INSERÇÃO PRODUTO OMO",
+                      "${history.operationType} ${history.objectName}",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -26,7 +37,7 @@ class HistoryTile extends StatelessWidget {
                       height: 4,
                     ),
                     Text(
-                      "PRODUTO",
+                      "${history.objectType}",
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -41,7 +52,7 @@ class HistoryTile extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      "09/09/1990",
+                      "${dateFormatter.format(dateTime)}",
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.w700,
@@ -52,7 +63,7 @@ class HistoryTile extends StatelessWidget {
                       height: 4,
                     ),
                     Text(
-                      "08:23",
+                      "${timeFormatter.format(dateTime)}",
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
                     ),
                   ],

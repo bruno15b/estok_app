@@ -1,8 +1,9 @@
 import 'package:estok_app/entities/history.dart';
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/repository/local/history_repository.dart';
-import 'package:estok_app/ui/validator/add_pages_validators.dart';
+import 'package:estok_app/ui/validator/add_pages_validator.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
@@ -268,24 +269,10 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                 message: "Estoque adicionado com sucesso",
                 seconds: 3,
                 onPop: (value) {
+                  StockModel.of(context).fetchAllStocks();
+                  HistoryModel.of(context).saveHistoryOnInsert(stock: stock);
                   Navigator.of(context).pop();
                 });
-
-
-            StockModel.of(context).fetchAllStocks();
-            History history = History(
-              date: DateTime.now().toLocal(),
-              objectType: "ESTOQUE",
-              objectName: stock.stockDescription,
-              operationType: "INSERÇÃO",
-            );
-
-            await HistoryRepository.instance.save(history);
-            List<History> result = await HistoryRepository.instance.getAll();
-            result.forEach((element) {
-              print(element.toJson());
-            });
-
             return;
           },
           onFail: (string) {
@@ -308,11 +295,12 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
               message: "Estoque editado com sucesso",
               seconds: 3,
               onPop: (value) {
+                StockModel.of(context).fetchAllStocks();
+                HistoryModel.of(context).saveHistoryOnUpdate(stock: stock);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
             );
-            StockModel.of(context).fetchAllStocks();
             return;
           },
           onFail: (string) {
