@@ -5,6 +5,7 @@ import 'package:estok_app/ui/pages/history_page.dart';
 import 'package:estok_app/ui/pages/home_page.dart';
 import 'package:estok_app/ui/pages/profile_page.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
+import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -82,7 +83,7 @@ class MainPage extends StatelessWidget {
           ),
           drawer: userModel.currentIndexMainPage == 0
               ? SafeArea(
-                  child: SizedBox(
+                  child: Container(
                     width: 315,
                     child: Drawer(
                       child: ListView(
@@ -90,7 +91,7 @@ class MainPage extends StatelessWidget {
                           FutureBuilder<User>(
                               future: UserRepository.instance.getUser(),
                               builder: (context, snapshot) {
-                                return SizedBox(
+                                return Container(
                                   height: 240,
                                   child: DrawerHeader(
                                     padding: EdgeInsets.only(top: 50, left: 32, bottom: 32),
@@ -199,33 +200,25 @@ class MainPage extends StatelessWidget {
                             height: 135,
                           ),
                           Center(
-                            child: SizedBox(
-                              height: 43,
+                            child: CustomButton(
+                              textButton: "Sair",
                               width: 100,
-                              child: ElevatedButton(
-                                child: Text(
-                                  "Sair",
-                                  style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
-                                ),
-                                onPressed: () {
-                                  UserModel.of(context).logout();
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) {
-                                        return LoginPage();
-                                      },
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    primary: Theme.of(context).primaryColor),
-                              ),
+                              height: 45,
+                              borderRadius: BorderRadius.circular(8),
+                              colorText: Theme.of(context).scaffoldBackgroundColor,
+                              colorButton: Theme.of(context).primaryColor,
+                              fontSize: 14,
+                              onPressed: () {
+                                UserModel.of(context).logout();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (BuildContext context) {
+                                    return LoginPage();
+                                  }),
+                                );
+                              },
                             ),
-                          )
+                          ),
+                          SizedBox(height: 40,)
                         ],
                       ),
                     ),

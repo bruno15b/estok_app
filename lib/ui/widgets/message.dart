@@ -17,7 +17,7 @@ class Message {
       ),
     );
     if (onPop != null) {
-      Future.delayed(Duration(seconds: seconds ?? 2)).then(onPop);
+      Future.delayed(Duration(milliseconds: 300)).then(onPop);
     }
   }
 

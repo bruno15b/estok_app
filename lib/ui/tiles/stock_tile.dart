@@ -5,7 +5,7 @@ import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/pages/stock_show_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:estok_app/extensions/stock_status_extension.dart';
+import 'package:estok_app/enums/extensions/stock_status_enum_extension.dart';
 
 class StockTile extends StatelessWidget {
   final Stock _stock;
@@ -32,7 +32,7 @@ class StockTile extends StatelessWidget {
 
               ProductModel.of(context).fetchAllProducts(_stock.id);
               ProductModel.of(context).sumProductsTotalValue();
-              StockModel.of(context).saveOpenStock(_stock);
+              StockModel.of(context).setSelectedStock(_stock);
               StockModel.of(context).selectedStockStatusColor = null;
               StockModel.of(context).selectedStockStatusText = null;
 

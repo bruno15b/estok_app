@@ -3,6 +3,7 @@ import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/models/stock_model.dart';
+import 'package:estok_app/ui/formatters/currency_text_formatter.dart';
 import 'package:estok_app/ui/validators/add_pages_validator.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
@@ -56,8 +57,8 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
       newProductAdd = false;
       _productNameController.text = widget.product.productName;
       _productDescriptionController.text = widget.product.productDescription;
-      _productItemPriceController.text = widget.product.productItemPrice.toString();
-      _productUnitaryPriceController.text = widget.product.productUnitaryPrice.toString();
+      _productItemPriceController.text = "R\$ " + widget.product.productItemPrice.toString();
+      _productUnitaryPriceController.text = "R\$ " + widget.product.productUnitaryPrice.toString();
       _productQuantityController.text = widget.product.productQuantity.toString();
       _productUrlSiteController.text = widget.product.productUrlSite;
     } else {
@@ -65,20 +66,6 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
     }
     ProductModel.of(context).imageFile = null;
     ProductModel.of(context).setState();
-  }
-
-  ImageProvider getImage(ProductModel productModel) {
-    if (!newProductAdd && widget.product.productImageUrl != "") {
-      if (productModel.imageFile != null) {
-        return FileImage(productModel.imageFile);
-      } else {
-        return NetworkImage(widget.product.productImageUrl);
-      }
-    } else if (productModel.imageFile != null) {
-      return FileImage(productModel.imageFile);
-    } else {
-      return AssetImage("assets/images/ic_camera.png");
-    }
   }
 
   @override
@@ -116,7 +103,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
               ),
               Divider(),
               CustomTextFormField(
-                maxLength: 17,
+                maxLength: 21,
                 controller: _productNameController,
                 requestFocus: _focusProductDescription,
                 validator: emptyField,
@@ -128,7 +115,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 sizeText: 14,
               ),
               CustomTextFormField(
-                maxLength: 100,
+                maxLength: 85,
                 controller: _productDescriptionController,
                 focusNode: _focusProductDescription,
                 requestFocus: _focusProductItemPrice,
@@ -142,6 +129,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 sizeText: 14,
               ),
               CustomTextFormField(
+                formatter: CurrencyInputFormatter(),
                 maxLength: 15,
                 controller: _productItemPriceController,
                 focusNode: _focusProductItemPrice,
@@ -155,6 +143,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 sizeText: 14,
               ),
               CustomTextFormField(
+                formatter: CurrencyInputFormatter(),
                 maxLength: 15,
                 controller: _productUnitaryPriceController,
                 focusNode: _focusProductUnitaryPrice,
@@ -181,10 +170,10 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 sizeText: 14,
               ),
               CustomTextFormField(
+                validator:validateUrl,
                 maxLength: 40,
                 controller: _productUrlSiteController,
                 focusNode: _focusProductUrlSite,
-                validator: emptyField,
                 textAboveFormField: "Site",
                 labelText: "Informe a url",
                 hintText: "ex: www.google.com.br",
@@ -212,8 +201,8 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
       Product product = Product(
         productName: _productNameController.text,
         productDescription: _productDescriptionController.text,
-        productItemPrice: double.parse(_productItemPriceController.text),
-        productUnitaryPrice: double.parse(_productUnitaryPriceController.text),
+        productItemPrice: double.parse(_productItemPriceController.text.replaceAll(RegExp(r'^[R$\s]+'), '')),
+        productUnitaryPrice: double.parse(_productUnitaryPriceController.text.replaceAll(RegExp(r'^[R$\s]+'), '')),
         productQuantity: int.parse(_productQuantityController.text),
         productUrlSite: _productUrlSiteController.text,
         productImageUrl: widget.product?.productImageUrl ?? "",
@@ -235,10 +224,10 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
             );
             return;
           },
-          onFail: (string) {
+          onFail: (errorText) {
             Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: "Erro ao adicionar Produto!",
+              message: errorText,
               seconds: 3,
             );
             return;
@@ -261,10 +250,10 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
             );
             return;
           },
-          onFail: (string) {
+          onFail: (errorText) {
             Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: "Erro ao editar Produto!",
+              message: errorText,
               seconds: 3,
             );
             return;
@@ -282,7 +271,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
       double totalStock = await ProductModel.of(context).sumProductsTotalQuantity();
       await Future.delayed(Duration(milliseconds: 500));
       await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
-      StockModel.of(context).updateOpenStockStatus();
+      StockModel.of(context).updateSelectedStockStatus();
       await Future.delayed(Duration(milliseconds: 500));
       await StockModel.of(context).fetchAllStocks();
     } catch (e) {
@@ -290,6 +279,20 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
     } finally {
       Navigator.of(context).pop();
       Navigator.of(context).pop();
+    }
+  }
+
+  ImageProvider getImage(ProductModel productModel) {
+    if (!newProductAdd && widget.product.productImageUrl != "") {
+      if (productModel.imageFile != null) {
+        return FileImage(productModel.imageFile);
+      } else {
+        return NetworkImage(widget.product.productImageUrl);
+      }
+    } else if (productModel.imageFile != null) {
+      return FileImage(productModel.imageFile);
+    } else {
+      return AssetImage("assets/images/ic_camera.png");
     }
   }
 

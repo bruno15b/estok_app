@@ -1,6 +1,9 @@
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/enums/stock_type_enum.dart';
+import 'package:estok_app/enums/extensions/stock_type_enum_extension.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/stock_model.dart';
+import 'package:estok_app/ui/formatters/date_text_formatter.dart';
 import 'package:estok_app/ui/validators/add_pages_validator.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/message.dart';
@@ -20,7 +23,7 @@ class StockAddPage extends StatefulWidget {
 }
 
 class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
-  String _selectedOption;
+  String _selectedStockTypeOption;
 
   final FocusNode _focusEnterDate = FocusNode();
   final FocusNode _focusValidityDate = FocusNode();
@@ -44,85 +47,9 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
       _stockValidityDateController.text = StockModel.of(context).formatDateToString(widget.stock.validityDate);
       StockModel.of(context).onChangeTypeOfStock(widget.stock.typeOfStock);
     } else {
-      StockModel.of(context).onChangeTypeOfStock("CAIXA");
+      StockModel.of(context).onChangeTypeOfStock(StockTypeEnum.CAIXA.stringValue);
       newStockAdd = true;
     }
-  }
-
-  _showOptionsDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          content: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  onTap: () {
-                    _selectedOption = "CAIXA";
-                    StockModel.of(context).onChangeTypeOfStock(_selectedOption);
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
-                    child: Text(
-                      "CAIXA",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () {
-                    _selectedOption = "GRADE";
-                    StockModel.of(context).onChangeTypeOfStock(_selectedOption);
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
-                    child: Text(
-                      "GRADE",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () {
-                    _selectedOption = "PACOTE";
-                    StockModel.of(context).onChangeTypeOfStock(_selectedOption);
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
-                    child: Text(
-                      "PACOTE",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -149,10 +76,10 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
+                Container(
                   width: 150,
                   child: CustomTextFormField(
-                    dateFormatter: true,
+                    formatter: DateInputFormatter(),
                     keyboardType: TextInputType.datetime,
                     textAboveFormField: "Data de entrada",
                     labelText: "Entrada",
@@ -166,10 +93,10 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     sizeText: 14,
                   ),
                 ),
-                SizedBox(
+                Container(
                   width: 150,
                   child: CustomTextFormField(
-                    dateFormatter: true,
+                    formatter: DateInputFormatter(),
                     keyboardType: TextInputType.datetime,
                     textAboveFormField: "Data de validade",
                     labelText: "Saída",
@@ -199,37 +126,35 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       _showOptionsDialog();
                     },
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(25, 11, 0, 11),
+                      padding: EdgeInsets.fromLTRB(20, 11, 20, 11),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          width: 1.0,
+                          width: 1,
                           color: Theme.of(context).primaryColor,
                         ),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Row(
                         children: [
-                          Expanded(
-                            flex: 6,
-                            child: Container(
-                              padding: EdgeInsets.only(left: 25),
-                              child: Text(
-                                stockModel.selectedStockType,
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.transparent,
                           ),
                           Expanded(
-                            flex: 1,
-                            child: Icon(
+                            child: Text(
+                              stockModel.selectedStockType,
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+
+                            Icon(
                               Icons.keyboard_arrow_down,
                             ),
-                          )
                         ],
                       ),
                     ),
@@ -247,6 +172,82 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
           ],
         ),
       ),
+    );
+  }
+
+  _showOptionsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          content: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    _selectedStockTypeOption = StockTypeEnum.CAIXA.stringValue;
+                    StockModel.of(context).onChangeTypeOfStock(_selectedStockTypeOption);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
+                    child: Text(
+                      StockTypeEnum.CAIXA.stringValue,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                Divider(),
+                InkWell(
+                  onTap: () {
+                    _selectedStockTypeOption = StockTypeEnum.GRADE.stringValue;
+                    StockModel.of(context).onChangeTypeOfStock(_selectedStockTypeOption);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
+                    child: Text(
+                     StockTypeEnum.GRADE.stringValue,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                Divider(),
+                InkWell(
+                  onTap: () {
+                    _selectedStockTypeOption = StockTypeEnum.PACOTE.stringValue;
+                    StockModel.of(context).onChangeTypeOfStock(_selectedStockTypeOption);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
+                    child: Text(
+                     StockTypeEnum.PACOTE.stringValue,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -279,10 +280,10 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                 });
             return;
           },
-          onFail: (string) {
+          onFail: (errorText) {
             Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: "Erro ao adicionar estoque.!",
+              message: errorText,
               seconds: 3,
             );
             return;
@@ -307,17 +308,16 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
             );
             return;
           },
-          onFail: (string) {
+          onFail: (errorText) {
             Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: "Erro ao editar estoque.!",
+              message: errorText,
               seconds: 3,
             );
             return;
           },
         );
       }
-
       return;
     }
   }

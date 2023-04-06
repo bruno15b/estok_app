@@ -1,14 +1,16 @@
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/enums/stock_status_enum.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
-import 'package:estok_app/extensions/stock_status_extension.dart';
+import 'package:estok_app/enums/extensions/stock_status_enum_extension.dart';
+import 'package:estok_app/enums/extensions/stock_type_enum_extension.dart';
+import 'package:estok_app/enums/stock_type_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:intl/intl.dart';
 
 class StockModel extends Model {
   Future<List<Stock>> futureStockList;
-  String selectedStockType = "CAIXA";
+  String selectedStockType = StockTypeEnum.CAIXA.stringValue;
   final dateFormatString = "dd/MM/yyyy";
   Stock selectedStock;
   String selectedStockStatusText;
@@ -58,7 +60,7 @@ class StockModel extends Model {
     }
   }
 
-  void saveOpenStock(Stock stock) {
+  void setSelectedStock(Stock stock) {
     selectedStock = stock;
   }
 
@@ -67,9 +69,18 @@ class StockModel extends Model {
     await StockApi.instance.putStock(selectedStock);
   }
 
-  void updateOpenStockStatus() {
-    print(selectedStock.stockTotalProductQuantity);
-    StockStatusEnum stockStatus = StockStatusExtension.fromStockQuantity(selectedStock.stockTotalProductQuantity);
+  StockStatusEnum fromStockQuantity(double stockTotalQuantity) {
+    if (stockTotalQuantity > 5) {
+      return StockStatusEnum.EM_ESTOQUE;
+    } else if (stockTotalQuantity == 0) {
+      return StockStatusEnum.EM_FALTA;
+    } else {
+      return StockStatusEnum.EM_AVISO;
+    }
+  }
+
+  void updateSelectedStockStatus() {
+    StockStatusEnum stockStatus = fromStockQuantity(selectedStock.stockTotalProductQuantity);
     selectedStockStatusColor = stockStatus.colorValue;
     selectedStockStatusText= stockStatus.stringValue;
     setState();

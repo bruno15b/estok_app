@@ -10,31 +10,13 @@ import 'package:scoped_model/scoped_model.dart';
 
 class ProductTile extends StatelessWidget {
   final Product _product;
-  final void Function(bool, Product) message;
+  final void Function(bool, Product) deleteProductResponseFn;
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-  ProductTile(this._product, this.message, this.scaffoldKey);
+  ProductTile(this._product, this.deleteProductResponseFn, this.scaffoldKey);
 
   @override
   Widget build(BuildContext context) {
-    void updateStocksProductsWithServer(Product product) async {
-      Message.alertDialogLoading(context);
-      try {
-        await ProductModel.of(context).sumProductsTotalValue();
-        double stockTotal = await ProductModel.of(context).sumProductsTotalQuantity();
-        await StockModel.of(context).updateStockTotalProductQuantity(stockTotal);
-        StockModel.of(context).updateOpenStockStatus();
-        await Future.delayed(Duration(milliseconds: 500));
-        await StockModel.of(context).fetchAllStocks();
-        await Future.delayed(Duration(milliseconds: 500));
-      } catch (e) {
-        print(e);
-      } finally {
-        Navigator.of(context).pop();
-        await ProductModel.of(context).fetchAllProducts(product.stockId);
-      }
-    }
-
     return InkWell(
       onTap: () {
         ProductModel.of(context).productUnitQuantity = null;
@@ -83,10 +65,13 @@ class ProductTile extends StatelessWidget {
             await ProductModel.of(context).updateProduct(
               _product,
               onSuccess: () {
-                Message.onSuccess(scaffoldKey: scaffoldKey, message: "Quantidade atualizada com sucesso!",onPop: (_){
-                  updateStocksProductsWithServer(_product);
-                  HistoryModel.of(context).saveHistoryOnUpdate(product: _product);
-                });
+                Message.onSuccess(
+                    scaffoldKey: scaffoldKey,
+                    message: "Quantidade atualizada com sucesso!",
+                    onPop: (_) {
+                      updateStocksProductsWithServer(_product, context);
+                      HistoryModel.of(context).saveHistoryOnUpdate(product: _product);
+                    });
                 return;
               },
               onFail: (string) {
@@ -94,7 +79,6 @@ class ProductTile extends StatelessWidget {
                 return;
               },
             );
-
           },
           onPressedNoButton: () {
             Navigator.of(context).pop();
@@ -119,20 +103,21 @@ class ProductTile extends StatelessWidget {
           ),
         ),
         onDismissed: (direction) async {
-          final bool success = await ProductModel.of(context).deleteProduct(_product);
-          message(success, _product);
+          final bool deleteResponse = await ProductModel.of(context).deleteProduct(_product);
+          deleteProductResponseFn(deleteResponse, _product);
         },
         child: Column(
           children: [
             Container(
-              height:132,
+              height: 120,
               width: double.infinity,
               padding: EdgeInsets.only(top: 14),
+              margin:EdgeInsets.only(bottom: 14) ,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    flex:3,
+                    flex: 3,
                     child: Container(
                       width: 85,
                       height: 74,
@@ -154,25 +139,26 @@ class ProductTile extends StatelessWidget {
                           children: [
                             Expanded(
                               flex: 3,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _product.productName,
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                      color: Color(0xFF555353),
+                              child: Container(
+                                height: 70,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Text(
+                                      _product.productName,
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                        color: Color(0xFF555353),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  SizedBox(
-                                    height: 46,
-                                    child: Text(
+                                    SizedBox(height: 5,),
+                                    Text(
                                       _product.productDescription,
+                                      maxLines: 3,
                                       overflow: TextOverflow.clip,
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
@@ -181,43 +167,48 @@ class ProductTile extends StatelessWidget {
                                         color: Color(0xFF949191),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                             Expanded(
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    width: 65,
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        "R\$ ${_product.productItemPrice}",
-                                        style: TextStyle(
-                                            color: Theme.of(context).primaryColor,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 13),
+                              child: Padding(
+                                padding: MediaQuery.of(context).orientation == Orientation.landscape
+                                    ? EdgeInsets.only(right: 70)
+                                    : EdgeInsets.only(right: 0),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: 70,
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          "R\$ ${_product.productItemPrice}",
+                                          style: TextStyle(
+                                              color: Theme.of(context).primaryColor,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 14),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  SizedBox(
-                                    width: 60,
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        "R\$ ${_product.productUnitaryPrice}",
-                                        style: TextStyle(fontSize: 12,color: Colors.black),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      width: 60,
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          "R\$ ${_product.productUnitaryPrice}",
+                                          style: TextStyle(fontSize: 12, color: Colors.black),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 28,
-                                  )
-                                ],
+                                    SizedBox(
+                                      height: 28,
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -226,34 +217,51 @@ class ProductTile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              margin:EdgeInsets.only(left: 40),
+                              margin: EdgeInsets.only(left:35, top: 5),
                               child: Text(
                                 "${_product.productQuantity}",
-                                style: TextStyle(fontSize: 16, color: Colors.black),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
-                            Row(
-                              children: [
-                                IconButton(
-                                    icon: Icon(Icons.share),
-                                    onPressed: () {
-                                      ProductModel.of(context).shareWebsiteLink(_product);
-                                    }),
-                                IconButton(
-                                  icon: Icon(Icons.edit),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) {
-                                          return ProductAddPage.editProduct(
-                                            product: _product,
-                                          );
-                                        },
+                            Padding(
+                              padding: MediaQuery.of(context).orientation == Orientation.landscape
+                                  ? EdgeInsets.only(right: 70)
+                                  : EdgeInsets.only(right: 15),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                      constraints: BoxConstraints(maxHeight: 36),
+                                      icon: Icon(
+                                        Icons.share,
+                                        size: 22,
                                       ),
-                                    );
-                                  },
-                                )
-                              ],
+                                      onPressed: () {
+                                        ProductModel.of(context).shareWebsiteLink(_product);
+                                      }),
+                                  SizedBox(width: 5,),
+                                  IconButton(
+                                    constraints: BoxConstraints(maxHeight: 36),
+                                    icon: Icon(
+                                      Icons.edit,
+                                      size: 22,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) {
+                                            return ProductAddPage.editProduct(
+                                              product: _product,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  )
+                                ],
+                              ),
                             ),
                           ],
                         )
@@ -270,5 +278,23 @@ class ProductTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void updateStocksProductsWithServer(Product product, BuildContext context) async {
+    Message.alertDialogLoading(context);
+    try {
+      await ProductModel.of(context).sumProductsTotalValue();
+      double stockTotal = await ProductModel.of(context).sumProductsTotalQuantity();
+      await StockModel.of(context).updateStockTotalProductQuantity(stockTotal);
+      StockModel.of(context).updateSelectedStockStatus();
+      await Future.delayed(Duration(milliseconds: 500));
+      await StockModel.of(context).fetchAllStocks();
+      await Future.delayed(Duration(milliseconds: 500));
+    } catch (e) {
+      print(e);
+    } finally {
+      Navigator.of(context).pop();
+      await ProductModel.of(context).fetchAllProducts(product.stockId);
+    }
   }
 }

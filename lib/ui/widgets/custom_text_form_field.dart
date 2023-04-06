@@ -1,14 +1,11 @@
 import 'package:estok_app/models/user_model.dart';
-import 'package:estok_app/ui/formatters/date_text_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:scoped_model/scoped_model.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final String labelText;
   final String hintText;
   final TextInputType keyboardType;
-  bool obscureText;
   final TextEditingController controller;
   final FocusNode focusNode;
   final FocusNode requestFocus;
@@ -18,10 +15,11 @@ class CustomTextFormField extends StatelessWidget {
   final String textAboveFormField;
   final int maxLength;
   final FloatingLabelBehavior floatingLabelBehavior;
-  final bool dateFormatter;
+  final TextInputFormatter formatter;
   final int maxLines;
   final double sizeText;
   final Color colorText;
+  bool obscureText;
 
   CustomTextFormField({
     @required this.labelText,
@@ -37,10 +35,10 @@ class CustomTextFormField extends StatelessWidget {
     this.textAboveFormField,
     this.maxLength,
     this.floatingLabelBehavior,
-    this.dateFormatter = false,
     this.maxLines = 1,
     this.colorText = const Color(0xFF495057),
     this.sizeText = 16,
+    this.formatter,
   });
 
   @override
@@ -58,7 +56,7 @@ class CustomTextFormField extends StatelessWidget {
             ),
           ),
         TextFormField(
-          inputFormatters: dateFormatter ? [DateTextFormatter()] : null,
+          inputFormatters: formatter != null ? [formatter] : null,
           maxLines: maxLines,
           maxLength: maxLength ?? null,
           controller: controller,
@@ -92,14 +90,14 @@ class CustomTextFormField extends StatelessWidget {
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                width: 1.0,
+                width: 1,
                 color: Theme.of(context).primaryColor,
               ),
               borderRadius: BorderRadius.circular(15),
             ),
             border: OutlineInputBorder(
               borderSide: BorderSide(
-                width: 1.0,
+                width: 1,
                 color: Theme.of(context).primaryColor,
               ),
               borderRadius: BorderRadius.circular(15),

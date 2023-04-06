@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:estok_app/enums/stock_status_enum.dart';
 import 'package:flutter/material.dart';
 
-extension StockStatusExtension on StockStatusEnum {
+extension StockStatusEnumExtension on StockStatusEnum {
   String get stringValue {
     switch (this) {
       case StockStatusEnum.EM_ESTOQUE:
@@ -28,16 +28,6 @@ extension StockStatusExtension on StockStatusEnum {
         return Color(0XFFDCC707);
       default:
         return Colors.black;
-    }
-  }
-
-  static StockStatusEnum fromStockQuantity(double stockTotalQuantity) {
-    if (stockTotalQuantity > 5) {
-      return StockStatusEnum.EM_ESTOQUE;
-    } else if (stockTotalQuantity == 0) {
-      return StockStatusEnum.EM_FALTA;
-    } else {
-      return StockStatusEnum.EM_AVISO;
     }
   }
 }

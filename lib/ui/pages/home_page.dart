@@ -3,7 +3,7 @@ import 'package:estok_app/ui/pages/stock_add_page.dart';
 import 'package:estok_app/ui/tabs/home_tab.dart';
 import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
 import 'package:flutter/material.dart';
-import 'package:estok_app/extensions/stock_status_extension.dart';
+import 'package:estok_app/enums/extensions/stock_status_enum_extension.dart';
 
 class HomePage extends StatefulWidget {
   HomePage();

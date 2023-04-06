@@ -31,12 +31,7 @@ class AddPagesValidators {
     return null;
   }
 
-  String compareDates(DateTime date1, DateTime date2) {
-    if (date1.isAfter(date2)) {
-      return 'A data de validade é superior a de entrada';
-    }
-    return null;
-  }
+
 
   String emptyField(String value) {
     if (value.isEmpty) {
@@ -54,6 +49,20 @@ class AddPagesValidators {
     if (!regex.hasMatch(value)) {
       return 'Apenas números são permitidos';
     }
+    return null;
+  }
+
+  String validateUrl(String url) {
+    if (url == null || url.isEmpty) {
+      return "Campo Vazio";
+    }
+
+    final regex = RegExp(r'^((https?|ftp|smtp):\/\/)?(www\.)?[a-z0-9]+\.[a-z]+(\.[a-z]+)?(\/[a-zA-Z0-9#]+\/?)*$');
+
+    if (!regex.hasMatch(url)) {
+      return "URL inválida";
+    }
+
     return null;
   }
 

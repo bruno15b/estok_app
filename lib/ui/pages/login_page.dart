@@ -142,11 +142,11 @@ class LoginPage extends StatelessWidget with LoginValidator {
 
       StockModel.of(context).fetchAllStocks();
       return;
-    }, onFail: (infoText) {
+    }, onFail: (errorText) {
       Message.onFail(
           scaffoldKey: _scaffoldKey,
           seconds: 2,
-          message: infoText,
+          message: errorText,
           onPop: (_) async {
             String password = await UserRepository.instance.getUserPassword();
             User user = await UserRepository.instance.getUser();

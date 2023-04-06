@@ -19,8 +19,6 @@ class UserModel extends Model {
   void login(String email, String password, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
     User user = await UserApi.instance.signIn(email, password);
 
-    print(user.toJson());
-
     if (user != null && user.email != null && user.id != null) {
       await UserRepository.instance.saveUser(user);
       await UserRepository.instance.saveUserPassword(password);

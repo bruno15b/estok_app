@@ -8,6 +8,7 @@ import 'package:estok_app/ui/pages/stock_add_page.dart';
 import 'package:estok_app/ui/tiles/product_tile.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
+import 'package:estok_app/ui/widgets/custom_future_builder.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -33,27 +34,15 @@ class StockShowPage extends StatelessWidget {
       }
     }
 
-
-    deleteProductResponse(bool response, Product product) async {
-      if (response) {
+    deleteProductResponseFn(bool deleteProductResponse, Product product) {
+      if (deleteProductResponse) {
         return Message.onSuccess(
             scaffoldKey: _scaffoldKey,
             message: "Produto deletado",
             seconds: 2,
-          onPop: (_)async{
-            Message.alertDialogLoading(context);
-            await ProductModel.of(context).fetchAllProducts(_stock.id);
-            await ProductModel.of(context).sumProductsTotalValue();
-            double totalStock = await ProductModel.of(context).sumProductsTotalQuantity();
-            await Future.delayed(Duration(milliseconds: 500));
-            await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
-            StockModel.of(context).updateOpenStockStatus();
-            await Future.delayed(Duration(milliseconds: 500));
-            await StockModel.of(context).fetchAllStocks();
-            HistoryModel.of(context).saveHistoryOnDelete(product: product);
-            Navigator.of(context).pop();
-          }
-          );
+            onPop: (_) {
+              updateStocksProductsWithServer(product,context);
+            });
       } else {
         return Message.onFail(
           scaffoldKey: _scaffoldKey,
@@ -110,10 +99,14 @@ class StockShowPage extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
-                              color: Theme.of(context).textTheme.bodyText2.color),
+                              color: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyText2
+                                  .color),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 6, bottom: 10),
+                          padding: EdgeInsets.only(top: 6, bottom: 10),
                           child: SizedBox(
                             width: 80,
                             child: Text(
@@ -156,7 +149,7 @@ class StockShowPage extends StatelessWidget {
                               context,
                               title: "Deseja excluir o estoque?",
                               subtitle:
-                                  "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
+                              "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
                               onPressedNoButton: () {
                                 Navigator.of(context).pop();
                               },
@@ -219,41 +212,12 @@ class StockShowPage extends StatelessWidget {
           Expanded(
             child: ScopedModelDescendant<ProductModel>(
               builder: (context, child, productModel) {
-                return FutureBuilder(
-                  future: productModel.futureProductList,
-                  builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.none:
-                        return Message.alert("Não foi possivel obter os dados necessários",
-                            onPressed: _reload, color: Theme.of(context).primaryColor);
-                      case ConnectionState.waiting:
-                        return Message.loading(context, height: 200);
-                      default:
-                        if (snapshot.hasError) {
-                          print('Snapshot has error: ${snapshot.error}');
-                          return Message.alert("Não foi possivel obter os dados do servidor, recarregue a pagina!",
-                              onPressed: _reload, color: Theme.of(context).primaryColor);
-                        } else if (!snapshot.hasData) {
-                          return Message.alert("Não foi possivel obter os Produtos, recarregue a pagina!",
-                              onPressed: _reload, color: Theme.of(context).primaryColor);
-                        } else if (snapshot.data.isEmpty) {
-                          return Message.alert("Nenhum Produto Cadastrado",
-                              onPressed: _reload, color: Theme.of(context).primaryColor);
-                        } else {
-                          return RefreshIndicator(
-                            onRefresh: () async {
-                              _reload();
-                            },
-                            child: ListView.builder(
-                              padding: EdgeInsets.only(left: 11, right: 11, top: 18, bottom: 90),
-                              itemCount: snapshot.data.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return ProductTile(snapshot.data[index], deleteProductResponse,_scaffoldKey);
-                              },
-                            ),
-                          );
-                        }
-                    }
+                return CustomFutureBuilder(
+                  futureList: productModel.futureProductList,
+                  onRefresh: _reload,
+                  padding: EdgeInsets.only(left: 11, right: 11, top: 18, bottom: 90),
+                  itemBuilder: (BuildContext context, Product product) {
+                    return ProductTile(product, deleteProductResponseFn,_scaffoldKey);
                   },
                 );
               },
@@ -268,4 +232,21 @@ class StockShowPage extends StatelessWidget {
       ),
     );
   }
-}
+
+  void updateStocksProductsWithServer(Product product, BuildContext context) async {
+       Message.alertDialogLoading(context);
+      try {
+        await ProductModel.of(context).fetchAllProducts(_stock.id);
+        await ProductModel.of(context).sumProductsTotalValue();
+        double totalStock = await ProductModel.of(context).sumProductsTotalQuantity();
+        await Future.delayed(Duration(milliseconds: 500));
+        await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
+        StockModel.of(context).updateSelectedStockStatus();
+        await Future.delayed(Duration(milliseconds: 500));
+        await StockModel.of(context).fetchAllStocks();
+      } finally {
+        HistoryModel.of(context).saveHistoryOnDelete(product: product);
+        Navigator.of(context).pop();
+      }
+    }
+  }
