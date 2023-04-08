@@ -1,7 +1,7 @@
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/repository/api/product_api.dart';
 import 'package:estok_app/repository/api/upload_image_api.dart';
-import 'package:estok_app/util/share_util.dart';
+import 'package:estok_app/utils/share_util.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dart:io';

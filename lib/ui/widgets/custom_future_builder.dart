@@ -22,7 +22,7 @@ class CustomFutureBuilder<T> extends StatelessWidget {
     this.emptyMessage = "Nenhum dado encontrado!",
     this.filter,
     this.filterCategory,
-    this.padding = const EdgeInsets.only(left: 10, right: 10, top: 37, bottom: 90)
+    this.padding = const EdgeInsets.only(left: 10, right: 10, top: 29, bottom: 90)
   });
 
   @override

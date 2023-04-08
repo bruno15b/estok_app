@@ -27,10 +27,11 @@ class StockTile extends StatelessWidget {
     return Card(
       elevation: 0,
       child: InkWell(
+        borderRadius: BorderRadius.circular(15),
         onTap: () async {
           StockModel.of(context).setSelectedStock(_stock);
           await ProductModel.of(context).fetchAllProducts(_stock.id);
-          ProductModel.of(context).sumProductsTotalValue();
+          await ProductModel.of(context).sumProductsTotalValue();
           var total = await ProductModel.of(context).sumProductsTotalQuantity();
           await StockModel.of(context).updateStockTotalProductQuantity(total);
           StockModel.of(context).updateSelectedStockStatus();
@@ -49,7 +50,7 @@ class StockTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
           ),
           height: 90,
-          margin: EdgeInsets.only(top: 0, bottom: 16),
+          margin: EdgeInsets.only(top: 8, bottom: 8),
           padding: EdgeInsets.only(top: 15, left: 22, right: 12, bottom: 14),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

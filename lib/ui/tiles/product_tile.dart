@@ -1,9 +1,9 @@
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
-import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/pages/product_add_page.dart';
 import 'package:estok_app/ui/widgets/message.dart';
+import 'package:estok_app/utils/server_sync_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -19,7 +19,9 @@ class ProductTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ProductModel.of(context).productUnitQuantity = null;
+        ProductModel
+            .of(context)
+            .productUnitQuantity = null;
         Message.alertDialogConfirm(
           context,
           textOkButton: "Alterar ",
@@ -60,7 +62,9 @@ class ProductTile extends StatelessWidget {
           ),
           onPressedOkButton: () async {
             Navigator.of(context).pop();
-            _product.productQuantity = ProductModel.of(context).productUnitQuantity;
+            _product.productQuantity = ProductModel
+                .of(context)
+                .productUnitQuantity;
 
             await ProductModel.of(context).updateProduct(
               _product,
@@ -69,7 +73,7 @@ class ProductTile extends StatelessWidget {
                     scaffoldKey: scaffoldKey,
                     message: "Quantidade atualizada com sucesso!",
                     onPop: (_) {
-                      updateStocksProductsWithServer(_product, context);
+                      ServerSyncUtil.updateStocksProductsWithServer(context,_product);
                       HistoryModel.of(context).saveHistoryOnUpdate(product: _product);
                     });
                 return;
@@ -112,7 +116,7 @@ class ProductTile extends StatelessWidget {
               height: 120,
               width: double.infinity,
               padding: EdgeInsets.only(top: 14),
-              margin:EdgeInsets.only(bottom: 14) ,
+              margin: EdgeInsets.only(bottom: 14),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -152,7 +156,11 @@ class ProductTile extends StatelessWidget {
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 14,
-                                        color: Theme.of(context).textTheme.headline1.color,
+                                        color: Theme
+                                            .of(context)
+                                            .textTheme
+                                            .headline1
+                                            .color,
                                       ),
                                     ),
                                     SizedBox(height: 5,),
@@ -164,7 +172,11 @@ class ProductTile extends StatelessWidget {
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 11,
-                                        color: Theme.of(context).textTheme.headline4.color,
+                                        color: Theme
+                                            .of(context)
+                                            .textTheme
+                                            .headline4
+                                            .color,
                                       ),
                                     ),
                                   ],
@@ -173,7 +185,9 @@ class ProductTile extends StatelessWidget {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: MediaQuery.of(context).orientation == Orientation.landscape
+                                padding: MediaQuery
+                                    .of(context)
+                                    .orientation == Orientation.landscape
                                     ? EdgeInsets.only(right: 70)
                                     : EdgeInsets.only(right: 0),
                                 child: Column(
@@ -185,7 +199,9 @@ class ProductTile extends StatelessWidget {
                                         child: Text(
                                           "R\$ ${_product.productItemPrice}",
                                           style: TextStyle(
-                                              color: Theme.of(context).primaryColor,
+                                              color: Theme
+                                                  .of(context)
+                                                  .primaryColor,
                                               fontWeight: FontWeight.w700,
                                               fontSize: 14),
                                         ),
@@ -200,7 +216,11 @@ class ProductTile extends StatelessWidget {
                                         fit: BoxFit.scaleDown,
                                         child: Text(
                                           "R\$ ${_product.productUnitaryPrice}",
-                                          style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyText1.color),
+                                          style: TextStyle(fontSize: 12, color: Theme
+                                              .of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              .color),
                                         ),
                                       ),
                                     ),
@@ -217,17 +237,23 @@ class ProductTile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              margin: EdgeInsets.only(left:35, top: 5),
+                              margin: EdgeInsets.only(left: 35, top: 5),
                               child: Text(
                                 "${_product.productQuantity}",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Theme.of(context).textTheme.bodyText1.color,
+                                  color: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      .color,
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: MediaQuery.of(context).orientation == Orientation.landscape
+                              padding: MediaQuery
+                                  .of(context)
+                                  .orientation == Orientation.landscape
                                   ? EdgeInsets.only(right: 70)
                                   : EdgeInsets.only(right: 15),
                               child: Row(
@@ -278,23 +304,5 @@ class ProductTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void updateStocksProductsWithServer(Product product, BuildContext context) async {
-    Message.alertDialogLoading(context);
-    try {
-      await ProductModel.of(context).sumProductsTotalValue();
-      double stockTotal = await ProductModel.of(context).sumProductsTotalQuantity();
-      await StockModel.of(context).updateStockTotalProductQuantity(stockTotal);
-      StockModel.of(context).updateSelectedStockStatus();
-      await Future.delayed(Duration(milliseconds: 500));
-      await StockModel.of(context).fetchAllStocks();
-      await Future.delayed(Duration(milliseconds: 500));
-    } catch (e) {
-      print(e);
-    } finally {
-      Navigator.of(context).pop();
-      await ProductModel.of(context).fetchAllProducts(product.stockId);
-    }
   }
 }

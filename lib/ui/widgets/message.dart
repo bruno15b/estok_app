@@ -239,11 +239,11 @@ class Message {
                         Navigator.pop(context);
                       },
                       child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
+                          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 80),
                           child: Text(
                             listStockTypeEnum[index].stringValue,
                             style: TextStyle(
-                              fontSize: 14.0,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Theme.of(context).primaryColor,
                             ),

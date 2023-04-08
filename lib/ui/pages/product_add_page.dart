@@ -2,7 +2,7 @@ import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/entities/stock.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
-import 'package:estok_app/models/stock_model.dart';
+import "package:estok_app/utils/server_sync_util.dart";
 import 'package:estok_app/ui/formatters/currency_text_formatter.dart';
 import 'package:estok_app/ui/validators/product_add_page_validator.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
@@ -219,8 +219,10 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
               scaffoldKey: _scaffoldKey,
               message: "Produto adicionado com sucesso!",
               seconds: 1,
-              onPop: (_) {
-                updateStocksProductsWithServer(product);
+              onPop: (_) async {
+                await ProductModel.of(context).fetchAllProducts(product.stockId);
+                await ServerSyncUtil.updateStocksProductsWithServer(context,product);
+                Navigator.of(context).pop();
                 HistoryModel.of(context).saveHistoryOnInsert(product: product);
               },
             );
@@ -245,8 +247,10 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
               scaffoldKey: _scaffoldKey,
               message: "Produto editado com sucesso!",
               seconds: 1,
-              onPop: (_) {
-                updateStocksProductsWithServer(product);
+              onPop: (_) async{
+                await ProductModel.of(context).fetchAllProducts(product.stockId);
+                await ServerSyncUtil.updateStocksProductsWithServer(context,product);
+                Navigator.of(context).pop();
                 HistoryModel.of(context).saveHistoryOnUpdate(product: product);
               },
             );
@@ -262,25 +266,6 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
           },
         );
       }
-    }
-  }
-
-  void updateStocksProductsWithServer(Product product) async {
-    Message.alertDialogLoading(context);
-    try {
-      await ProductModel.of(context).fetchAllProducts(product.stockId);
-      await ProductModel.of(context).sumProductsTotalValue();
-      double totalStock = await ProductModel.of(context).sumProductsTotalQuantity();
-      await Future.delayed(Duration(milliseconds: 500));
-      await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
-      StockModel.of(context).updateSelectedStockStatus();
-      await Future.delayed(Duration(milliseconds: 500));
-      await StockModel.of(context).fetchAllStocks();
-    } catch (e) {
-      print(e);
-    } finally {
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
     }
   }
 
@@ -306,6 +291,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
           mainAxisSize: MainAxisSize.min,
           children: [
             FlatButton(
+                padding: EdgeInsets.symmetric(horizontal: 100,vertical: 20),
                 onPressed: () async {
                   var picker = ImagePicker();
                   var pickedFile = await picker.getImage(source: ImageSource.camera);
@@ -319,6 +305,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
                 },
                 child: Text("Câmera")),
             FlatButton(
+              padding: EdgeInsets.symmetric(horizontal: 100,vertical: 20),
                 onPressed: () async {
                   var picker = ImagePicker();
                   var pickedFile = await picker.getImage(source: ImageSource.gallery);

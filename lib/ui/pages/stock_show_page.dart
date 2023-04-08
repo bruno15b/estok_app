@@ -10,6 +10,7 @@ import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
 import 'package:estok_app/ui/widgets/custom_future_builder.dart';
 import 'package:estok_app/ui/widgets/message.dart';
+import 'package:estok_app/utils/server_sync_util.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -39,18 +40,19 @@ class StockShowPage extends StatelessWidget {
             scaffoldKey: _scaffoldKey,
             message: "Produto deletado",
             seconds: 2,
-            onPop: (_) {
-              updateStocksProductsWithServer(product,context);
+            onPop: (_) async {
+              await ProductModel.of(context).fetchAllProducts(product.stockId);
+              await ServerSyncUtil.updateStocksProductsWithServer(context, product);
+              HistoryModel.of(context).saveHistoryOnDelete(product: product);
             });
       } else {
         return Message.onFail(
-          scaffoldKey: _scaffoldKey,
-          message: "Falha ao deletar o produto",
-          seconds: 2,
-          onPop: (_){
-            ProductModel.of(context).fetchAllProducts(product.stockId);
-          }
-        );
+            scaffoldKey: _scaffoldKey,
+            message: "Falha ao deletar o produto",
+            seconds: 2,
+            onPop: (_) {
+              ProductModel.of(context).fetchAllProducts(product.stockId);
+            });
       }
     }
 
@@ -101,11 +103,7 @@ class StockShowPage extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
-                              color: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodyText2
-                                  .color),
+                              color: Theme.of(context).textTheme.bodyText2.color),
                         ),
                         Padding(
                           padding: EdgeInsets.only(top: 6, bottom: 10),
@@ -151,7 +149,7 @@ class StockShowPage extends StatelessWidget {
                               context,
                               title: "Deseja excluir o estoque?",
                               subtitle:
-                              "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
+                                  "A exclusão ira deletar permanentemente todos os dados de produto que essse estoque possui",
                               onPressedNoButton: () {
                                 Navigator.of(context).pop();
                               },
@@ -219,7 +217,7 @@ class StockShowPage extends StatelessWidget {
                   onRefresh: _reload,
                   padding: EdgeInsets.only(left: 11, right: 11, top: 18, bottom: 90),
                   itemBuilder: (BuildContext context, Product product) {
-                    return ProductTile(product, deleteProductResponseFn,_scaffoldKey);
+                    return ProductTile(product, deleteProductResponseFn, _scaffoldKey);
                   },
                 );
               },
@@ -234,21 +232,4 @@ class StockShowPage extends StatelessWidget {
       ),
     );
   }
-
-  void updateStocksProductsWithServer(Product product, BuildContext context) async {
-       Message.alertDialogLoading(context);
-      try {
-        await ProductModel.of(context).fetchAllProducts(_stock.id);
-        await ProductModel.of(context).sumProductsTotalValue();
-        double totalStock = await ProductModel.of(context).sumProductsTotalQuantity();
-        await Future.delayed(Duration(milliseconds: 500));
-        await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
-        StockModel.of(context).updateSelectedStockStatus();
-        await Future.delayed(Duration(milliseconds: 500));
-        await StockModel.of(context).fetchAllStocks();
-      } finally {
-        HistoryModel.of(context).saveHistoryOnDelete(product: product);
-        Navigator.of(context).pop();
-      }
-    }
-  }
+}
