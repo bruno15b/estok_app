@@ -75,6 +75,9 @@ class LoginPage extends StatelessWidget with LoginValidator {
                 ),
                 ScopedModelDescendant<UserModel>(
                   builder: (context, snapshot, userModel) {
+
+                    userModel.currentIndexMainPage =0;
+
                     return CustomTextFormField(
                       floatingLabelBehavior: FloatingLabelBehavior.auto,
                       labelText: "Senha",
@@ -127,7 +130,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
     UserModel.of(context).login(_emailController.text, _passwordController.text, onSuccess: () {
       Message.onSuccess(
         scaffoldKey: _scaffoldKey,
-        message: "Usuário logado com sucesso",
+        message: "Usuário logado com sucesso!",
         seconds: 2,
         onPop: (_) {
           Navigator.of(context).push(
@@ -142,11 +145,11 @@ class LoginPage extends StatelessWidget with LoginValidator {
 
       StockModel.of(context).fetchAllStocks();
       return;
-    }, onFail: (errorText) {
+    }, onFail: (onFailText) {
       Message.onFail(
           scaffoldKey: _scaffoldKey,
           seconds: 2,
-          message: errorText,
+          message: onFailText,
           onPop: (_) async {
             String password = await UserRepository.instance.getUserPassword();
             User user = await UserRepository.instance.getUser();

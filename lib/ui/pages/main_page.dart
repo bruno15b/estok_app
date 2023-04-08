@@ -6,6 +6,7 @@ import 'package:estok_app/ui/pages/home_page.dart';
 import 'package:estok_app/ui/pages/profile_page.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
+import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -13,6 +14,8 @@ import 'package:scoped_model/scoped_model.dart';
 import 'login_page.dart';
 
 class MainPage extends StatelessWidget {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     PageController _pageController = PageController(initialPage: 0);
@@ -26,6 +29,7 @@ class MainPage extends StatelessWidget {
     return ScopedModelDescendant<UserModel>(
       builder: (context, snapshot, userModel) {
         return Scaffold(
+          key: _scaffoldKey,
           appBar: CustomAppBar(
             titleText: pagesTitle[userModel.currentIndexMainPage],
             automaticallyImplyLeading: userModel.currentIndexMainPage == 0 ? true : false,
@@ -144,7 +148,7 @@ class MainPage extends StatelessWidget {
                             contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
                             leading: Icon(
                               Icons.account_circle,
-                              color: Color(0xFF949191),
+                              color: Theme.of(context).textTheme.headline4.color,
                             ),
                             title: Text(
                               "Meu Perfil",
@@ -163,7 +167,7 @@ class MainPage extends StatelessWidget {
                             contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
                             leading: Icon(
                               Icons.store,
-                              color: Color(0xFF949191),
+                              color: Theme.of(context).textTheme.headline4.color,
                             ),
                             title: Text(
                               "Estoques",
@@ -181,11 +185,14 @@ class MainPage extends StatelessWidget {
                             contentPadding: EdgeInsets.fromLTRB(28, 0, 28, 0),
                             leading: Icon(
                               Icons.playlist_add_check,
-                              color: Color(0xFF949191),
+                              color: Theme.of(context).textTheme.headline4.color,
                             ),
                             title: Text(
                               "Histórico",
-                              style: TextStyle(color: Theme.of(context).primaryColor,fontSize: 14,),
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 14,
+                              ),
                             ),
                             trailing: Icon(
                               Icons.arrow_forward_ios,
@@ -208,17 +215,12 @@ class MainPage extends StatelessWidget {
                               colorText: Theme.of(context).scaffoldBackgroundColor,
                               colorButton: Theme.of(context).primaryColor,
                               fontSize: 14,
-                              onPressed: () {
-                                UserModel.of(context).logout();
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (BuildContext context) {
-                                    return LoginPage();
-                                  }),
-                                );
-                              },
+                              onPressed: () => logoutOnPressed(context),
                             ),
                           ),
-                          SizedBox(height: 40,)
+                          SizedBox(
+                            height: 40,
+                          )
                         ],
                       ),
                     ),
@@ -228,5 +230,34 @@ class MainPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  void logoutOnPressed(BuildContext context) {
+    Navigator.of(context).pop();
+    UserModel.of(context).logout(onFail: (logoutError) {
+      Message.onFail(
+          scaffoldKey: _scaffoldKey,
+          message: logoutError,
+          seconds: 3,
+          onPop: (_) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
+              (Route<dynamic> route) => false,
+            );
+          });
+      return;
+    }, onSuccess: () {
+      Message.onSuccess(
+          scaffoldKey: _scaffoldKey,
+          message: "Logout realizado com sucesso!Encerrando...",
+          seconds: 3,
+          onPop: (_) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
+              (Route<dynamic> route) => false,
+            );
+          });
+      return;
+    });
   }
 }

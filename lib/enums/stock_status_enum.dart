@@ -1,4 +1,3 @@
-
 enum StockStatusEnum {
   EM_ESTOQUE,
   EM_FALTA,

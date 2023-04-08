@@ -33,13 +33,13 @@ class CustomAppBar extends PreferredSize {
       shape: showBorder
           ? Border(
               bottom: BorderSide(
-                color: Color(0xFFC4C4C4),
+                color: Theme.of(context).textTheme.caption.color,
                 width: 1,
               ),
             )
           : null,
       title: Container(
-        width: 100,
+        width: 130,
         child: Text(
           titleText,
           overflow: TextOverflow.ellipsis,

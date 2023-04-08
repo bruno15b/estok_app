@@ -4,7 +4,7 @@ import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/formatters/currency_text_formatter.dart';
-import 'package:estok_app/ui/validators/add_pages_validator.dart';
+import 'package:estok_app/ui/validators/product_add_page_validator.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
@@ -28,7 +28,7 @@ class ProductAddPage extends StatefulWidget {
   State<ProductAddPage> createState() => _ProductAddPageState();
 }
 
-class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators {
+class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageValidator {
   var _productNameController = TextEditingController();
   var _productDescriptionController = TextEditingController();
   var _productItemPriceController = TextEditingController();
@@ -106,7 +106,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 maxLength: 21,
                 controller: _productNameController,
                 requestFocus: _focusProductDescription,
-                validator: emptyField,
+                validator: nameValidator,
                 textAboveFormField: "Nome",
                 labelText: "Nome do Produto",
                 hintText: "Ex: Heinkiken Original",
@@ -119,7 +119,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 controller: _productDescriptionController,
                 focusNode: _focusProductDescription,
                 requestFocus: _focusProductItemPrice,
-                validator: emptyField,
+                validator: descriptionValidator,
                 maxLines: 3,
                 textAboveFormField: "Descrição",
                 labelText: "Descrição do Produto",
@@ -161,7 +161,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 controller: _productQuantityController,
                 focusNode: _focusProductQuantity,
                 requestFocus: _focusProductUrlSite,
-                validator: onlyNumbers,
+                validator: onlyNumbersValidator,
                 textAboveFormField: "Quantidade",
                 labelText: "Informe a quantidade do produto",
                 hintText: "Ex: 10",
@@ -170,7 +170,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                 sizeText: 14,
               ),
               CustomTextFormField(
-                validator:validateUrl,
+                validator: urlValidator,
                 maxLength: 40,
                 controller: _productUrlSiteController,
                 focusNode: _focusProductUrlSite,
@@ -201,8 +201,10 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
       Product product = Product(
         productName: _productNameController.text,
         productDescription: _productDescriptionController.text,
-        productItemPrice: double.parse(_productItemPriceController.text.replaceAll(RegExp(r'^[R$\s]+'), '')),
-        productUnitaryPrice: double.parse(_productUnitaryPriceController.text.replaceAll(RegExp(r'^[R$\s]+'), '')),
+        productItemPrice:
+            double.parse(_productItemPriceController.text.replaceAll(RegExp(r'^[R$\s]+'), '').replaceAll(',', '.')),
+        productUnitaryPrice:
+            double.parse(_productUnitaryPriceController.text.replaceAll(RegExp(r'^[R$\s]+'), '').replaceAll(',', '.')),
         productQuantity: int.parse(_productQuantityController.text),
         productUrlSite: _productUrlSiteController.text,
         productImageUrl: widget.product?.productImageUrl ?? "",
@@ -215,7 +217,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
           onSuccess: () {
             Message.onSuccess(
               scaffoldKey: _scaffoldKey,
-              message: "Produto adicionado com sucesso",
+              message: "Produto adicionado com sucesso!",
               seconds: 1,
               onPop: (_) {
                 updateStocksProductsWithServer(product);
@@ -224,10 +226,10 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
             );
             return;
           },
-          onFail: (errorText) {
+          onFail: (onFailText) {
             Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: errorText,
+              message: onFailText,
               seconds: 3,
             );
             return;
@@ -241,7 +243,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
           onSuccess: () {
             Message.onSuccess(
               scaffoldKey: _scaffoldKey,
-              message: "Produto editado com sucesso",
+              message: "Produto editado com sucesso!",
               seconds: 1,
               onPop: (_) {
                 updateStocksProductsWithServer(product);
@@ -250,10 +252,10 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
             );
             return;
           },
-          onFail: (errorText) {
+          onFail: (onFailText) {
             Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: errorText,
+              message: onFailText,
               seconds: 3,
             );
             return;
@@ -315,7 +317,7 @@ class _ProductAddPageState extends State<ProductAddPage> with AddPagesValidators
                   productModel.setState();
                   Navigator.of(context).pop();
                 },
-                child: Text("Camera")),
+                child: Text("Câmera")),
             FlatButton(
                 onPressed: () async {
                   var picker = ImagePicker();

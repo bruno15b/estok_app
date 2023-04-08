@@ -15,9 +15,8 @@ import 'package:scoped_model/scoped_model.dart';
 
 class StockShowPage extends StatelessWidget {
   final Stock _stock;
-  final Color colorStockStatus;
 
-  StockShowPage(this._stock, this.colorStockStatus);
+  StockShowPage(this._stock);
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -48,6 +47,9 @@ class StockShowPage extends StatelessWidget {
           scaffoldKey: _scaffoldKey,
           message: "Falha ao deletar o produto",
           seconds: 2,
+          onPop: (_){
+            ProductModel.of(context).fetchAllProducts(product.stockId);
+          }
         );
       }
     }
@@ -70,19 +72,19 @@ class StockShowPage extends StatelessWidget {
                     children: [
                       Text(
                         "Tipo: ${_stock.typeOfStock.toUpperCase()}",
-                        style: TextStyle(fontSize: 15, color: Colors.black),
+                        style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       Text(
                         "Entrada em: ${StockModel.of(context).formatDateToString(_stock.enterDate)}",
-                        style: TextStyle(fontSize: 15, color: Colors.black),
+                        style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       Text(
                         "Validade: ${StockModel.of(context).formatDateToString(_stock.validityDate)}",
-                        style: TextStyle(fontSize: 15, color: Colors.black),
+                        style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       Text(
                         "Valor Total: ${productModel.productsTotalValue} ",
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                        style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       SizedBox(
                         height: 20,
@@ -110,13 +112,13 @@ class StockShowPage extends StatelessWidget {
                           child: SizedBox(
                             width: 80,
                             child: Text(
-                              "${stockModel.selectedStockStatusText ?? _stock.stockStatus}",
+                              "${_stock.stockStatus}",
                               overflow: TextOverflow.clip,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14,
-                                color: stockModel.selectedStockStatusColor ?? colorStockStatus,
+                                color: stockModel.selectedStockStatusColor,
                               ),
                             ),
                           ),

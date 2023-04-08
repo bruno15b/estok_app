@@ -10,7 +10,7 @@ extension OperationTypeEnumExtension on OperationTypeEnum {
       case OperationTypeEnum.REMOCAO:
         return "REMOÇÃO";
       default:
-        return "";
+        return 'Not Defined In Extension';
     }
   }
 }

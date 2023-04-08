@@ -4,7 +4,7 @@ import 'package:estok_app/enums/extensions/stock_type_enum_extension.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/ui/formatters/date_text_formatter.dart';
-import 'package:estok_app/ui/validators/add_pages_validator.dart';
+import 'package:estok_app/ui/validators/stock_add_page_validator.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,8 +22,7 @@ class StockAddPage extends StatefulWidget {
   _StockAddPageState createState() => _StockAddPageState();
 }
 
-class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
-  String _selectedStockTypeOption;
+class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator {
 
   final FocusNode _focusEnterDate = FocusNode();
   final FocusNode _focusValidityDate = FocusNode();
@@ -39,7 +38,9 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
   @override
   void initState() {
     super.initState();
-
+    print(StockTypeEnum.values[0].stringValue);
+    var values = StockTypeEnum.values;
+    print(values);
     if (widget.stock != null) {
       newStockAdd = false;
       _stockDescriptionController.text = widget.stock.stockDescription;
@@ -63,14 +64,15 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
           padding: EdgeInsets.only(top: 31, left: 24, right: 24, bottom: 60),
           children: [
             CustomTextFormField(
-              validator: emptyField,
+              validator: descriptionValidator,
+              maxLength: 22,
               requestFocus: _focusEnterDate,
               textAboveFormField: "Descrição",
               labelText: "Descrição do estoque",
               hintText: "Ex: Engradados Cerveja",
               keyboardType: TextInputType.text,
               controller: _stockDescriptionController,
-              colorText: Color(0xFFC3B6B6),
+              colorText: Theme.of(context).textTheme.headline2.color,
               sizeText: 14,
             ),
             Row(
@@ -87,9 +89,9 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     controller: _stockEnterDateController,
                     focusNode: _focusEnterDate,
                     requestFocus: _focusValidityDate,
-                    validator: validateDate,
+                    validator: dateValidator,
                     maxLength: 10,
-                    colorText: Color(0xFFC3B6B6),
+                    colorText: Theme.of(context).textTheme.headline2.color,
                     sizeText: 14,
                   ),
                 ),
@@ -103,9 +105,9 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                     hintText: "12/12/2012",
                     controller: _stockValidityDateController,
                     focusNode: _focusValidityDate,
-                    validator: validateDate,
+                    validator: dateValidator,
                     maxLength: 10,
-                    colorText: Color(0xFFC3B6B6),
+                    colorText: Theme.of(context).textTheme.headline2.color,
                     sizeText: 14,
                   ),
                 ),
@@ -121,10 +123,6 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                         style: TextStyle(color: Theme.of(context).textTheme.bodyText2.color, fontSize: 16)),
                   ),
                   InkWell(
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
-                      _showOptionsDialog();
-                    },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(20, 11, 20, 11),
                       decoration: BoxDecoration(
@@ -136,11 +134,11 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Colors.transparent,
+                          Expanded(
+                            child: SizedBox(),
                           ),
                           Expanded(
+                            flex: 10,
                             child: Text(
                               stockModel.selectedStockType,
                               style: TextStyle(
@@ -151,13 +149,19 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                               textAlign: TextAlign.center,
                             ),
                           ),
-
-                            Icon(
+                          Expanded(
+                            child: Icon(
                               Icons.keyboard_arrow_down,
                             ),
+                          ),
                         ],
                       ),
                     ),
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                      Message.alertDialogChooser(context,
+                          listStockTypeEnum: StockTypeEnum.values, stockModel: stockModel);
+                    },
                   ),
                 ],
               );
@@ -175,88 +179,22 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
     );
   }
 
-  _showOptionsDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          content: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  onTap: () {
-                    _selectedStockTypeOption = StockTypeEnum.CAIXA.stringValue;
-                    StockModel.of(context).onChangeTypeOfStock(_selectedStockTypeOption);
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
-                    child: Text(
-                      StockTypeEnum.CAIXA.stringValue,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () {
-                    _selectedStockTypeOption = StockTypeEnum.GRADE.stringValue;
-                    StockModel.of(context).onChangeTypeOfStock(_selectedStockTypeOption);
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
-                    child: Text(
-                     StockTypeEnum.GRADE.stringValue,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () {
-                    _selectedStockTypeOption = StockTypeEnum.PACOTE.stringValue;
-                    StockModel.of(context).onChangeTypeOfStock(_selectedStockTypeOption);
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
-                    child: Text(
-                     StockTypeEnum.PACOTE.stringValue,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void stockOnPressed() async {
     FocusScope.of(context).unfocus();
     if (this._formKey.currentState.validate()) {
+
       DateTime _enterDate = StockModel.of(context).formatStringToDate(_stockEnterDateController.text);
       DateTime _validityDate = StockModel.of(context).formatStringToDate(_stockValidityDateController.text);
       String typeOfStock = StockModel.of(context).selectedStockType;
+
+      if (_validityDate.isBefore(_enterDate)) {
+        Message.onFail(
+          scaffoldKey: _scaffoldKey,
+          message: "A validade não pode ser anterior a data de entrada.",
+          seconds: 3,
+        );
+        return;
+      }
 
       Stock stock = Stock(
         stockDescription: _stockDescriptionController.text,
@@ -271,7 +209,7 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
           onSuccess: () async {
             Message.onSuccess(
                 scaffoldKey: _scaffoldKey,
-                message: "Estoque adicionado com sucesso",
+                message: "Estoque adicionado com sucesso!",
                 seconds: 3,
                 onPop: (value) {
                   StockModel.of(context).fetchAllStocks();
@@ -280,10 +218,10 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
                 });
             return;
           },
-          onFail: (errorText) {
+          onFail: (onFailText) {
             Message.onFail(
               scaffoldKey: _scaffoldKey,
-              message: errorText,
+              message: onFailText,
               seconds: 3,
             );
             return;
@@ -318,7 +256,6 @@ class _StockAddPageState extends State<StockAddPage> with AddPagesValidators {
           },
         );
       }
-      return;
     }
   }
 }

@@ -29,7 +29,9 @@ class UserApi {
         return user;
       } else {
         print("UserApi: ${response.statusCode}");
-
+        if(response.statusCode == 500){
+          return User();
+        }
         return null;
       }
     } on Exception catch (error) {
@@ -55,7 +57,7 @@ class UserApi {
       }
     } on Exception catch (error) {
       print('Erro ao realizar logout: $error');
-      throw error;
+      return false;
     }
   }
 }

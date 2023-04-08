@@ -13,7 +13,6 @@ class StockModel extends Model {
   String selectedStockType = StockTypeEnum.CAIXA.stringValue;
   final dateFormatString = "dd/MM/yyyy";
   Stock selectedStock;
-  String selectedStockStatusText;
   Color selectedStockStatusColor;
 
   static StockModel of(BuildContext context) {
@@ -82,7 +81,7 @@ class StockModel extends Model {
   void updateSelectedStockStatus() {
     StockStatusEnum stockStatus = fromStockQuantity(selectedStock.stockTotalProductQuantity);
     selectedStockStatusColor = stockStatus.colorValue;
-    selectedStockStatusText= stockStatus.stringValue;
+    selectedStock.stockStatus = stockStatus.stringValue;
     setState();
   }
 

@@ -14,7 +14,7 @@ extension StockStatusEnumExtension on StockStatusEnum {
       case StockStatusEnum.TODOS:
         return "TODOS";
       default:
-        return "";
+        return 'Not Defined In Extension';
     }
   }
 

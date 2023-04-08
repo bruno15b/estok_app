@@ -18,8 +18,8 @@ class CustomFutureBuilder<T> extends StatelessWidget {
     @required this.itemBuilder,
     @required this.onRefresh,
     this.connectionMessage = "Não foi possivel obter os dados necessários, sem conexão!",
-    this.errorMessage = '"Não foi possível obter os dados, recarregue a pagina!"',
-    this.emptyMessage = "Nenhum dado encontrado",
+    this.errorMessage = "Erro ao obter os dados!",
+    this.emptyMessage = "Nenhum dado encontrado!",
     this.filter,
     this.filterCategory,
     this.padding = const EdgeInsets.only(left: 10, right: 10, top: 37, bottom: 90)
@@ -41,7 +41,7 @@ class CustomFutureBuilder<T> extends StatelessWidget {
             } else if (!snapshot.hasData) {
               return Message.alert(errorMessage, onPressed: onRefresh, color: Theme.of(context).primaryColor);
             } else if (snapshot.data.isEmpty) {
-              return Message.alert(emptyMessage, onPressed: onRefresh, color: Theme.of(context).primaryColor);
+              return Message.alert(emptyMessage, color: Theme.of(context).primaryColor);
             } else {
               List<T> filteredList =
                   filter != null && filterCategory != null ? filter(snapshot.data, filterCategory) : snapshot.data;

@@ -9,7 +9,7 @@ class CustomFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
+      padding: EdgeInsets.only(bottom: 15),
       child: FloatingActionButton(
         elevation: 0,
         foregroundColor: Theme.of(context).scaffoldBackgroundColor,

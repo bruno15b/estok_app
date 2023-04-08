@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 fontWeight: FontWeight.w500,
                 height: 2,
               ),
-              unselectedLabelColor: Color(0xFF909FAD),
+              unselectedLabelColor: Theme.of(context).textTheme.headline4.color,
               labelColor: Theme.of(context).primaryColor,
               labelStyle: TextStyle(
                 fontSize: 13,

@@ -152,7 +152,7 @@ class ProductTile extends StatelessWidget {
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 14,
-                                        color: Color(0xFF555353),
+                                        color: Theme.of(context).textTheme.headline1.color,
                                       ),
                                     ),
                                     SizedBox(height: 5,),
@@ -164,7 +164,7 @@ class ProductTile extends StatelessWidget {
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 11,
-                                        color: Color(0xFF949191),
+                                        color: Theme.of(context).textTheme.headline4.color,
                                       ),
                                     ),
                                   ],
@@ -200,7 +200,7 @@ class ProductTile extends StatelessWidget {
                                         fit: BoxFit.scaleDown,
                                         child: Text(
                                           "R\$ ${_product.productUnitaryPrice}",
-                                          style: TextStyle(fontSize: 12, color: Colors.black),
+                                          style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyText1.color),
                                         ),
                                       ),
                                     ),
@@ -222,7 +222,7 @@ class ProductTile extends StatelessWidget {
                                 "${_product.productQuantity}",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.black,
+                                  color: Theme.of(context).textTheme.bodyText1.color,
                                 ),
                               ),
                             ),

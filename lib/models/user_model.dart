@@ -27,18 +27,23 @@ class UserModel extends Model {
     } else if (user == null) {
       onFail("Erro ao logar! Verifique o email e senha!");
     } else {
-      String password = await UserRepository.instance.getUserPassword();
+      String savePassword = await UserRepository.instance.getUserPassword();
       User user = await UserRepository.instance.getUser();
-      if (email == user.email && password == password) {
-        onFail("Sem conexão! Redirecionando para Histórico");
+      if (email == user.email && password == savePassword) {
+        onFail("Sem conexão com o servidor! Carregando Histórico!");
       } else {
-        onFail("Sem conexão com a internet!");
+        onFail("Sem conexão com o servidor!");
       }
     }
   }
 
-  Future<void> logout() async {
+  Future<void> logout({VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
     User user = await UserRepository.instance.getUser();
-    await UserApi.instance.logout(user.token);
+    bool logoutResponse = await UserApi.instance.logout(user.token);
+    if(logoutResponse){
+      onSuccess();
+    }else{
+      onFail("Erro ao fazer logout! Encerrando Sessão!");
+    }
   }
 }
