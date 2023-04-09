@@ -42,8 +42,6 @@ class StockAddPageValidator {
     return null;
   }
 
-
-
   String descriptionValidator(String value) {
     if (value.trim().isEmpty) {
       return "Campo vazio";

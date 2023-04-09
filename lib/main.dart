@@ -1,3 +1,4 @@
+import 'package:estok_app/app/shared/constants.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/product_model.dart';
@@ -35,7 +36,7 @@ class _MyAppState extends State<MyApp> {
             model: widget.historyScopedModel,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: 'ESTOK APP',
+              title: Constants.APP_TITLE,
               theme: ThemeData(
                 textTheme: TextTheme(
                   bodyText1: TextStyle(color: Color(0xFF000000)),

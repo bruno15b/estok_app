@@ -1,4 +1,4 @@
-enum ObjectTypeEnum {
+enum EntityTypeEnum {
   ESTOQUE,
   PRODUTO,
 }

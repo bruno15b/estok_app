@@ -1,3 +1,4 @@
+import 'package:estok_app/app/shared/constants.dart';
 import 'package:estok_app/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,7 @@ class SplashScreenPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "ESTOK APP",
+              Constants.APP_TITLE,
               style: TextStyle(color: Theme.of(context).textTheme.headline3.color, fontSize: 34),
             ),
             SizedBox(

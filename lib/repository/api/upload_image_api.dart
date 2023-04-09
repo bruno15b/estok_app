@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:estok_app/app/shared/constants.dart';
+
 import '../local/user_repository.dart';
 import '../../entities/user.dart';
 import 'dart:convert' as convert;
@@ -15,7 +17,7 @@ class UploadImageApi{
     try {
       print("ProductApi[postNewProduct]:---------- Entrou");
 
-      String url = "http://54.90.203.92/images/upload";
+      String url = Constants.BASE_URL_API + "images/upload";
       User user = await UserRepository.instance.getUser();
       String authorization = "Bearer ${user.token}";
       

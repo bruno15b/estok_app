@@ -1,4 +1,5 @@
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/enums/upload_progress_enum.dart';
 import 'package:estok_app/enums/stock_status_enum.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
 import 'package:estok_app/enums/extensions/stock_status_enum_extension.dart';
@@ -6,14 +7,13 @@ import 'package:estok_app/enums/extensions/stock_type_enum_extension.dart';
 import 'package:estok_app/enums/stock_type_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:intl/intl.dart';
 
 class StockModel extends Model {
   Future<List<Stock>> futureStockList;
   String selectedStockType = StockTypeEnum.CAIXA.stringValue;
-  final dateFormatString = "dd/MM/yyyy";
   Stock selectedStock;
   Color selectedStockStatusColor;
+  UploadProgressEnum stockUploadProgressChange = UploadProgressEnum.IDLE;
 
   static StockModel of(BuildContext context) {
     return ScopedModel.of<StockModel>(context);
@@ -38,6 +38,7 @@ class StockModel extends Model {
     } else {
       onFail("Erro ao criar novo Estoque!");
     }
+    setState();
   }
 
   Future<void> updateStock(Stock stock, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
@@ -47,6 +48,7 @@ class StockModel extends Model {
     } else {
       onFail("Erro ao editar estoque!");
     }
+    setState();
   }
 
   deleteStock(Stock stock, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
@@ -99,11 +101,4 @@ class StockModel extends Model {
     return selectedStockType;
   }
 
-  DateTime formatStringToDate(String dateString) {
-    return DateFormat(dateFormatString).parse(dateString);
-  }
-
-  String formatDateToString(DateTime date) {
-    return DateFormat(dateFormatString).format(date);
-  }
 }

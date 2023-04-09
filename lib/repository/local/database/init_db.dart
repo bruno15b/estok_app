@@ -13,8 +13,9 @@ class InitDB {
       onCreate: (Database database, int version) async {
         await database.execute('CREATE TABLE ${HistoryRepository.tableName} ('
             '${HistoryRepository.idHistoryColumn} INTEGER PRIMARY KEY, '
+            '${HistoryRepository.operationCode} TEXT, '
             '${HistoryRepository.operationType} TEXT, '
-            '${HistoryRepository.objectType} TEXT, '
+            '${HistoryRepository.entityType} TEXT, '
             '${HistoryRepository.objectName} TEXT, '
             '${HistoryRepository.dateTimeOperation} TEXT '
             ')');
@@ -27,5 +28,6 @@ class InitDB {
   //   String path = join(await getDatabasesPath(), "history_db");
   //   DatabaseFactory dbFactory = databaseFactory;
   //   await dbFactory.deleteDatabase(path);
+  //   print("deletado");
   // }
 }

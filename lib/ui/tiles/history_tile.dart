@@ -1,3 +1,4 @@
+import 'package:estok_app/app/shared/constants.dart';
 import 'package:estok_app/entities/history.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +12,7 @@ class HistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final DateTime dateTime = history.date;
-    final DateFormat dateFormatter = DateFormat("dd/MM/yyyy");
+    final DateFormat dateFormatter = DateFormat(Constants.DATE_FORMAT_STRING);
     final DateFormat timeFormatter = DateFormat("HH:mm");
 
     return Column(
@@ -37,7 +38,7 @@ class HistoryTile extends StatelessWidget {
                       height: 4,
                     ),
                     Text(
-                      "${history.objectType}",
+                      "${history.entityType}",
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,

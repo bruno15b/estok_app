@@ -10,6 +10,7 @@ import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
 import 'package:estok_app/ui/widgets/custom_future_builder.dart';
 import 'package:estok_app/ui/widgets/message.dart';
+import 'package:estok_app/utils/date_util.dart';
 import 'package:estok_app/utils/server_sync_util.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -19,7 +20,7 @@ class StockShowPage extends StatelessWidget {
 
   StockShowPage(this._stock);
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _stockShowScaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +38,17 @@ class StockShowPage extends StatelessWidget {
     deleteProductResponseFn(bool deleteProductResponse, Product product) {
       if (deleteProductResponse) {
         return Message.onSuccess(
-            scaffoldKey: _scaffoldKey,
+            scaffoldKey: _stockShowScaffoldKey,
             message: "Produto deletado",
             seconds: 2,
             onPop: (_) async {
               await ProductModel.of(context).fetchAllProducts(product.stockId);
-              await ServerSyncUtil.updateStocksProductsWithServer(context, product);
+              await ServerSyncUtil.updateStocksWithServer(context, product);
               HistoryModel.of(context).saveHistoryOnDelete(product: product);
             });
       } else {
         return Message.onFail(
-            scaffoldKey: _scaffoldKey,
+            scaffoldKey: _stockShowScaffoldKey,
             message: "Falha ao deletar o produto",
             seconds: 2,
             onPop: (_) {
@@ -57,7 +58,7 @@ class StockShowPage extends StatelessWidget {
     }
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _stockShowScaffoldKey,
       appBar: CustomAppBar(titleText: _stock.stockDescription),
       body: Column(
         children: [
@@ -77,15 +78,15 @@ class StockShowPage extends StatelessWidget {
                         style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       Text(
-                        "Entrada em: ${StockModel.of(context).formatDateToString(_stock.enterDate)}",
+                        "Entrada em: ${DateUtil.formatDateToString(_stock.enterDate)}",
                         style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       Text(
-                        "Validade: ${StockModel.of(context).formatDateToString(_stock.validityDate)}",
+                        "Validade: ${DateUtil.formatDateToString(_stock.validityDate)}",
                         style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       Text(
-                        "Valor Total: ${productModel.productsTotalValue} ",
+                        "Valor Total: ${productModel.productsTotalValue.toStringAsFixed(2)} ",
                         style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       SizedBox(
@@ -158,7 +159,7 @@ class StockShowPage extends StatelessWidget {
                                   _stock,
                                   onSuccess: () {
                                     Message.onSuccess(
-                                        scaffoldKey: _scaffoldKey,
+                                        scaffoldKey: _stockShowScaffoldKey,
                                         message: "Estoque deletado",
                                         seconds: 2,
                                         onPop: (value) {
@@ -171,7 +172,7 @@ class StockShowPage extends StatelessWidget {
                                   },
                                   onFail: (string) {
                                     Message.onFail(
-                                      scaffoldKey: _scaffoldKey,
+                                      scaffoldKey: _stockShowScaffoldKey,
                                       message: "Erro ao deletar Estoque",
                                       seconds: 2,
                                     );
@@ -217,7 +218,7 @@ class StockShowPage extends StatelessWidget {
                   onRefresh: _reload,
                   padding: EdgeInsets.only(left: 11, right: 11, top: 18, bottom: 90),
                   itemBuilder: (BuildContext context, Product product) {
-                    return ProductTile(product, deleteProductResponseFn, _scaffoldKey);
+                    return ProductTile(product, deleteProductResponseFn, _stockShowScaffoldKey);
                   },
                 );
               },

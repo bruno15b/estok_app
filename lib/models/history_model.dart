@@ -1,10 +1,12 @@
 import 'package:estok_app/entities/history.dart';
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/entities/stock.dart';
-import 'package:estok_app/enums/object_type_enum.dart';
+import 'package:estok_app/enums/entity_type_enum.dart';
 import 'package:estok_app/enums/operation_type_enum.dart';
 import 'package:estok_app/repository/local/history_repository.dart';
 import 'package:estok_app/enums/extensions/operation_type_enum_extension.dart';
+import 'package:estok_app/enums/extensions/entity_type_enum_extension.dart';
+import 'package:estok_app/utils/string_util.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -18,12 +20,13 @@ class HistoryModel extends Model {
   void setState() {
     notifyListeners();
   }
-  void saveHistory(ObjectTypeEnum objectType, String objectName, String operationType) async {
+  void saveHistory(String entityType, String objectName, String operationType, int stockId) async {
     final history = History(
       date: DateTime.now().toLocal(),
-      objectType: objectType.toString().split('.').last,
+      entityType: entityType + (stockId != null ? " - EstoqueID: $stockId": " -- Novo"),
       objectName: objectName,
       operationType: operationType,
+      operationCode: StringUtil.generateRandomString(),
     );
 
     await HistoryRepository.instance.save(history);
@@ -31,25 +34,25 @@ class HistoryModel extends Model {
 
   void saveHistoryOnInsert({Stock stock, Product product}) async {
     if (stock != null) {
-      saveHistory(ObjectTypeEnum.ESTOQUE, stock.stockDescription, OperationTypeEnum.INSERCAO.stringValue);
+      saveHistory(EntityTypeEnum.ESTOQUE.stringValue, stock.stockDescription, OperationTypeEnum.INSERCAO.stringValue,stock.id);
     } else if (product != null) {
-      saveHistory(ObjectTypeEnum.PRODUTO, product.productName, OperationTypeEnum.INSERCAO.stringValue);
+      saveHistory(EntityTypeEnum.PRODUTO.stringValue, product.productName, OperationTypeEnum.INSERCAO.stringValue,product.stockId);
     }
   }
 
   void saveHistoryOnUpdate({Stock stock, Product product}) async {
     if (stock != null) {
-      saveHistory(ObjectTypeEnum.ESTOQUE, stock.stockDescription, OperationTypeEnum.ATUALIZACAO.stringValue);
+      saveHistory(EntityTypeEnum.ESTOQUE.stringValue, stock.stockDescription, OperationTypeEnum.ATUALIZACAO.stringValue,stock.id);
     } else if (product != null) {
-      saveHistory(ObjectTypeEnum.PRODUTO, product.productName, OperationTypeEnum.ATUALIZACAO.stringValue);
+      saveHistory(EntityTypeEnum.PRODUTO.stringValue, product.productName, OperationTypeEnum.ATUALIZACAO.stringValue,product.stockId);
     }
   }
 
   void saveHistoryOnDelete({Stock stock, Product product}) async {
     if (stock != null) {
-      saveHistory(ObjectTypeEnum.ESTOQUE, stock.stockDescription, OperationTypeEnum.REMOCAO.stringValue);
+      saveHistory(EntityTypeEnum.ESTOQUE.stringValue, stock.stockDescription, OperationTypeEnum.REMOCAO.stringValue,stock.id);
     } else if (product != null) {
-      saveHistory(ObjectTypeEnum.PRODUTO, product.productName, OperationTypeEnum.REMOCAO.stringValue);
+      saveHistory(EntityTypeEnum.PRODUTO.stringValue, product.productName, OperationTypeEnum.REMOCAO.stringValue,product.stockId);
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:estok_app/entities/user.dart';
+import 'package:estok_app/enums/upload_progress_enum.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
@@ -17,13 +18,13 @@ class LoginPage extends StatelessWidget with LoginValidator {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _loginFormKey = GlobalKey<FormState>();
+  final _loginScaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+      key: _loginScaffoldKey,
       body: ListView(
         padding: EdgeInsets.fromLTRB(27, 220, 27, 0),
         children: [
@@ -53,7 +54,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
             ],
           ),
           Form(
-            key: _formKey,
+            key: _loginFormKey,
             child: Column(
               children: [
                 CustomTextFormField(
@@ -75,8 +76,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
                 ),
                 ScopedModelDescendant<UserModel>(
                   builder: (context, snapshot, userModel) {
-
-                    userModel.currentIndexMainPage =0;
+                    userModel.currentIndexMainPage = 0;
 
                     return CustomTextFormField(
                       floatingLabelBehavior: FloatingLabelBehavior.auto,
@@ -102,10 +102,15 @@ class LoginPage extends StatelessWidget with LoginValidator {
                 Row(
                   children: [
                     Expanded(
-                      child: CustomButton(
-                        textButton: "ENTRAR",
-                        onPressed: () => _loginOnPressed(context),
-                      ),
+                      child: ScopedModelDescendant<UserModel>(builder: (context, snapshot, userModel) {
+                        return CustomButton(
+                          isLoading: userModel.userUploadProgressChange == UploadProgressEnum.LOADING,
+                          onPressed: () {
+                            _loginOnPressed(context, userModel);
+                          },
+                          textButton: "ENTRAR",
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -120,16 +125,19 @@ class LoginPage extends StatelessWidget with LoginValidator {
     );
   }
 
-  void _loginOnPressed(BuildContext context) async {
+  void _loginOnPressed(BuildContext context, UserModel userModel) {
     FocusScope.of(context).unfocus();
-
-    if (!this._formKey.currentState.validate()) {
+    if (!this._loginFormKey.currentState.validate()) {
       return;
     }
 
-    UserModel.of(context).login(_emailController.text, _passwordController.text, onSuccess: () {
+    userModel.userUploadProgressChange = UploadProgressEnum.LOADING;
+    userModel.setState();
+
+    userModel.login(_emailController.text, _passwordController.text, onSuccess: () {
+      userModel.userUploadProgressChange = UploadProgressEnum.IDLE;
       Message.onSuccess(
-        scaffoldKey: _scaffoldKey,
+        scaffoldKey: _loginScaffoldKey,
         message: "Usuário logado com sucesso!",
         seconds: 2,
         onPop: (_) {
@@ -146,8 +154,9 @@ class LoginPage extends StatelessWidget with LoginValidator {
       StockModel.of(context).fetchAllStocks();
       return;
     }, onFail: (onFailText) {
+      userModel.userUploadProgressChange = UploadProgressEnum.IDLE;
       Message.onFail(
-          scaffoldKey: _scaffoldKey,
+          scaffoldKey: _loginScaffoldKey,
           seconds: 2,
           message: onFailText,
           onPop: (_) async {

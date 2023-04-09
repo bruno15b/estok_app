@@ -6,9 +6,10 @@ class HistoryRepository {
   static final String tableName = "history_db";
   static final String idHistoryColumn = "id";
   static final String operationType = "operationType";
-  static final String objectType = "objectType";
+  static final String entityType = "entityType";
   static final String objectName= "objectName";
   static final String dateTimeOperation = "dateTimeOperation";
+  static final String operationCode = "operationCode";
 
   static final HistoryRepository instance = HistoryRepository._();
 

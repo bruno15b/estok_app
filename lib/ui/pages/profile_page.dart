@@ -1,18 +1,22 @@
 import 'package:estok_app/entities/user.dart';
+import 'package:estok_app/enums/upload_progress_enum.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
-import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import 'package:scoped_model/scoped_model.dart';
+
 
 class ProfilePage extends StatelessWidget {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _profileScaffoldKey = GlobalKey<ScaffoldState>();
+  final void Function(BuildContext) onPressed;
+
+  ProfilePage(this.onPressed);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+      key: _profileScaffoldKey,
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.only(left: 25, right: 25, top: 75, bottom: 60),
@@ -34,7 +38,9 @@ class ProfilePage extends StatelessWidget {
                   Text(
                     snapshot.hasData ? snapshot.data.name.toUpperCase() : "",
                     style: TextStyle(
-                      color: Theme.of(context).primaryColor,
+                      color: Theme
+                          .of(context)
+                          .primaryColor,
                       fontWeight: FontWeight.w500,
                       fontSize: 14,
                     ),
@@ -42,7 +48,11 @@ class ProfilePage extends StatelessWidget {
                   Text(
                     snapshot.hasData ? snapshot.data.email : "",
                     style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyText2.color,
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyText2
+                          .color,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
                     ),
@@ -67,13 +77,19 @@ class ProfilePage extends StatelessWidget {
                           Icon(
                             Icons.phone,
                             size: 20,
-                            color: Theme.of(context).primaryColor,
+                            color: Theme
+                                .of(context)
+                                .primaryColor,
                           ),
                           SizedBox(width: 15),
                           Text(
                             snapshot.hasData ? snapshot.data.telephone : "",
                             style: TextStyle(
-                              color: Theme.of(context).textTheme.bodyText2.color,
+                              color: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyText2
+                                  .color,
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
                             ),
@@ -89,13 +105,19 @@ class ProfilePage extends StatelessWidget {
                           Icon(
                             Icons.email,
                             size: 20,
-                            color: Theme.of(context).primaryColor,
+                            color: Theme
+                                .of(context)
+                                .primaryColor,
                           ),
                           SizedBox(width: 15),
                           Text(
                             snapshot.hasData ? snapshot.data.email : "",
                             style: TextStyle(
-                              color: Theme.of(context).textTheme.bodyText2.color,
+                              color: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyText2
+                                  .color,
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
                             ),
@@ -108,13 +130,17 @@ class ProfilePage extends StatelessWidget {
                     height: 60,
                   ),
                   CustomButton(
-                    onPressed: () => logoutOnPressed(context),
+                    onPressed: () => onPressed(context),
                     textButton: "Sair",
                     width: 100,
                     height: 45,
                     borderRadius: BorderRadius.circular(8),
-                    colorText: Theme.of(context).scaffoldBackgroundColor,
-                    colorButton: Theme.of(context).primaryColor,
+                    colorText: Theme
+                        .of(context)
+                        .scaffoldBackgroundColor,
+                    colorButton: Theme
+                        .of(context)
+                        .primaryColor,
                     fontSize: 14,
                   ),
                 ],
@@ -124,33 +150,5 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void logoutOnPressed(BuildContext context) {
-    UserModel.of(context).logout(onFail: (logoutError) {
-      Message.onFail(
-          scaffoldKey: _scaffoldKey,
-          message: logoutError,
-          seconds: 3,
-          onPop: (_) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
-              (Route<dynamic> route) => false,
-            );
-          });
-      return;
-    }, onSuccess: () {
-      Message.onSuccess(
-          scaffoldKey: _scaffoldKey,
-          message: "Logout realizado com sucesso!Encerrando...",
-          seconds: 3,
-          onPop: (_) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
-              (Route<dynamic> route) => false,
-            );
-          });
-      return;
-    });
   }
 }

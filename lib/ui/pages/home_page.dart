@@ -1,6 +1,9 @@
 import 'package:estok_app/enums/stock_status_enum.dart';
 import 'package:estok_app/ui/pages/stock_add_page.dart';
-import 'package:estok_app/ui/tabs/home_tab.dart';
+import 'package:estok_app/ui/tabs/em_aviso_tab.dart';
+import 'package:estok_app/ui/tabs/em_estoque_tab.dart';
+import 'package:estok_app/ui/tabs/em_falta_tab.dart';
+import 'package:estok_app/ui/tabs/todos_tab.dart';
 import 'package:estok_app/ui/widgets/custom_floating_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:estok_app/enums/extensions/stock_status_enum_extension.dart';
@@ -72,10 +75,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             child: TabBarView(
               controller: _tabController,
               children: [
-                HomeTab(StockStatusEnum.TODOS.stringValue),
-                HomeTab(StockStatusEnum.EM_ESTOQUE.stringValue),
-                HomeTab(StockStatusEnum.EM_AVISO.stringValue),
-                HomeTab(StockStatusEnum.EM_FALTA.stringValue),
+                TodosTab(StockStatusEnum.TODOS.stringValue),
+                EmEstoqueTab(StockStatusEnum.EM_ESTOQUE.stringValue),
+                EmAvisoTab(StockStatusEnum.EM_AVISO.stringValue),
+                EmFaltaTab(StockStatusEnum.EM_FALTA.stringValue),
               ],
             ),
           ),

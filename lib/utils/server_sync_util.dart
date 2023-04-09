@@ -6,18 +6,17 @@ import 'package:flutter/material.dart';
 
 class ServerSyncUtil {
 
-  static Future<void> updateStocksProductsWithServer(BuildContext context, Product product) async {
+  static Future<void> updateStocksWithServer(BuildContext context, Product product) async {
     Message.alertDialogLoading(context);
     try {
+      await Future.delayed(Duration(milliseconds: 200));
       await ProductModel.of(context).sumProductsTotalValue();
       double totalStock = await ProductModel.of(context).sumProductsTotalQuantity();
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(Duration(milliseconds: 200));
       await StockModel.of(context).updateStockTotalProductQuantity(totalStock);
       StockModel.of(context).updateSelectedStockStatus();
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(Duration(milliseconds: 200));
       await StockModel.of(context).fetchAllStocks();
-      await Future.delayed(Duration(milliseconds: 500));
-      await ProductModel.of(context).fetchAllProducts(product.stockId);
     } catch (e) {
       print(e);
     } finally {

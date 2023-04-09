@@ -1,3 +1,4 @@
+import 'package:estok_app/enums/upload_progress_enum.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:estok_app/entities/user.dart';
@@ -7,6 +8,7 @@ import 'package:scoped_model/scoped_model.dart';
 class UserModel extends Model {
   bool passwordVisibility = true;
   int currentIndexMainPage = 0;
+  UploadProgressEnum userUploadProgressChange = UploadProgressEnum.IDLE;
 
   setState() {
     notifyListeners();
@@ -35,6 +37,7 @@ class UserModel extends Model {
         onFail("Sem conexão com o servidor!");
       }
     }
+    setState();
   }
 
   Future<void> logout({VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
@@ -43,7 +46,7 @@ class UserModel extends Model {
     if(logoutResponse){
       onSuccess();
     }else{
-      onFail("Erro ao fazer logout! Encerrando Sessão!");
+      onFail("Erro ao fazer logout!");
     }
   }
 }

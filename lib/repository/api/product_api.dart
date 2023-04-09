@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:estok_app/app/shared/constants.dart';
 import 'package:estok_app/entities/product.dart';
 import '../local/user_repository.dart';
 import '../../entities/user.dart';
@@ -16,7 +17,7 @@ class ProductApi {
     try {
 
       print("ProductApi[getAllProduct]:---------- Entrou");
-      final String url = "http://54.90.203.92/estoques/$stockId/produtos/";
+      final String url = Constants.BASE_URL_API + "estoques/$stockId/produtos/";
 
       final String authorization = "Bearer ${user.token}";
 
@@ -56,7 +57,7 @@ class ProductApi {
       var encode = json.encode(encodeString);
 
 
-      String url = "http://54.90.203.92/estoques/${product.stockId}/produtos/";
+      String url = Constants.BASE_URL_API + "estoques/${product.stockId}/produtos/";
 
 
       String authorization = "Bearer ${user.token}";
@@ -92,7 +93,7 @@ class ProductApi {
       var encodeString = product.toJsonUpdate();
       var encode = json.encode(encodeString);
 
-      String url = "http://54.90.203.92/estoques/${product.stockId}/produtos/";
+      String url = Constants.BASE_URL_API + "estoques/${product.stockId}/produtos/";
 
       String authorization = "Bearer ${user.token}";
 
@@ -123,7 +124,7 @@ class ProductApi {
     try {
       User user = await UserRepository.instance.getUser();
       print("ProductApi[deleteProduct]:---------- Entrou");
-      String url = "http://54.90.203.92/estoques/${product.stockId}/produtos/${product.id}";
+      String url = Constants.BASE_URL_API + "estoques/${product.stockId}/produtos/${product.id}";
       String authorization = "Bearer ${user.token}";
 
       var response = await http.delete(url, headers: {

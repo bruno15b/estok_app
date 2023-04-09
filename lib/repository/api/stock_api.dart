@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:estok_app/app/shared/constants.dart';
 import 'package:estok_app/entities/stock.dart';
 import '../local/user_repository.dart';
 import '../../entities/user.dart';
@@ -15,7 +16,7 @@ class StockApi {
     try {
       User user = await UserRepository.instance.getUser();
       print("StockApi[getAllStocks]:---------- Entrou com Sucesso");
-      String url = "http://54.90.203.92/estoques/";
+      String url = Constants.BASE_URL_API + "estoques/";
 
       String authorization = "Bearer ${user.token}";
 
@@ -53,7 +54,7 @@ class StockApi {
 
       print(encode);
 
-      String url = "http://54.90.203.92/estoques/";
+      String url = Constants.BASE_URL_API + "estoques/";
 
       String authorization = "Bearer ${user.token}";
 
@@ -83,7 +84,7 @@ class StockApi {
       var encodeString = stock.toJsonUpdate();
       var encode = json.encode(encodeString);
 
-      String url = "http://54.90.203.92/estoques/";
+      String url = Constants.BASE_URL_API + "estoques/";
 
       String authorization = "Bearer ${user.token}";
 
@@ -110,7 +111,7 @@ class StockApi {
     try {
       print("StockApi[deleteStock]:---------- Entrou");
       User user = await UserRepository.instance.getUser();
-      String url = "http://54.90.203.92/estoques/$stockId";
+      String url = Constants.BASE_URL_API + "estoques/$stockId";
       String authorization = "Bearer ${user.token}";
 
       var response =

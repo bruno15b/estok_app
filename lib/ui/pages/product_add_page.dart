@@ -1,5 +1,6 @@
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/entities/stock.dart';
+import 'package:estok_app/enums/upload_progress_enum.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
 import "package:estok_app/utils/server_sync_util.dart";
@@ -42,8 +43,8 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
   final FocusNode _focusProductQuantity = FocusNode();
   final FocusNode _focusProductUrlSite = FocusNode();
 
-  final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _productAddformKey = GlobalKey<FormState>();
+  final _productAddScaffoldKey = GlobalKey<ScaffoldState>();
   bool newProductAdd = true;
 
   @override
@@ -57,8 +58,8 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
       newProductAdd = false;
       _productNameController.text = widget.product.productName;
       _productDescriptionController.text = widget.product.productDescription;
-      _productItemPriceController.text = "R\$ " + widget.product.productItemPrice.toString();
-      _productUnitaryPriceController.text = "R\$ " + widget.product.productUnitaryPrice.toString();
+      _productItemPriceController.text = "R\$ " + widget.product.productItemPrice.toStringAsFixed(2).toString();
+      _productUnitaryPriceController.text = "R\$ " + widget.product.productUnitaryPrice.toStringAsFixed(2).toString();
       _productQuantityController.text = widget.product.productQuantity.toString();
       _productUrlSiteController.text = widget.product.productUrlSite;
     } else {
@@ -71,13 +72,13 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+      key: _productAddScaffoldKey,
       appBar: CustomAppBar(titleText: widget.product?.productName ?? "NOVO PRODUTO"),
       body: ScopedModelDescendant<ProductModel>(builder: (context, snapshot, productModel) {
         return Form(
-          key: _formKey,
+          key: _productAddformKey,
           child: ListView(
-            padding: EdgeInsets.only(top: 39, left: 24, right: 24, bottom: 40),
+            padding: EdgeInsets.only(top: 39, left: 24, right: 24, bottom: 60),
             children: [
               SizedBox(
                 child: InkWell(
@@ -185,8 +186,9 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
                 height: 20,
               ),
               CustomButton(
+                onPressed: () => productOnPressed(productModel),
+                isLoading: productModel.productUploadProgressChange == UploadProgressEnum.LOADING,
                 textButton: widget.product?.productName != null ? "EDITAR" : "CADASTRAR",
-                onPressed: () => productOnPressed(),
               ),
             ],
           ),
@@ -195,9 +197,10 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
     );
   }
 
-  productOnPressed() async {
+  productOnPressed(ProductModel productModel) async {
     FocusScope.of(context).unfocus();
-    if (this._formKey.currentState.validate()) {
+    if (this._productAddformKey.currentState.validate()) {
+
       Product product = Product(
         productName: _productNameController.text,
         productDescription: _productDescriptionController.text,
@@ -210,18 +213,22 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
         productImageUrl: widget.product?.productImageUrl ?? "",
       );
 
+      productModel.productUploadProgressChange = UploadProgressEnum.LOADING;
+      productModel.setState();
+
       if (newProductAdd) {
         product.stockId = widget.stock.id;
         await ProductModel.of(context).createNewProduct(
           product,
           onSuccess: () {
+            productModel.productUploadProgressChange = UploadProgressEnum.IDLE;
             Message.onSuccess(
-              scaffoldKey: _scaffoldKey,
+              scaffoldKey: _productAddScaffoldKey,
               message: "Produto adicionado com sucesso!",
               seconds: 1,
               onPop: (_) async {
                 await ProductModel.of(context).fetchAllProducts(product.stockId);
-                await ServerSyncUtil.updateStocksProductsWithServer(context,product);
+                await ServerSyncUtil.updateStocksWithServer(context,product);
                 Navigator.of(context).pop();
                 HistoryModel.of(context).saveHistoryOnInsert(product: product);
               },
@@ -229,8 +236,9 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
             return;
           },
           onFail: (onFailText) {
+            productModel.productUploadProgressChange = UploadProgressEnum.IDLE;
             Message.onFail(
-              scaffoldKey: _scaffoldKey,
+              scaffoldKey: _productAddScaffoldKey,
               message: onFailText,
               seconds: 3,
             );
@@ -243,13 +251,14 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
         await ProductModel.of(context).updateProduct(
           product,
           onSuccess: () {
+            productModel.productUploadProgressChange = UploadProgressEnum.IDLE;
             Message.onSuccess(
-              scaffoldKey: _scaffoldKey,
+              scaffoldKey: _productAddScaffoldKey,
               message: "Produto editado com sucesso!",
               seconds: 1,
               onPop: (_) async{
                 await ProductModel.of(context).fetchAllProducts(product.stockId);
-                await ServerSyncUtil.updateStocksProductsWithServer(context,product);
+                await ServerSyncUtil.updateStocksWithServer(context,product);
                 Navigator.of(context).pop();
                 HistoryModel.of(context).saveHistoryOnUpdate(product: product);
               },
@@ -257,8 +266,9 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
             return;
           },
           onFail: (onFailText) {
+            productModel.productUploadProgressChange = UploadProgressEnum.IDLE;
             Message.onFail(
-              scaffoldKey: _scaffoldKey,
+              scaffoldKey: _productAddScaffoldKey,
               message: onFailText,
               seconds: 3,
             );
@@ -291,7 +301,6 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
           mainAxisSize: MainAxisSize.min,
           children: [
             FlatButton(
-                padding: EdgeInsets.symmetric(horizontal: 100,vertical: 20),
                 onPressed: () async {
                   var picker = ImagePicker();
                   var pickedFile = await picker.getImage(source: ImageSource.camera);
@@ -303,9 +312,9 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
                   productModel.setState();
                   Navigator.of(context).pop();
                 },
+                padding: EdgeInsets.symmetric(horizontal: 100,vertical: 20),
                 child: Text("Câmera")),
             FlatButton(
-              padding: EdgeInsets.symmetric(horizontal: 100,vertical: 20),
                 onPressed: () async {
                   var picker = ImagePicker();
                   var pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -317,6 +326,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
                   productModel.setState();
                   Navigator.of(context).pop();
                 },
+              padding: EdgeInsets.symmetric(horizontal: 100,vertical: 20),
                 child: Text("Galeria")),
           ],
         );

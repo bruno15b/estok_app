@@ -1,10 +1,44 @@
 import 'package:estok_app/enums/stock_type_enum.dart';
 import 'package:estok_app/enums/extensions/stock_type_enum_extension.dart';
 import 'package:estok_app/models/stock_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Message {
+class Message extends StatelessWidget{
+   final String message;
+   final double fontSize;
+   final Color color;
+   final FontWeight fontWeight;
+   final void Function() onPressed;
+
+   Message(this.message, {this.fontSize, this.color = Colors.grey, this.fontWeight = FontWeight.bold,this.onPressed});
+
+   @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        Text(
+          message,
+          style: TextStyle(
+            fontSize: fontSize ?? 15,
+            fontWeight: fontWeight,
+            color: color,
+          ),
+        ),
+        onPressed != null
+            ? TextButton(
+          onPressed: onPressed,
+          style: ButtonStyle(),
+          child: Text(
+            "Clique aqui para recarregar",
+            style: TextStyle(color: color),
+          ),
+        )
+            : SizedBox()
+      ]),
+    );
+  }
+
   static void onSuccess({
     @required GlobalKey<ScaffoldState> scaffoldKey,
     @required String message,
@@ -15,11 +49,11 @@ class Message {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.green,
-        duration: Duration(seconds: seconds ?? 1),
+        duration: Duration(seconds: seconds ?? 2),
       ),
     );
     if (onPop != null) {
-      Future.delayed(Duration(milliseconds: 700)).then(onPop);
+      Future.delayed(Duration(milliseconds: seconds != null ? seconds * 1000 : 700)).then(onPop);
     }
   }
 
@@ -62,37 +96,6 @@ class Message {
     );
   }
 
-  static Widget alert(
-    message, {
-    double fontSize,
-    double fontWeight,
-    Color color,
-    void Function() onPressed,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text(
-          message,
-          style: TextStyle(
-            fontSize: fontSize ?? 15,
-            fontWeight: fontWeight ?? FontWeight.bold,
-            color: color ?? Colors.grey[600],
-          ),
-        ),
-        onPressed != null
-            ? TextButton(
-                onPressed: onPressed,
-                style: ButtonStyle(),
-                child: Text(
-                  "Clique aqui para recarregar",
-                  style: TextStyle(color: color),
-                ),
-              )
-            : SizedBox()
-      ]),
-    );
-  }
 
   static void alertDialogLoading(
     BuildContext context, {
@@ -115,7 +118,7 @@ class Message {
               color: Theme.of(context).textTheme.bodyText2.color,
             ),
             content: SingleChildScrollView(
-              padding: EdgeInsets.only(top: 30, bottom: 30),
+              padding: EdgeInsets.only(top: 30, bottom: 40),
               child: Center(
                 child: Container(
                   width: width ?? 40.0,

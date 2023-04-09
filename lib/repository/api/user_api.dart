@@ -1,3 +1,4 @@
+import 'package:estok_app/app/shared/constants.dart';
 import 'package:estok_app/entities/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,7 +16,7 @@ class UserApi {
       };
 
       var encode = json.encode(encodeString);
-      String url = "http://54.90.203.92/auth/login";
+      String url = Constants.BASE_URL_API + "auth/login";
 
       print(encodeString);
 
@@ -42,7 +43,7 @@ class UserApi {
 
   Future<bool> logout(String token) async {
     try {
-      String url = "http://54.90.203.92/auth/logout";
+      String url = Constants.BASE_URL_API + "auth/logout";
 
       print("Logout iniciado com o token: $token");
 

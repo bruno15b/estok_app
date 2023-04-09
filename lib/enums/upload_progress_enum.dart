@@ -1,0 +1,4 @@
+enum UploadProgressEnum {
+  LOADING,
+  IDLE,
+}

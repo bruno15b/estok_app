@@ -1,4 +1,5 @@
 import 'package:estok_app/entities/product.dart';
+import 'package:estok_app/enums/upload_progress_enum.dart';
 import 'package:estok_app/repository/api/product_api.dart';
 import 'package:estok_app/repository/api/upload_image_api.dart';
 import 'package:estok_app/utils/share_util.dart';
@@ -12,6 +13,7 @@ class ProductModel extends Model {
   double productsTotalQuantity;
   int productUnitQuantity;
   File imageFile;
+  UploadProgressEnum productUploadProgressChange = UploadProgressEnum.IDLE;
 
   static ProductModel of(BuildContext context) {
     return ScopedModel.of<ProductModel>(context);
@@ -29,7 +31,6 @@ class ProductModel extends Model {
 
   Future<void> createNewProduct(Product product,
       {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-    print(imageFile);
 
     if (imageFile != null) {
       String urlImage = await sendImageFile(imageFile);
@@ -40,7 +41,6 @@ class ProductModel extends Model {
         return;
       }
     }
-
     var response = await ProductApi.instance.postNewProduct(product);
 
     if (response != null) {
@@ -48,6 +48,7 @@ class ProductModel extends Model {
     } else {
       onFail("Erro ao criar novo Produto!");
     }
+    setState();
   }
 
   Future<void> updateProduct(Product product,
@@ -62,6 +63,7 @@ class ProductModel extends Model {
         onFail("Erro ao enviar imagem do produto!");
         return;
       }
+      setState();
     }
 
     var response = await ProductApi.instance.putProduct(product);
@@ -71,6 +73,7 @@ class ProductModel extends Model {
     } else {
       onFail("Erro ao editar produto!");
     }
+    setState();
   }
 
   deleteProduct(Product product) async {

@@ -4,7 +4,6 @@ import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/ui/pages/product_add_page.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:estok_app/utils/server_sync_util.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -19,9 +18,7 @@ class ProductTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ProductModel
-            .of(context)
-            .productUnitQuantity = null;
+        ProductModel.of(context).productUnitQuantity = null;
         Message.alertDialogConfirm(
           context,
           textOkButton: "Alterar ",
@@ -38,8 +35,8 @@ class ProductTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.remove),
                       onPressed: () => productModel.updateUnitaryProductQuantity("remove"),
+                      icon: Icon(Icons.remove),
                     ),
                     SizedBox(
                       width: 10,
@@ -52,8 +49,8 @@ class ProductTile extends StatelessWidget {
                       width: 10,
                     ),
                     IconButton(
-                      icon: Icon(Icons.add),
                       onPressed: () => productModel.updateUnitaryProductQuantity("add"),
+                      icon: Icon(Icons.add),
                     )
                   ],
                 ),
@@ -62,9 +59,7 @@ class ProductTile extends StatelessWidget {
           ),
           onPressedOkButton: () async {
             Navigator.of(context).pop();
-            _product.productQuantity = ProductModel
-                .of(context)
-                .productUnitQuantity;
+            _product.productQuantity = ProductModel.of(context).productUnitQuantity;
 
             await ProductModel.of(context).updateProduct(
               _product,
@@ -73,7 +68,7 @@ class ProductTile extends StatelessWidget {
                     scaffoldKey: scaffoldKey,
                     message: "Quantidade atualizada com sucesso!",
                     onPop: (_) {
-                      ServerSyncUtil.updateStocksProductsWithServer(context,_product);
+                      ServerSyncUtil.updateStocksWithServer(context, _product);
                       HistoryModel.of(context).saveHistoryOnUpdate(product: _product);
                     });
                 return;
@@ -107,8 +102,20 @@ class ProductTile extends StatelessWidget {
           ),
         ),
         onDismissed: (direction) async {
-          final bool deleteResponse = await ProductModel.of(context).deleteProduct(_product);
-          deleteProductResponseFn(deleteResponse, _product);
+          Message.alertDialogConfirm(
+            context,
+            title: "Deseja excluir o produto?",
+            subtitle: "A exclusão ira deletar permanentemente o produto.",
+            onPressedNoButton: () {
+              ProductModel.of(context).fetchAllProducts(_product.stockId);
+              Navigator.of(context).pop();
+            },
+            onPressedOkButton: () async {
+              Navigator.of(context).pop();
+              final bool deleteResponse = await ProductModel.of(context).deleteProduct(_product);
+              deleteProductResponseFn(deleteResponse, _product);
+            },
+          );
         },
         child: Column(
           children: [
@@ -156,14 +163,12 @@ class ProductTile extends StatelessWidget {
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 14,
-                                        color: Theme
-                                            .of(context)
-                                            .textTheme
-                                            .headline1
-                                            .color,
+                                        color: Theme.of(context).textTheme.headline1.color,
                                       ),
                                     ),
-                                    SizedBox(height: 5,),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
                                     Text(
                                       _product.productDescription,
                                       maxLines: 3,
@@ -172,11 +177,7 @@ class ProductTile extends StatelessWidget {
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 11,
-                                        color: Theme
-                                            .of(context)
-                                            .textTheme
-                                            .headline4
-                                            .color,
+                                        color: Theme.of(context).textTheme.headline4.color,
                                       ),
                                     ),
                                   ],
@@ -185,9 +186,7 @@ class ProductTile extends StatelessWidget {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: MediaQuery
-                                    .of(context)
-                                    .orientation == Orientation.landscape
+                                padding: MediaQuery.of(context).orientation == Orientation.landscape
                                     ? EdgeInsets.only(right: 70)
                                     : EdgeInsets.only(right: 0),
                                 child: Column(
@@ -197,11 +196,9 @@ class ProductTile extends StatelessWidget {
                                       child: FittedBox(
                                         fit: BoxFit.scaleDown,
                                         child: Text(
-                                          "R\$ ${_product.productItemPrice}",
+                                          "R\$ ${_product.productItemPrice.toStringAsFixed(2)}",
                                           style: TextStyle(
-                                              color: Theme
-                                                  .of(context)
-                                                  .primaryColor,
+                                              color: Theme.of(context).primaryColor,
                                               fontWeight: FontWeight.w700,
                                               fontSize: 14),
                                         ),
@@ -215,12 +212,9 @@ class ProductTile extends StatelessWidget {
                                       child: FittedBox(
                                         fit: BoxFit.scaleDown,
                                         child: Text(
-                                          "R\$ ${_product.productUnitaryPrice}",
-                                          style: TextStyle(fontSize: 12, color: Theme
-                                              .of(context)
-                                              .textTheme
-                                              .bodyText1
-                                              .color),
+                                          "R\$ ${_product.productUnitaryPrice.toStringAsFixed(2)}",
+                                          style: TextStyle(
+                                              fontSize: 12, color: Theme.of(context).textTheme.bodyText1.color),
                                         ),
                                       ),
                                     ),
@@ -242,38 +236,30 @@ class ProductTile extends StatelessWidget {
                                 "${_product.productQuantity}",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .color,
+                                  color: Theme.of(context).textTheme.bodyText1.color,
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: MediaQuery
-                                  .of(context)
-                                  .orientation == Orientation.landscape
+                              padding: MediaQuery.of(context).orientation == Orientation.landscape
                                   ? EdgeInsets.only(right: 70)
                                   : EdgeInsets.only(right: 15),
                               child: Row(
                                 children: [
                                   IconButton(
-                                      constraints: BoxConstraints(maxHeight: 36),
-                                      icon: Icon(
-                                        Icons.share,
-                                        size: 22,
-                                      ),
-                                      onPressed: () {
-                                        ProductModel.of(context).shareWebsiteLink(_product);
-                                      }),
-                                  SizedBox(width: 5,),
-                                  IconButton(
+                                    onPressed: () {
+                                      ProductModel.of(context).shareWebsiteLink(_product);
+                                    },
                                     constraints: BoxConstraints(maxHeight: 36),
                                     icon: Icon(
-                                      Icons.edit,
+                                      Icons.share,
                                       size: 22,
                                     ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  IconButton(
                                     onPressed: () {
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
@@ -285,6 +271,11 @@ class ProductTile extends StatelessWidget {
                                         ),
                                       );
                                     },
+                                    constraints: BoxConstraints(maxHeight: 36),
+                                    icon: Icon(
+                                      Icons.edit,
+                                      size: 22,
+                                    ),
                                   )
                                 ],
                               ),
