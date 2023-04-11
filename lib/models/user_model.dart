@@ -1,4 +1,4 @@
-import 'package:estok_app/enums/upload_progress_enum.dart';
+import 'package:estok_app/enums/progress_enum.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:estok_app/entities/user.dart';
@@ -8,7 +8,7 @@ import 'package:scoped_model/scoped_model.dart';
 class UserModel extends Model {
   bool passwordVisibility = true;
   int currentIndexMainPage = 0;
-  UploadProgressEnum userUploadProgressChange = UploadProgressEnum.IDLE;
+  ProgressEnum userUploadProgressChange = ProgressEnum.IDLE;
 
   setState() {
     notifyListeners();

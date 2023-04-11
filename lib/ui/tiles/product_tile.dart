@@ -4,6 +4,7 @@ import 'package:estok_app/models/product_model.dart';
 import 'package:estok_app/ui/pages/product_add_page.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:estok_app/utils/server_sync_util.dart';
+import 'package:estok_app/utils/string_util.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -136,7 +137,7 @@ class ProductTile extends StatelessWidget {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                             image: _product.productImageUrl == null || _product.productImageUrl.isEmpty
-                                ? AssetImage("assets/images/ic_camera.png")
+                                ? AssetImage("assets/images/no_image.png")
                                 : NetworkImage(_product.productImageUrl),
                             fit: BoxFit.fitHeight),
                       ),
@@ -196,7 +197,7 @@ class ProductTile extends StatelessWidget {
                                       child: FittedBox(
                                         fit: BoxFit.scaleDown,
                                         child: Text(
-                                          "R\$ ${_product.productItemPrice.toStringAsFixed(2)}",
+                                          "R\$ ${StringUtil.formatCurrency(_product.productItemPrice)}",
                                           style: TextStyle(
                                               color: Theme.of(context).primaryColor,
                                               fontWeight: FontWeight.w700,
@@ -212,7 +213,7 @@ class ProductTile extends StatelessWidget {
                                       child: FittedBox(
                                         fit: BoxFit.scaleDown,
                                         child: Text(
-                                          "R\$ ${_product.productUnitaryPrice.toStringAsFixed(2)}",
+                                          "R\$ ${StringUtil.formatCurrency(_product.productUnitaryPrice)}",
                                           style: TextStyle(
                                               fontSize: 12, color: Theme.of(context).textTheme.bodyText1.color),
                                         ),

@@ -4,11 +4,11 @@ extension EntityTypeEnumExtension on EntityTypeEnum {
   String get stringValue {
     switch (this) {
       case EntityTypeEnum.ESTOQUE:
-        return 'Estoque';
+        return "Estoque";
       case EntityTypeEnum.PRODUTO:
-        return 'Produto';
+        return "Produto";
       default:
-        return '';
+        return "Not Defined In Extension";
     }
   }
 }

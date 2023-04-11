@@ -1,4 +1,4 @@
-import 'package:estok_app/enums/upload_progress_enum.dart';
+import 'package:estok_app/enums/progress_enum.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/ui/pages/history_page.dart';
 import 'package:estok_app/ui/pages/home_page.dart';

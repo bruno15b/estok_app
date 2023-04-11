@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class HistoryModel extends Model {
-  Future<List<History>> historyListFuture = Future.value([]);
+  Future<List<History>> futureHistoryList = Future.value([]);
 
   static HistoryModel of(BuildContext context) {
     return ScopedModel.of<HistoryModel>(context);
@@ -58,7 +58,7 @@ class HistoryModel extends Model {
 
   Future<void> getAllHistory() async {
     setState();
-     historyListFuture = HistoryRepository.instance.getAll();
+    futureHistoryList = HistoryRepository.instance.getAll();
     setState();
   }
 }

@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:intl/intl.dart';
+
 
 class StringUtil {
   static String generateRandomString() {
@@ -22,5 +24,10 @@ class StringUtil {
     }
 
     return randomString;
+  }
+
+  static String formatCurrency(double value) {
+    var formatter = NumberFormat.currency(locale: 'pt_BR', symbol: '');
+    return formatter.format(value);
   }
 }

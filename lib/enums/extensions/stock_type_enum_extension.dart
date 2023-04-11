@@ -10,7 +10,7 @@ extension StockTypeEnumExtension on StockTypeEnum {
       case StockTypeEnum.PACOTE:
         return 'PACOTE';
       default:
-        return 'Not Defined In Extension';
+        return "Not Defined In Extension";
     }
   }
 }

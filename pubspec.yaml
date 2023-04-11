@@ -37,6 +37,7 @@ dependencies:
   sqflite: any
 
 dev_dependencies:
+  mockito: ^4.1.4
   flutter_test:
     sdk: flutter
 
@@ -55,6 +56,7 @@ flutter:
     - assets/images/perfil_background.png
     - assets/images/perfil_image.png
     - assets/images/ic_camera.png
+    - assets/images/no_image.png
 
   fonts:
    - family: Montserrat

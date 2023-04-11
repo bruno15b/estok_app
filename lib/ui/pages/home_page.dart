@@ -16,12 +16,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  TabController tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
+    tabController = TabController(initialIndex: 0, length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,7 +68,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   ),
                 ),
               ),
-              controller: _tabController,
+              controller: tabController,
               tabs: [
                 Tab(text: "TODOS"),
                 Tab(text: "Em estoque"),
@@ -73,7 +79,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           ),
           Expanded(
             child: TabBarView(
-              controller: _tabController,
+              controller: tabController,
               children: [
                 TodosTab(StockStatusEnum.TODOS.stringValue),
                 EmEstoqueTab(StockStatusEnum.EM_ESTOQUE.stringValue),

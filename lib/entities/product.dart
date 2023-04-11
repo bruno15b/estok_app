@@ -24,7 +24,7 @@ class Product {
     this.stockId,
     this.productName,
     this.productDescription,
-    this.productImageUrl="url",
+    this.productImageUrl,
     this.productItemPrice,
     this.productUnitaryPrice,
     this.productQuantity,
@@ -69,4 +69,36 @@ class Product {
       URL_SITE_FIELD: productUrlSite,
     };
   }
+
+  @override
+  String toString() {
+    return 'Product{id: $id, stockId: $stockId, productName: $productName, productDescription: $productDescription, productImageUrl: $productImageUrl, productItemPrice: $productItemPrice, productUnitaryPrice: $productUnitaryPrice, productQuantity: $productQuantity, productUrlSite: $productUrlSite}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Product &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          stockId == other.stockId &&
+          productName == other.productName &&
+          productDescription == other.productDescription &&
+          productImageUrl == other.productImageUrl &&
+          productItemPrice == other.productItemPrice &&
+          productUnitaryPrice == other.productUnitaryPrice &&
+          productQuantity == other.productQuantity &&
+          productUrlSite == other.productUrlSite;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      stockId.hashCode ^
+      productName.hashCode ^
+      productDescription.hashCode ^
+      productImageUrl.hashCode ^
+      productItemPrice.hashCode ^
+      productUnitaryPrice.hashCode ^
+      productQuantity.hashCode ^
+      productUrlSite.hashCode;
 }

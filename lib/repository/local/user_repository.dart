@@ -18,7 +18,7 @@ class UserRepository {
     var instance = await SharedPreferences.getInstance();
     String userString = instance.getString("user.prefs");
     instance.setString("user.prefs", userString);
-    if (userString.isEmpty) {
+    if (userString == null || userString.isEmpty) {
       return null;
     }
     Map userJson = json.decode(userString);

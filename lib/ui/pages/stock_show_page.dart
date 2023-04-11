@@ -12,6 +12,7 @@ import 'package:estok_app/ui/widgets/custom_future_builder.dart';
 import 'package:estok_app/ui/widgets/message.dart';
 import 'package:estok_app/utils/date_util.dart';
 import 'package:estok_app/utils/server_sync_util.dart';
+import 'package:estok_app/utils/string_util.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -64,7 +65,7 @@ class StockShowPage extends StatelessWidget {
         children: [
           Container(
             height: 165,
-            margin: EdgeInsets.fromLTRB(20, 15, 20, 0),
+            margin: EdgeInsets.fromLTRB(16, 15, 16, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -86,7 +87,7 @@ class StockShowPage extends StatelessWidget {
                         style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       Text(
-                        "Valor Total: ${productModel.productsTotalValue.toStringAsFixed(2)} ",
+                        "Valor Total: ${StringUtil.formatCurrency(productModel.productsTotalValue)} ",
                         style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyText1.color),
                       ),
                       SizedBox(
@@ -99,12 +100,18 @@ class StockShowPage extends StatelessWidget {
                   builder: (context, snapshot, stockModel) {
                     return Column(
                       children: [
-                        Text(
-                          "${_stock.stockTotalProductQuantity?.round()}",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).textTheme.bodyText2.color),
+                        Container(
+                          width: 80,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "${_stock.stockTotalProductQuantity?.round()}",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).textTheme.bodyText2.color),
+                            ),
+                          ),
                         ),
                         Padding(
                           padding: EdgeInsets.only(top: 6, bottom: 10),

@@ -44,7 +44,7 @@ class StockAddPageValidator {
 
   String descriptionValidator(String value) {
     if (value.trim().isEmpty) {
-      return "Campo vazio";
+      return "Campo Vazio";
     } else if (value.length > 22) {
       return "Campo excede o limite de 22 caracteres";
     } else {

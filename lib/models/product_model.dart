@@ -1,5 +1,5 @@
 import 'package:estok_app/entities/product.dart';
-import 'package:estok_app/enums/upload_progress_enum.dart';
+import 'package:estok_app/enums/progress_enum.dart';
 import 'package:estok_app/repository/api/product_api.dart';
 import 'package:estok_app/repository/api/upload_image_api.dart';
 import 'package:estok_app/utils/share_util.dart';
@@ -8,16 +8,24 @@ import 'package:scoped_model/scoped_model.dart';
 import 'dart:io';
 
 class ProductModel extends Model {
+  ProductApi _productApi;
+  UploadImageApi _uploadImageApi;
+
+  ProductModel.forTestOnly(this._productApi, this._uploadImageApi);
+
+  ProductModel();
+
+  static ProductModel of(BuildContext context) {
+    return ScopedModel.of<ProductModel>(context);
+  }
+
   Future<List<Product>> futureProductList = Future.value([]);
   double productsTotalValue = 0;
   double productsTotalQuantity;
   int productUnitQuantity;
   File imageFile;
-  UploadProgressEnum productUploadProgressChange = UploadProgressEnum.IDLE;
-
-  static ProductModel of(BuildContext context) {
-    return ScopedModel.of<ProductModel>(context);
-  }
+  ProgressEnum productDownloadProgressChange = ProgressEnum.IDLE;
+  ProgressEnum productUploadProgressChange = ProgressEnum.IDLE;
 
   setState() {
     notifyListeners();
@@ -25,13 +33,12 @@ class ProductModel extends Model {
 
   Future<void> fetchAllProducts(int stockId) async {
     setState();
-    futureProductList = ProductApi.instance.getAllProducts(stockId);
+    futureProductList =
+        _productApi != null ? _productApi.getAllProducts(stockId) : ProductApi.instance.getAllProducts(stockId);
     setState();
   }
 
-  Future<void> createNewProduct(Product product,
-      {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-
+  Future<void> createNewProduct(Product product, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
     if (imageFile != null) {
       String urlImage = await sendImageFile(imageFile);
       if (urlImage != null) {
@@ -41,7 +48,10 @@ class ProductModel extends Model {
         return;
       }
     }
-    var response = await ProductApi.instance.postNewProduct(product);
+
+    var response = _productApi != null
+        ? await _productApi.postNewProduct(product)
+        : await ProductApi.instance.postNewProduct(product);
 
     if (response != null) {
       onSuccess();
@@ -51,9 +61,7 @@ class ProductModel extends Model {
     setState();
   }
 
-  Future<void> updateProduct(Product product,
-      {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
-    print(imageFile);
+  Future<void> updateProduct(Product product, {VoidCallback onSuccess, VoidCallback onFail(String message)}) async {
 
     if (imageFile != null) {
       String urlImage = await sendImageFile(imageFile);
@@ -66,7 +74,8 @@ class ProductModel extends Model {
       setState();
     }
 
-    var response = await ProductApi.instance.putProduct(product);
+    var response =
+        _productApi != null ? await _productApi.putProduct(product) : await ProductApi.instance.putProduct(product);
 
     if (response != null) {
       onSuccess();
@@ -77,12 +86,17 @@ class ProductModel extends Model {
   }
 
   deleteProduct(Product product) async {
-    var response = await ProductApi.instance.deleteProduct(product);
+    var response = _productApi != null
+        ? await _productApi.deleteProduct(product)
+        : await ProductApi.instance.deleteProduct(product);
+
     return response;
   }
 
   Future<String> sendImageFile(File imageFile) async {
-    return await UploadImageApi.instance.uploadImage(imageFile);
+    return _uploadImageApi != null
+        ? await _uploadImageApi.uploadImage(imageFile)
+        : await UploadImageApi.instance.uploadImage(imageFile);
   }
 
   Future<void> sumProductsTotalValue() async {
@@ -111,14 +125,13 @@ class ProductModel extends Model {
     return productsTotalQuantity;
   }
 
-
   updateUnitaryProductQuantity(String action) {
     setState();
     if (action == "add") {
       productUnitQuantity++;
-    } else if(action == "remove") {
+    } else if (action == "remove" && productUnitQuantity > 0) {
       productUnitQuantity--;
-    }else{
+    } else {
       return;
     }
     setState();
@@ -127,5 +140,4 @@ class ProductModel extends Model {
   Future<void> shareWebsiteLink(Product product) async {
     await ShareUtil.shareLink(product.productUrlSite);
   }
-
 }

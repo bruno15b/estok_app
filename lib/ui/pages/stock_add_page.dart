@@ -1,5 +1,5 @@
 import 'package:estok_app/entities/stock.dart';
-import 'package:estok_app/enums/upload_progress_enum.dart';
+import 'package:estok_app/enums/progress_enum.dart';
 import 'package:estok_app/enums/stock_type_enum.dart';
 import 'package:estok_app/enums/extensions/stock_type_enum_extension.dart';
 import 'package:estok_app/models/history_model.dart';
@@ -38,9 +38,6 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
   @override
   void initState() {
     super.initState();
-    print(StockTypeEnum.values[0].stringValue);
-    var values = StockTypeEnum.values;
-    print(values);
     if (widget.stock != null) {
       newStockAdd = false;
       _stockDescriptionController.text = widget.stock.stockDescription;
@@ -139,6 +136,7 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
                               child: SizedBox(),
                             ),
                             Expanded(
+                              key: ValueKey("typeButtom"),
                               flex: 10,
                               child: Text(
                                 stockModel.selectedStockType,
@@ -160,7 +158,8 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
                       ),
                       onTap: () {
                         FocusScope.of(context).unfocus();
-                        Message.alertDialogChooser(context,
+                        Message.alertDialogChooser(
+                            context,
                             listStockTypeEnum: StockTypeEnum.values, stockModel: stockModel);
                       },
                     ),
@@ -170,7 +169,7 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
                   height: 57,
                 ),
                 CustomButton(
-                  isLoading: stockModel.stockUploadProgressChange == UploadProgressEnum.LOADING,
+                  isLoading: stockModel.stockUploadProgressChange == ProgressEnum.LOADING,
                   onPressed: () => stockOnPressed(stockModel),
                   textButton: newStockAdd ? "CADASTRAR" : "EDITAR",
                 ),
@@ -190,10 +189,12 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
       DateTime _validityDate = DateUtil.formatStringToDate(_stockValidityDateController.text);
       String typeOfStock = StockModel.of(context).selectedStockType;
 
-      stockModel.stockUploadProgressChange = UploadProgressEnum.LOADING;
+      stockModel.stockUploadProgressChange = ProgressEnum.LOADING;
       stockModel.setState();
 
       if (_validityDate.isBefore(_enterDate)) {
+        stockModel.stockUploadProgressChange = ProgressEnum.IDLE;
+        stockModel.setState();
         Message.onFail(
           scaffoldKey: _stockAddScaffoldKey,
           message: "A validade não pode ser anterior a data de entrada.",
@@ -213,7 +214,7 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
         await StockModel.of(context).createNewStock(
           stock,
           onSuccess: () async {
-            stockModel.stockUploadProgressChange = UploadProgressEnum.IDLE;
+            stockModel.stockUploadProgressChange = ProgressEnum.IDLE;
             Message.onSuccess(
                 scaffoldKey: _stockAddScaffoldKey,
                 message: "Estoque adicionado com sucesso!",
@@ -226,7 +227,7 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
             return;
           },
           onFail: (onFailText) {
-            stockModel.stockUploadProgressChange = UploadProgressEnum.IDLE;
+            stockModel.stockUploadProgressChange = ProgressEnum.IDLE;
             Message.onFail(
               scaffoldKey: _stockAddScaffoldKey,
               message: onFailText,
@@ -241,7 +242,7 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
         StockModel.of(context).updateStock(
           stock,
           onSuccess: () {
-            stockModel.stockUploadProgressChange = UploadProgressEnum.IDLE;
+            stockModel.stockUploadProgressChange = ProgressEnum.IDLE;
             Message.onSuccess(
               scaffoldKey: _stockAddScaffoldKey,
               message: "Estoque editado com sucesso",
@@ -256,7 +257,7 @@ class _StockAddPageState extends State<StockAddPage> with StockAddPageValidator 
             return;
           },
           onFail: (errorText) {
-            stockModel.stockUploadProgressChange = UploadProgressEnum.IDLE;
+            stockModel.stockUploadProgressChange = ProgressEnum.IDLE;
             Message.onFail(
               scaffoldKey: _stockAddScaffoldKey,
               message: errorText,

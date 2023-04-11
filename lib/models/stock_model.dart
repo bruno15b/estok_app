@@ -1,5 +1,5 @@
 import 'package:estok_app/entities/stock.dart';
-import 'package:estok_app/enums/upload_progress_enum.dart';
+import 'package:estok_app/enums/progress_enum.dart';
 import 'package:estok_app/enums/stock_status_enum.dart';
 import 'package:estok_app/repository/api/stock_api.dart';
 import 'package:estok_app/enums/extensions/stock_status_enum_extension.dart';
@@ -13,7 +13,7 @@ class StockModel extends Model {
   String selectedStockType = StockTypeEnum.CAIXA.stringValue;
   Stock selectedStock;
   Color selectedStockStatusColor;
-  UploadProgressEnum stockUploadProgressChange = UploadProgressEnum.IDLE;
+  ProgressEnum stockUploadProgressChange = ProgressEnum.IDLE;
 
   static StockModel of(BuildContext context) {
     return ScopedModel.of<StockModel>(context);

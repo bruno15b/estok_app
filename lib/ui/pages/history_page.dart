@@ -28,7 +28,7 @@ class _HistoryPageState extends State<HistoryPage> {
         builder: (context, child, historyModel) {
           return Center(
             child: CustomFutureBuilder(
-              futureList: historyModel.historyListFuture,
+              futureList: historyModel.futureHistoryList,
               onRefresh: _reload,
               padding: EdgeInsets.only(left: 5, right: 5, top: 40, bottom: 90),
               itemBuilder: (BuildContext context, History history) {

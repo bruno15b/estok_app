@@ -9,11 +9,11 @@ class ProductAddPageValidator {
     final regex = RegExp(r'^[0-9]+$');
 
     if (!regex.hasMatch(value)) {
-      return 'Apenas números inteiros são permitidos';
+      return 'Apenas números inteiros não negativos são permitidos';
     }
 
-    if(value.length>15){
-      return 'Campo excede o limite de 15 caracteres';
+    if(value.length>10){
+      return 'Campo excede o limite de 10 caracteres';
     }
     return null;
   }
@@ -56,6 +56,10 @@ class ProductAddPageValidator {
     final regex = RegExp(r'^R?\$\s?\d+(?:,\d+)?(?:\.\d+)?|\d+$');
     if (!regex.hasMatch(value)) {
       return 'Apenas números!Com . ou ,!';
+    }
+
+    if(value.length>14){
+      return 'Campo excede o limite de 14 caracteres';
     }
 
     return null;

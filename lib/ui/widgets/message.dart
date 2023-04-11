@@ -15,6 +15,7 @@ class Message extends StatelessWidget{
    @override
   Widget build(BuildContext context) {
     return Container(
+      key:ValueKey('message'),
       padding: EdgeInsets.all(20),
       child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
         Text(
@@ -225,6 +226,7 @@ class Message extends StatelessWidget{
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          key: ValueKey('dialogWidgetKey'),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),

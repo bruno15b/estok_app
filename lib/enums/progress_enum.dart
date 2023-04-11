@@ -1,0 +1,4 @@
+enum ProgressEnum {
+  LOADING,
+  IDLE,
+}

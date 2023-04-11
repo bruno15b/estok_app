@@ -1,5 +1,5 @@
 import 'package:estok_app/entities/user.dart';
-import 'package:estok_app/enums/upload_progress_enum.dart';
+import 'package:estok_app/enums/progress_enum.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';

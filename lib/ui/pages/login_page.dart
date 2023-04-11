@@ -1,11 +1,11 @@
 import 'package:estok_app/entities/user.dart';
-import 'package:estok_app/enums/upload_progress_enum.dart';
+import 'package:estok_app/enums/progress_enum.dart';
 import 'package:estok_app/models/stock_model.dart';
 import 'package:estok_app/models/user_model.dart';
 import 'package:estok_app/repository/local/user_repository.dart';
 import 'package:estok_app/ui/pages/history_page.dart';
 import 'package:estok_app/ui/pages/main_page.dart';
-import 'package:estok_app/ui/validators/login_validator.dart';
+import 'package:estok_app/ui/validators/login_page_validator.dart';
 import 'package:estok_app/ui/widgets/custom_app_bar.dart';
 import 'package:estok_app/ui/widgets/custom_button.dart';
 import 'package:estok_app/ui/widgets/custom_text_form_field.dart';
@@ -13,7 +13,7 @@ import 'package:estok_app/ui/widgets/message.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class LoginPage extends StatelessWidget with LoginValidator {
+class LoginPage extends StatelessWidget with LoginPageValidator {
   final FocusNode _focusPassword = FocusNode();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -104,7 +104,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
                     Expanded(
                       child: ScopedModelDescendant<UserModel>(builder: (context, snapshot, userModel) {
                         return CustomButton(
-                          isLoading: userModel.userUploadProgressChange == UploadProgressEnum.LOADING,
+                          isLoading: userModel.userUploadProgressChange == ProgressEnum.LOADING,
                           onPressed: () {
                             _loginOnPressed(context, userModel);
                           },
@@ -131,11 +131,11 @@ class LoginPage extends StatelessWidget with LoginValidator {
       return;
     }
 
-    userModel.userUploadProgressChange = UploadProgressEnum.LOADING;
+    userModel.userUploadProgressChange = ProgressEnum.LOADING;
     userModel.setState();
 
-    userModel.login(_emailController.text, _passwordController.text, onSuccess: () {
-      userModel.userUploadProgressChange = UploadProgressEnum.IDLE;
+    userModel.login(_emailController.text.trim(), _passwordController.text, onSuccess: () {
+      userModel.userUploadProgressChange = ProgressEnum.IDLE;
       Message.onSuccess(
         scaffoldKey: _loginScaffoldKey,
         message: "Usuário logado com sucesso!",
@@ -154,7 +154,7 @@ class LoginPage extends StatelessWidget with LoginValidator {
       StockModel.of(context).fetchAllStocks();
       return;
     }, onFail: (onFailText) {
-      userModel.userUploadProgressChange = UploadProgressEnum.IDLE;
+      userModel.userUploadProgressChange = ProgressEnum.IDLE;
       Message.onFail(
           scaffoldKey: _loginScaffoldKey,
           seconds: 2,
@@ -181,6 +181,6 @@ class LoginPage extends StatelessWidget with LoginValidator {
       return;
     });
 
-    print("Email : ${_emailController.text}, Senha: ${_passwordController.text}");
+  //  print("Email : ${_emailController.text}, Senha: ${_passwordController.text}");
   }
 }

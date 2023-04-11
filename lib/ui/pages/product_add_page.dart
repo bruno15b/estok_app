@@ -1,6 +1,6 @@
 import 'package:estok_app/entities/product.dart';
 import 'package:estok_app/entities/stock.dart';
-import 'package:estok_app/enums/upload_progress_enum.dart';
+import 'package:estok_app/enums/progress_enum.dart';
 import 'package:estok_app/models/history_model.dart';
 import 'package:estok_app/models/product_model.dart';
 import "package:estok_app/utils/server_sync_util.dart";
@@ -43,7 +43,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
   final FocusNode _focusProductQuantity = FocusNode();
   final FocusNode _focusProductUrlSite = FocusNode();
 
-  final _productAddformKey = GlobalKey<FormState>();
+  final _productAddFormKey = GlobalKey<FormState>();
   final _productAddScaffoldKey = GlobalKey<ScaffoldState>();
   bool newProductAdd = true;
 
@@ -76,7 +76,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
       appBar: CustomAppBar(titleText: widget.product?.productName ?? "NOVO PRODUTO"),
       body: ScopedModelDescendant<ProductModel>(builder: (context, snapshot, productModel) {
         return Form(
-          key: _productAddformKey,
+          key: _productAddFormKey,
           child: ListView(
             padding: EdgeInsets.only(top: 39, left: 24, right: 24, bottom: 60),
             children: [
@@ -97,7 +97,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
               Padding(
                 padding: EdgeInsets.only(top: 11, bottom: 15),
                 child: Text(
-                  "Clique na imagem para tirar foto",
+                  "Clique na imagem para tirar uma foto",
                   textAlign: TextAlign.center,
                   style: TextStyle(),
                 ),
@@ -110,7 +110,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
                 validator: nameValidator,
                 textAboveFormField: "Nome",
                 labelText: "Nome do Produto",
-                hintText: "Ex: Heinkiken Original",
+                hintText: "Ex: Heineken Original",
                 keyboardType: TextInputType.text,
                 colorText: Color(0xFFC3B6B6),
                 sizeText: 14,
@@ -131,7 +131,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
               ),
               CustomTextFormField(
                 formatter: CurrencyInputFormatter(),
-                maxLength: 15,
+                maxLength: 14,
                 controller: _productItemPriceController,
                 focusNode: _focusProductItemPrice,
                 requestFocus: _focusProductUnitaryPrice,
@@ -145,7 +145,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
               ),
               CustomTextFormField(
                 formatter: CurrencyInputFormatter(),
-                maxLength: 15,
+                maxLength: 14,
                 controller: _productUnitaryPriceController,
                 focusNode: _focusProductUnitaryPrice,
                 requestFocus: _focusProductQuantity,
@@ -158,7 +158,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
                 sizeText: 14,
               ),
               CustomTextFormField(
-                maxLength: 15,
+                maxLength: 10,
                 controller: _productQuantityController,
                 focusNode: _focusProductQuantity,
                 requestFocus: _focusProductUrlSite,
@@ -187,7 +187,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
               ),
               CustomButton(
                 onPressed: () => productOnPressed(productModel),
-                isLoading: productModel.productUploadProgressChange == UploadProgressEnum.LOADING,
+                isLoading: productModel.productUploadProgressChange == ProgressEnum.LOADING,
                 textButton: widget.product?.productName != null ? "EDITAR" : "CADASTRAR",
               ),
             ],
@@ -199,7 +199,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
 
   productOnPressed(ProductModel productModel) async {
     FocusScope.of(context).unfocus();
-    if (this._productAddformKey.currentState.validate()) {
+    if (this._productAddFormKey.currentState.validate()) {
 
       Product product = Product(
         productName: _productNameController.text,
@@ -213,7 +213,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
         productImageUrl: widget.product?.productImageUrl ?? "",
       );
 
-      productModel.productUploadProgressChange = UploadProgressEnum.LOADING;
+      productModel.productUploadProgressChange = ProgressEnum.LOADING;
       productModel.setState();
 
       if (newProductAdd) {
@@ -221,7 +221,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
         await ProductModel.of(context).createNewProduct(
           product,
           onSuccess: () {
-            productModel.productUploadProgressChange = UploadProgressEnum.IDLE;
+            productModel.productUploadProgressChange = ProgressEnum.IDLE;
             Message.onSuccess(
               scaffoldKey: _productAddScaffoldKey,
               message: "Produto adicionado com sucesso!",
@@ -236,7 +236,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
             return;
           },
           onFail: (onFailText) {
-            productModel.productUploadProgressChange = UploadProgressEnum.IDLE;
+            productModel.productUploadProgressChange = ProgressEnum.IDLE;
             Message.onFail(
               scaffoldKey: _productAddScaffoldKey,
               message: onFailText,
@@ -251,7 +251,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
         await ProductModel.of(context).updateProduct(
           product,
           onSuccess: () {
-            productModel.productUploadProgressChange = UploadProgressEnum.IDLE;
+            productModel.productUploadProgressChange = ProgressEnum.IDLE;
             Message.onSuccess(
               scaffoldKey: _productAddScaffoldKey,
               message: "Produto editado com sucesso!",
@@ -266,7 +266,7 @@ class _ProductAddPageState extends State<ProductAddPage> with ProductAddPageVali
             return;
           },
           onFail: (onFailText) {
-            productModel.productUploadProgressChange = UploadProgressEnum.IDLE;
+            productModel.productUploadProgressChange = ProgressEnum.IDLE;
             Message.onFail(
               scaffoldKey: _productAddScaffoldKey,
               message: onFailText,
